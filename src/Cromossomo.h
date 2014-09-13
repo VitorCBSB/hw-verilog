@@ -12,10 +12,10 @@
 #include <array>
 #include <math.h>
 
-template <int NumIn, int NumOut, int R, int C>
+template<int NumIn, int NumOut, int R, int C>
 class Cromossomo {
 private:
-	std::array<std::bitset<16 + ceil((log(R * C + NumIn) / log(2))) * 2>, R * C> wow;
+	std::array<std::bitset<16 + ceil((log(R * C + NumIn) / log(2))) * 2>, R * C> elementos_logicos;
 	std::array<std::bitset<ceil((log(R * C + NumIn) / log(2)))>, NumOut> saidas;
 
 public:
