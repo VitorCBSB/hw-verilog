@@ -74,13 +74,18 @@ public:
 		auto this_serial = cromossomo_serial();
 		auto outro_serial = outro_pai.cromossomo_serial();
 		auto ponto_corte = rd() % (BITS_TOTAL);
-		auto mascara = mascara<BITS_TOTAL>(ponto_corte);
+		auto mascara = criar_mascara<BITS_TOTAL>(ponto_corte);
 		auto neg_mascara = ~mascara;
 
 		auto parcial_this = this_serial & mascara;
 		auto parcial_outro = outro_serial & neg_mascara;
 
-		return Cromossomo(parcial_this | parcial_outro);
+		return Cromossomo<NumIn, NumOut, LENumIn, R, C>(
+				parcial_this | parcial_outro);
+	}
+
+	int fitness() {
+		return 0;
 	}
 
 private:
@@ -96,7 +101,7 @@ private:
 	}
 
 	template<int tamanho>
-	std::bitset<tamanho> mascara(int ponto_corte) {
+	std::bitset<tamanho> criar_mascara(int ponto_corte) {
 		std::bitset<tamanho> resultado;
 		int i;
 		for (int i = 0; i < ponto_corte; i++) {
