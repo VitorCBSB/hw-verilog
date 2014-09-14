@@ -39,11 +39,13 @@ public:
 	Cromossomo(std::bitset<BITS_TOTAL> cromossomo_serial) {
 		int posicao_atual = 0;
 		for (int i = 0; i < R * C; i++) {
+			elementos_logicos[i] = std::bitset<BITS_LE>();
 			for (int j = 0; j < BITS_LE; j++, posicao_atual++) {
 				elementos_logicos[i][j] = cromossomo_serial[posicao_atual];
 			}
 		}
 		for (int i = 0; i < NumOut; i++) {
+			saidas[i] = std::bitset<BITS_TERMINAIS>();
 			for (int j = 0; j < BITS_TERMINAIS ; j++, posicao_atual++) {
 				saidas[i][j] = cromossomo_serial[posicao_atual];
 			}
