@@ -35,13 +35,26 @@ public:
 		}
 	}
 
+	Cromossomo(std::bitset<BITS_TOTAL> cromossomo_serial) {
+		int posicao_atual = 0;
+		for (auto& elemento_logico : elementos_logicos) {
+			for (int i = 0; i < BITS_LE; i++, posicao_atual++) {
+				elemento_logico[i] = cromossomo_serial[posicao_atual];
+			}
+		}
+		for (auto& saida : saidas) {
+			for (int i = 0; i < BITS_TERMINAIS ; i++, posicao_atual++) {
+				saida[i] = cromossomo_serial[posicao_atual];
+			}
+		}
+	}
+
 	std::bitset<BITS_TOTAL> cromossomo_serial() {
 		int posicao_atual = 0;
 		std::bitset<BITS_TOTAL> resultado;
 
 		for (auto& elemento_logico : elementos_logicos) {
-			for (int i = 0; i < BITS_LE;
-					i++, posicao_atual++) {
+			for (int i = 0; i < BITS_LE; i++, posicao_atual++) {
 				resultado[posicao_atual] = elemento_logico[i];
 			}
 		}
@@ -55,7 +68,19 @@ public:
 		return resultado;
 	}
 
-	void gerar_filho(const Cromossomo<NumIn, NumOut, LENumIn, R, C>& outro_pai) {
+	Cromossomo<NumIn, NumOut, LENumIn, R, C> gerar_filho(
+			const Cromossomo<NumIn, NumOut, LENumIn, R, C>& outro_pai) {
+		std::random_device rd;
+		auto this_serial = cromossomo_serial();
+		auto outro_serial = outro_pai.cromossomo_serial();
+		auto ponto_corte = rd() % (BITS_TOTAL);
+		auto mascara = mascara<BITS_TOTAL>(ponto_corte);
+		auto neg_mascara = ~mascara;
+
+		auto parcial_this = this_serial & mascara;
+		auto parcial_outro = outro_serial & neg_mascara;
+
+		return Cromossomo(parcial_this | parcial_outro);
 	}
 
 private:
@@ -70,12 +95,16 @@ private:
 		return resultado;
 	}
 
-	template<int N1, int N2>
-	std::bitset<N1 + N2> concatenar(const std::bitset<N1>& bitset1,
-			const std::bitset<N2>& bitset2) {
-		std::string s1 = bitset1.to_string();
-		std::string s2 = bitset2.to_string();
-		return std::bitset<N1 + N2>(s1 + s2);
+	template<int tamanho>
+	std::bitset<tamanho> mascara(int ponto_corte) {
+		std::bitset<tamanho> resultado;
+		int i;
+		for (int i = 0; i < ponto_corte; i++) {
+			resultado[i] = 1;
+		}
+		for (; i < tamanho; i++) {
+			resultado[i] = 0;
+		}
 	}
 };
 
