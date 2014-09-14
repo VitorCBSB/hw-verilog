@@ -13,6 +13,7 @@
 #include <random>
 #include <string>
 #include <math.h>
+#include <stdio.h>
 
 #define BITS_TERMINAIS (int) ceil((log(R * C + NumIn) / log(2)))
 #define SAIDAS_LUT 16
@@ -110,6 +111,16 @@ private:
 		for (; i < tamanho; i++) {
 			resultado[i] = 0;
 		}
+	}
+
+	void criar_arquivo_verilog(std::string nome_arquivo) {
+		FILE* fp = fopen(nome_arquivo.c_str(), "w");
+
+		fprintf(fp, "module genetico(in, out);\n");
+		fprintf(fp, "\n");
+		fprintf(fp, "\tinput [%d:0] in\n", NumIn - 1);
+		fprintf(fp, "\toutput [%d:0] out\n", NumOut - 1);
+		fprintf(fp, "endmodule\n");
 	}
 };
 
