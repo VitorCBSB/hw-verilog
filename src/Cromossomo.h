@@ -16,18 +16,19 @@
 
 #define BITS_TERMINAIS (int) ceil((log(R * C + NumIn) / log(2)))
 #define SAIDAS_LUT 16
-#define BITS_TOTAL R * C * (SAIDAS_LUT + BITS_TERMINAIS * 2) + NumOut * BITS_TERMINAIS
+#define BITS_TOTAL R * C * (BITS_LE) + NumOut * BITS_TERMINAIS
+#define BITS_LE SAIDAS_LUT + BITS_TERMINAIS * LENumIn
 
-template<int NumIn, int NumOut, int R, int C>
+template<int NumIn, int NumOut, int LENumIn, int R, int C>
 class Cromossomo {
 public:
-	std::array<std::bitset<SAIDAS_LUT + BITS_TERMINAIS * 2>, R * C> elementos_logicos;
+	std::array<std::bitset<BITS_LE>, R * C> elementos_logicos;
 	std::array<std::bitset<BITS_TERMINAIS >, NumOut> saidas;
 
 public:
 	Cromossomo() {
 		for (int i = 0; i < R * C; i++) {
-			elementos_logicos[i] = aleatorio<SAIDAS_LUT + BITS_TERMINAIS * 2>();
+			elementos_logicos[i] = aleatorio<BITS_LE>();
 		}
 		for (int i = 0; i < NumOut; i++) {
 			saidas[i] = aleatorio<BITS_TERMINAIS >();
@@ -39,7 +40,7 @@ public:
 		std::bitset<BITS_TOTAL> resultado;
 
 		for (auto& elemento_logico : elementos_logicos) {
-			for (int i = 0; i < SAIDAS_LUT + BITS_TERMINAIS * 2;
+			for (int i = 0; i < BITS_LE;
 					i++, posicao_atual++) {
 				resultado[posicao_atual] = elemento_logico[i];
 			}
@@ -54,7 +55,7 @@ public:
 		return resultado;
 	}
 
-	void gerar_filho(const Cromossomo<NumIn, NumOut, R, C>& outro_pai) {
+	void gerar_filho(const Cromossomo<NumIn, NumOut, LENumIn, R, C>& outro_pai) {
 	}
 
 private:

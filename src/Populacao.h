@@ -13,7 +13,7 @@
 
 class Populacao {
 private:
-	std::vector<Cromossomo<4, 1, 5, 5>> populacao;
+	std::vector<Cromossomo<4, 1, 4, 5, 5>> populacao;
 public:
 	Populacao();
 };
