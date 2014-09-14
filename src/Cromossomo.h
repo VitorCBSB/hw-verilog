@@ -38,14 +38,14 @@ public:
 
 	Cromossomo(std::bitset<BITS_TOTAL> cromossomo_serial) {
 		int posicao_atual = 0;
-		for (auto& elemento_logico : elementos_logicos) {
-			for (int i = 0; i < BITS_LE; i++, posicao_atual++) {
-				elemento_logico[i] = cromossomo_serial[posicao_atual];
+		for (int i = 0; i < R * C; i++) {
+			for (int j = 0; j < BITS_LE; j++, posicao_atual++) {
+				elementos_logicos[i][j] = cromossomo_serial[posicao_atual];
 			}
 		}
-		for (auto& saida : saidas) {
-			for (int i = 0; i < BITS_TERMINAIS ; i++, posicao_atual++) {
-				saida[i] = cromossomo_serial[posicao_atual];
+		for (int i = 0; i < NumOut; i++) {
+			for (int j = 0; j < BITS_TERMINAIS ; j++, posicao_atual++) {
+				saidas[i][j] = cromossomo_serial[posicao_atual];
 			}
 		}
 	}
@@ -120,6 +120,8 @@ private:
 		fprintf(fp, "\n");
 		fprintf(fp, "\tinput [%d:0] in\n", NumIn - 1);
 		fprintf(fp, "\toutput [%d:0] out\n", NumOut - 1);
+		fprintf(fp, "\twire [%d:0] le_out\n", R * C);
+
 		fprintf(fp, "endmodule\n");
 	}
 };
