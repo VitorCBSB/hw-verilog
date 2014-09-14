@@ -38,14 +38,15 @@ public:
 		int posicao_atual = 0;
 		std::bitset<BITS_TOTAL> resultado;
 
-		for(auto& elemento_logico : elementos_logicos) {
-			for (int i = 0; i < SAIDAS_LUT + BITS_TERMINAIS * 2; i++, posicao_atual++) {
+		for (auto& elemento_logico : elementos_logicos) {
+			for (int i = 0; i < SAIDAS_LUT + BITS_TERMINAIS * 2;
+					i++, posicao_atual++) {
 				resultado[posicao_atual] = elemento_logico[i];
 			}
 		}
 
-		for(auto& saida: saidas) {
-			for (int i = 0; i < BITS_TERMINAIS; i++, posicao_atual++) {
+		for (auto& saida : saidas) {
+			for (int i = 0; i < BITS_TERMINAIS ; i++, posicao_atual++) {
 				resultado[posicao_atual] = saida[i];
 			}
 		}
@@ -53,8 +54,7 @@ public:
 		return resultado;
 	}
 
-	void gerar_filho(
-			const Cromossomo<NumIn, NumOut, R, C>& outro_pai) {
+	void gerar_filho(const Cromossomo<NumIn, NumOut, R, C>& outro_pai) {
 	}
 
 private:
