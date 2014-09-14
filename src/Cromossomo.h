@@ -12,7 +12,7 @@
 #include <array>
 #include <math.h>
 
-#define BITS_TERMINAIS ceil((log(R * C + NumIn) / log(2)))
+#define BITS_TERMINAIS (int) ceil((log(R * C + NumIn) / log(2)))
 #define SAIDAS_LUT 16
 
 template<int NumIn, int NumOut, int R, int C>
