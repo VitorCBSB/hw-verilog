@@ -12,11 +12,13 @@
 #include <array>
 #include <math.h>
 
+#define BITS_SAIDAS ceil((log(R * C + NumIn) / log(2)))
+
 template<int NumIn, int NumOut, int R, int C>
 class Cromossomo {
 private:
-	std::array<std::bitset<16 + ceil((log(R * C + NumIn) / log(2))) * 2>, R * C> elementos_logicos;
-	std::array<std::bitset<ceil((log(R * C + NumIn) / log(2)))>, NumOut> saidas;
+	std::array<std::bitset<16 + BITS_SAIDAS * 2>, R * C> elementos_logicos;
+	std::array<std::bitset<BITS_SAIDAS>, NumOut> saidas;
 
 public:
 	Cromossomo();
