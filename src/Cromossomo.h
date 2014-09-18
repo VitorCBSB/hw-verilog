@@ -115,6 +115,15 @@ private:
 		}
 	}
 
+	template<int Ini, int Fim, int Original>
+	std::bitset<Fim - Ini> subbits(std::bitset<Original> original) {
+		std::bitset<Fim - Ini> resultado;
+		for (int i = 0; i < Fim - Ini; i++) {
+			resultado[i] = original[Ini + i];
+		}
+		return resultado;
+	}
+
 	void criar_arquivo_verilog(std::string nome_arquivo) {
 		FILE* fp = fopen(nome_arquivo.c_str(), "w");
 
@@ -122,7 +131,17 @@ private:
 		fprintf(fp, "\n");
 		fprintf(fp, "\tinput [%d:0] in\n", NumIn - 1);
 		fprintf(fp, "\toutput [%d:0] out\n", NumOut - 1);
-		fprintf(fp, "\twire [%d:0] le_out\n", R * C);
+		fprintf(fp, "\twire le_out[%d:0]\n", (R * C) - 1);
+		fprintf(fp, "\twire [%d:0] le_in[%d:0]\n", (R * C) - 1, LENumIn - 1);
+		fprintf(fp, "\n");
+
+		for (int i = 0; i < R; i++) {
+			for (int j = 0; j < C; j++) {
+				fprintf(fp, "logic_e le%d%d (\n", i, j);
+				fprintf(fp, "\t.func(16'b%s)\n", subbits<0, 16, BITS_LE>(elementos_logicos[i * R + j]).to_string().c_str());
+				fprintf(fp, "\t.in(le_out[%d])\n");
+			}
+		}
 
 		fprintf(fp, "endmodule\n");
 	}
