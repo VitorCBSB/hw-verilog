@@ -129,14 +129,13 @@ private:
 		char entrada_str[20];
 		std::string retorno;
 
-		sprintf(entrada_str, "%lu", entrada_int);
-
 		if (entrada_int > NumIn - 1) {
 			entrada_int -= NumIn;
 			retorno = "le_out[";
 		} else {
 			retorno = "in[";
 		}
+		sprintf(entrada_str, "%lu", entrada_int);
 		retorno += entrada_str;
 		retorno += "]";
 
@@ -149,10 +148,9 @@ public:
 
 		fprintf(fp, "module genetico(in, out);\n");
 		fprintf(fp, "\n");
-		fprintf(fp, "\tinput [%d:0] in\n", NumIn - 1);
-		fprintf(fp, "\toutput [%d:0] out\n", NumOut - 1);
-		fprintf(fp, "\twire le_out[%d:0]\n", (R * C) - 1);
-		fprintf(fp, "\twire [%d:0] le_in[%d:0]\n", (R * C) - 1, LENumIn - 1);
+		fprintf(fp, "\tinput [%d:0] in;\n", NumIn - 1);
+		fprintf(fp, "\toutput [%d:0] out;\n", NumOut - 1);
+		fprintf(fp, "\twire le_out[%d:0];\n", (R * C) - 1);
 		fprintf(fp, "\n");
 
 		for (int i = 0; i < R; i++) {
