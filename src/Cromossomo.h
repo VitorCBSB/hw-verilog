@@ -45,7 +45,7 @@ public:
 			}
 		}
 		for (int i = 0; i < NumOut; i++) {
-			saidas[i] = std::bitset<BITS_TERMINAIS>();
+			saidas[i] = std::bitset<BITS_TERMINAIS >();
 			for (int j = 0; j < BITS_TERMINAIS ; j++, posicao_atual++) {
 				saidas[i][j] = cromossomo_serial[posicao_atual];
 			}
@@ -115,15 +115,35 @@ private:
 		}
 	}
 
-	template<int Ini, int Fim, int Original>
-	std::bitset<Fim - Ini> subbits(std::bitset<Original> original) {
-		std::bitset<Fim - Ini> resultado;
-		for (int i = 0; i < Fim - Ini; i++) {
-			resultado[i] = original[Ini + i];
+	template<int Tamanho, int Original>
+	std::bitset<Tamanho> subbits(int inicio, std::bitset<Original> original) {
+		std::bitset<Tamanho> resultado;
+		for (int i = 0; i < Tamanho; i++) {
+			resultado[i] = original[inicio + i];
 		}
 		return resultado;
 	}
 
+	std::string decodificar_entrada(std::bitset<BITS_TERMINAIS > entrada) {
+		auto entrada_int = entrada.to_ulong() % (NumIn + R * C);
+		char entrada_str[20];
+		std::string retorno;
+
+		sprintf(entrada_str, "%lu", entrada_int);
+
+		if (entrada_int > NumIn - 1) {
+			entrada_int -= NumIn;
+			retorno = "le_out[";
+		} else {
+			retorno = "in[";
+		}
+		retorno += entrada_str;
+		retorno += "]";
+
+		return retorno;
+	}
+
+public:
 	void criar_arquivo_verilog(std::string nome_arquivo) {
 		FILE* fp = fopen(nome_arquivo.c_str(), "w");
 
@@ -138,12 +158,33 @@ private:
 		for (int i = 0; i < R; i++) {
 			for (int j = 0; j < C; j++) {
 				fprintf(fp, "logic_e le%d%d (\n", i, j);
-				fprintf(fp, "\t.func(16'b%s)\n", subbits<0, 16, BITS_LE>(elementos_logicos[i * R + j]).to_string().c_str());
-				fprintf(fp, "\t.in(le_out[%d])\n");
+				fprintf(fp, "\t.func(%d'b%s),\n", SAIDAS_LUT,
+						subbits<SAIDAS_LUT, BITS_LE>(0,
+								elementos_logicos[i * R + j]).to_string().c_str());
+				fprintf(fp, "\t.in({");
+				int k;
+				for (k = 0; k < LENumIn - 1; k++) {
+					fprintf(fp, "%s, ",
+							decodificar_entrada(
+									subbits<BITS_TERMINAIS, BITS_LE>(
+											SAIDAS_LUT + k * BITS_TERMINAIS,
+											elementos_logicos[i * R + j])).c_str());
+				}
+				fprintf(fp, "%s",
+						decodificar_entrada(
+								subbits<BITS_TERMINAIS, BITS_LE>(
+										SAIDAS_LUT + k * BITS_TERMINAIS,
+										elementos_logicos[i * R + j])).c_str());
+				fprintf(fp, "}),\n");
+
+				fprintf(fp, "\t.out(le_out[%d])\n", i * R + j);
+				fprintf(fp, ");\n\n");
 			}
 		}
 
 		fprintf(fp, "endmodule\n");
+
+		fclose(fp);
 	}
 };
 

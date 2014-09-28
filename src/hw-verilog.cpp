@@ -7,9 +7,14 @@
 //============================================================================
 
 #include <iostream>
-using namespace std;
+#include "Cromossomo.h"
 
 int main() {
-	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
+	Cromossomo<4, 1, 4, 5, 5> teste;
+
+	teste.criar_arquivo_verilog("wow.v");
+
+	printf("Arquivo criado com sucesso.\n");
+
 	return 0;
 }
