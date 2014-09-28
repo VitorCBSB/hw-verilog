@@ -145,6 +145,7 @@ private:
 public:
 	void criar_arquivo_verilog(std::string nome_arquivo) {
 		FILE* fp = fopen(nome_arquivo.c_str(), "w");
+		int i;
 
 		fprintf(fp, "module genetico(in, out);\n");
 		fprintf(fp, "\n");
@@ -153,7 +154,14 @@ public:
 		fprintf(fp, "\twire le_out[%d:0];\n", (R * C) - 1);
 		fprintf(fp, "\n");
 
-		for (int i = 0; i < R; i++) {
+		fprintf(fp, "\tassign out = {");
+		for (i = 0; i < NumOut - 1; i++) {
+			fprintf(fp, "%s, ", decodificar_entrada(saidas[i]).c_str());
+		}
+		fprintf(fp, "%s", decodificar_entrada(saidas[i]).c_str());
+		fprintf(fp, "};\n\n");
+
+		for (i = 0; i < R; i++) {
 			for (int j = 0; j < C; j++) {
 				fprintf(fp, "logic_e le%d%d (\n", i, j);
 				fprintf(fp, "\t.func(%d'b%s),\n", SAIDAS_LUT,
