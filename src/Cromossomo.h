@@ -37,21 +37,40 @@ public:
 	}
 
 	Cromossomo(std::bitset<BITS_TOTAL> cromossomo_serial) {
-		int posicao_atual = 0;
-		for (int i = 0; i < R * C; i++) {
-			elementos_logicos[i] = std::bitset<BITS_LE>();
-			for (int j = 0; j < BITS_LE; j++, posicao_atual++) {
-				elementos_logicos[i][j] = cromossomo_serial[posicao_atual];
-			}
-		}
-		for (int i = 0; i < NumOut; i++) {
-			saidas[i] = std::bitset<BITS_TERMINAIS >();
-			for (int j = 0; j < BITS_TERMINAIS ; j++, posicao_atual++) {
-				saidas[i][j] = cromossomo_serial[posicao_atual];
-			}
-		}
+		construir_a_partir_de_serial(cromossomo_serial);
 	}
 
+	Cromossomo<NumIn, NumOut, LENumIn, R, C> gerar_filho(
+			const Cromossomo<NumIn, NumOut, LENumIn, R, C>& outro_pai) {
+		std::random_device rd;
+		auto this_serial = cromossomo_serial();
+		auto outro_serial = outro_pai.cromossomo_serial();
+		auto ponto_corte = rd() % (BITS_TOTAL);
+		auto mascara = criar_mascara<BITS_TOTAL>(ponto_corte);
+		auto neg_mascara = ~mascara;
+
+		auto parcial_this = this_serial & mascara;
+		auto parcial_outro = outro_serial & neg_mascara;
+
+		return Cromossomo<NumIn, NumOut, LENumIn, R, C>(
+				parcial_this | parcial_outro);
+	}
+
+	void mutar() {
+		std::random_device rd;
+		auto aleatorio = rd() % (BITS_TOTAL);
+		auto this_serial = cromossomo_serial();
+
+		this_serial[aleatorio] = ~this_serial[aleatorio];
+
+		construir_a_partir_de_serial(this_serial);
+	}
+
+	int fitness() {
+		return 0;
+	}
+
+private:
 	std::bitset<BITS_TOTAL> cromossomo_serial() {
 		int posicao_atual = 0;
 		std::bitset<BITS_TOTAL> resultado;
@@ -71,27 +90,22 @@ public:
 		return resultado;
 	}
 
-	Cromossomo<NumIn, NumOut, LENumIn, R, C> gerar_filho(
-			const Cromossomo<NumIn, NumOut, LENumIn, R, C>& outro_pai) {
-		std::random_device rd;
-		auto this_serial = cromossomo_serial();
-		auto outro_serial = outro_pai.cromossomo_serial();
-		auto ponto_corte = rd() % (BITS_TOTAL);
-		auto mascara = criar_mascara<BITS_TOTAL>(ponto_corte);
-		auto neg_mascara = ~mascara;
-
-		auto parcial_this = this_serial & mascara;
-		auto parcial_outro = outro_serial & neg_mascara;
-
-		return Cromossomo<NumIn, NumOut, LENumIn, R, C>(
-				parcial_this | parcial_outro);
+	void construir_a_partir_de_serial(std::bitset<BITS_TOTAL> cromossomo_serial) {
+		int posicao_atual = 0;
+		for (int i = 0; i < R * C; i++) {
+			elementos_logicos[i] = std::bitset<BITS_LE>();
+			for (int j = 0; j < BITS_LE; j++, posicao_atual++) {
+				elementos_logicos[i][j] = cromossomo_serial[posicao_atual];
+			}
+		}
+		for (int i = 0; i < NumOut; i++) {
+			saidas[i] = std::bitset<BITS_TERMINAIS >();
+			for (int j = 0; j < BITS_TERMINAIS ; j++, posicao_atual++) {
+				saidas[i][j] = cromossomo_serial[posicao_atual];
+			}
+		}
 	}
 
-	int fitness() {
-		return 0;
-	}
-
-private:
 	template<int tamanho>
 	std::bitset<tamanho> aleatorio() {
 		std::random_device rd;
