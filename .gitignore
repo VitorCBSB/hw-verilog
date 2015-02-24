@@ -27,4 +27,8 @@
 *.out
 *.app
 
-Debug/
+C++/Debug/
+Verilog/teste_rs232/db/
+Verilog/teste_rs232/incremental_db/
+Verilog/teste_rs232/output_files/
+Verilog/teste_rs232/simulation/

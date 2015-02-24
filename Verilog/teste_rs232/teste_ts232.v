@@ -9,7 +9,7 @@ module teste_ts232(CLOCK_50, KEY, LEDR, SW, UART_RXD, UART_TXD);
 	
 	wire [31:0] data_to_send;
 	reg [31:0] received_data;
-	wire rx_data_is_ready = 0;
+	reg rx_data_is_ready = 0;
 	reg send_data_now = 0;
 	
 	assign LEDR[7:0] = received_data[7:0];
