@@ -35,7 +35,7 @@ uart rs232(
 	.tx_irq(),
 	
 	.uart_rx(UART_RXD),
-	.uart_tx(UART_TXD),
+	.uart_tx(UART_TXD)
 );
 
 endmodule
