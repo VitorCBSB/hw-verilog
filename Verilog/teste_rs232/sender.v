@@ -43,6 +43,8 @@ module sender(iData, iUart_Rxd, iSamplingFinished, oUart_Txd, oAddress);
 			end
 		START_SAMPLING:
 			fsm_function = IDLE;
+		default:
+			fsm_function = IDLE;
 		endcase
 		
 	endfunction
