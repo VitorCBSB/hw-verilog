@@ -1,9 +1,10 @@
 module sender(iClock, iReset, iData, iSamplingFinished, oAddress, oTxSend);
 
-	parameter IDLE = 2'b00,
-		SENDING = 2'b01,
-		SEND_PACKET = 2'b10, // Só serve para fazer o pulso de envio.
-		SENDING_PACKET = 2'b11;
+	parameter IDLE = 3'b000,
+		SENDING = 3'b001,
+		SEND_PACKET = 3'b010, // Só serve para fazer o pulso de envio.
+		SENDING_PACKET = 3'b011,
+		INCREMENTING_ADDR = 3'b100;
 	reg [1:0] state;
 	input [7:0] iData;
 	input iClock;
@@ -35,10 +36,12 @@ module sender(iClock, iReset, iData, iSamplingFinished, oAddress, oTxSend);
 			fsm_function = SENDING_PACKET;
 		SENDING_PACKET:
 			if (tx_done) begin
-				fsm_function = SENDING;
+				fsm_function = INCREMENTING_ADDR;
 			end else begin
 				fsm_function = SENDING_PACKET;
 			end
+		INCREMENTING_ADDR:
+			fsm_function = SENDING;
 		default:
 			fsm_function = IDLE;
 		endcase
@@ -56,8 +59,11 @@ end
 always@ (posedge iClock) begin
 	case (state)
 	IDLE: begin
+		oAddress <= 16'h0;
+		oTxSend <= 0;
 	end
 	SENDING: begin
+		oTxSend <= 0;
 	end
 	SEND_PACKET: begin
 		oTxSend <= 1;
@@ -65,7 +71,12 @@ always@ (posedge iClock) begin
 	SENDING_PACKET: begin
 		oTxSend <= 0;
 	end
+	INCREMENTING_ADDR: begin
+		oAddress <= oAddress + 1;
+		oTxSend <= 0;
+	end
 	default: begin
+		oTxSend <= 0;
 	end
 	endcase
 end
