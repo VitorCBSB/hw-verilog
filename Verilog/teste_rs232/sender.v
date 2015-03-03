@@ -1,7 +1,5 @@
 module sender(iClock, iReset, iData, iSamplingFinished, oAddress, oTxSend);
 
-	// TODO: Repensar essa máquina de estados.
-
 	parameter IDLE = 2'b00,
 		SENDING = 2'b01,
 		SEND_PACKET = 2'b10, // Só serve para fazer o pulso de envio.
@@ -37,9 +35,9 @@ module sender(iClock, iReset, iData, iSamplingFinished, oAddress, oTxSend);
 			fsm_function = SENDING_PACKET;
 		SENDING_PACKET:
 			if (tx_done) begin
-				fsm_function = SENDING_PACKET;
-			end else begin
 				fsm_function = SENDING;
+			end else begin
+				fsm_function = SENDING_PACKET;
 			end
 		default:
 			fsm_function = IDLE;
@@ -53,6 +51,23 @@ always@ (posedge iClock) begin
 	end else begin
 		state <= next_state;
 	end
+end
+
+always@ (posedge iClock) begin
+	case (state)
+	IDLE: begin
+	end
+	SENDING: begin
+	end
+	SEND_PACKET: begin
+		oTxSend <= 1;
+	end
+	SENDING_PACKET: begin
+		oTxSend <= 0;
+	end
+	default: begin
+	end
+	endcase
 end
 	
 endmodule
