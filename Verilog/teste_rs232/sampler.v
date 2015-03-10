@@ -1,4 +1,4 @@
-module sampler(iClock, iStartSignal, oAddress, oFinished);
+module sampler(iClock, iReset, iStartSignal, oAddress, oFinished);
 
 	parameter IDLE = 2'b00,
 		SAMPLING = 2'b01,
@@ -6,6 +6,7 @@ module sampler(iClock, iStartSignal, oAddress, oFinished);
 		FINISHED_SAMPLING = 2'b11;
 
 	input iClock;
+	input iReset;
 	input iStartSignal;
 	output reg [15:0] oAddress;
 	output oFinished;
