@@ -1,20 +1,24 @@
-module sender(iClock, iReset, iData, iSamplingFinished, oAddress, oTxSend);
+module sender(iClock, iReset, iData, iTxDone, iSamplingFinished, oAddress, oFinished, oTxSend);
 
 	parameter IDLE = 3'b000,
 		SENDING = 3'b001,
 		SEND_PACKET = 3'b010, // Só serve para fazer o pulso de envio.
 		SENDING_PACKET = 3'b011,
-		INCREMENTING_ADDR = 3'b100;
-	reg [1:0] state;
+		INCREMENTING_ADDR = 3'b100,
+		FINISHED_SENDING = 3'b101;
+	reg [2:0] state;
 	input [7:0] iData;
 	input iClock;
 	input iReset;
+	input iTxDone
+	output oTxSend;
+	output oFinished;
 	output [15:0] oAddress;
 	
-	assign next_state = fsm_function(state, oAddress, tx_done, iSamplingFinished);
+	assign next_state = fsm_function(state, oAddress, iTxDone, iSamplingFinished);
 	
-	function [1:0] fsm_function;
-		input [1:0] state;
+	function [2:0] fsm_function;
+		input [2:0] state;
 		input [15:0] current_address;
 		input tx_done;
 		input sampling_finished;
@@ -30,7 +34,7 @@ module sender(iClock, iReset, iData, iSamplingFinished, oAddress, oTxSend);
 			if (current_address < 16'hFFFF) begin
 				fsm_function = SEND_PACKET;
 			end else begin
-				fsm_function = IDLE; // Acabou de enviar os dados.
+				fsm_function = FINISHED_SENDING; // Acabou de enviar os dados.
 			end
 		SEND_PACKET:
 			fsm_function = SENDING_PACKET;
@@ -42,6 +46,8 @@ module sender(iClock, iReset, iData, iSamplingFinished, oAddress, oTxSend);
 			end
 		INCREMENTING_ADDR:
 			fsm_function = SENDING;
+		FINISHED_SENDING:
+			fsm_function = IDLE;
 		default:
 			fsm_function = IDLE;
 		endcase
@@ -57,26 +63,26 @@ always@ (posedge iClock) begin
 end
 
 always@ (posedge iClock) begin
+	oTxSend <= 0;
+	oFinished <= 0;
 	case (state)
 	IDLE: begin
 		oAddress <= 16'h0;
-		oTxSend <= 0;
 	end
 	SENDING: begin
-		oTxSend <= 0;
 	end
 	SEND_PACKET: begin
 		oTxSend <= 1;
 	end
 	SENDING_PACKET: begin
-		oTxSend <= 0;
 	end
 	INCREMENTING_ADDR: begin
 		oAddress <= oAddress + 1;
-		oTxSend <= 0;
+	end
+	FINISHED_SENDING: begin
+		oFinished <= 1;
 	end
 	default: begin
-		oTxSend <= 0;
 	end
 	endcase
 end
