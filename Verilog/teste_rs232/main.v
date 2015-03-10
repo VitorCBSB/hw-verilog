@@ -1,4 +1,4 @@
-module teste_ts232(CLOCK_50, KEY, LEDR, SW, UART_RXD, UART_TXD);
+module main(CLOCK_50, KEY, LEDR, SW, UART_RXD, UART_TXD);
 
 	input CLOCK_50;
 	input KEY[3:0];
