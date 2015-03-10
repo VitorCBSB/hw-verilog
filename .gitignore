@@ -32,4 +32,5 @@ Verilog/circ_gen/db/
 Verilog/circ_gen/incremental_db/
 Verilog/circ_gen/output_files/
 Verilog/circ_gen/simulation/
+qar_info.json
 *.bak
