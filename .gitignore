@@ -28,8 +28,8 @@
 *.app
 
 C++/Debug/
-Verilog/teste_rs232/db/
-Verilog/teste_rs232/incremental_db/
-Verilog/teste_rs232/output_files/
-Verilog/teste_rs232/simulation/
+Verilog/circ_gen/db/
+Verilog/circ_gen/incremental_db/
+Verilog/circ_gen/output_files/
+Verilog/circ_gen/simulation/
 *.bak
