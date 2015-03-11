@@ -12,33 +12,30 @@ module sampler(iClock, iReset, iStartSignal, oAddress, oFinished);
 	output oFinished;
 	
 	reg [1:0] state;
-	reg started;
-	integer counter;
+	wire [1:0] next_state;
+	
+	assign next_state = next_state_fun(state, iStartSignal, oAddress);
 
-	function [1:0] next_state;
-		input [1:0] state;
-		input start_signal;
-		input [15:0] address;
-		
+	function [1:0] next_state_fun(input [1:0] state, input start_signal, input [15:0] address);
 		case(state)
 		IDLE:
 			if (start_signal) begin
-				next_state = SAMPLING;
+				next_state_fun = SAMPLING;
 			end else begin
-				next_state = IDLE;
+				next_state_fun = IDLE;
 			end
 		SAMPLING:
 			if (address < 16'hFFFF) begin
-				next_state = FINISHED_SAMPLING;
+				next_state_fun = FINISHED_SAMPLING;
 			end else begin
-				next_state = INCREMENTING_ADDR;
+				next_state_fun = INCREMENTING_ADDR;
 			end
 		INCREMENTING_ADDR: 
-			next_state = SAMPLING;
+			next_state_fun = SAMPLING;
 		FINISHED_SAMPLING:
-			next_state = IDLE;
+			next_state_fun = IDLE;
 		default:
-			next_state = IDLE;
+			next_state_fun = IDLE;
 		endcase
 	
 	endfunction

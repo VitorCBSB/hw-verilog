@@ -16,14 +16,12 @@ module sender(iClock, iReset, iData, iTxDone, iStartSignal, oAddress, oFinished,
 	output oFinished;
 	output [15:0] oAddress;
 	
+	wire [1:0] next_state;
+	
 	assign next_state = fsm_function(state, oAddress, iTxDone, iStartSignal);
 	
-	function [2:0] fsm_function;
-		input [2:0] state;
-		input [15:0] current_address;
-		input tx_done;
-		input sampling_finished;
-		
+	function [2:0] fsm_function(input [2:0] state, input [15:0] current_address,
+		input tx_done, input sampling_finished);
 		case (state)
 		IDLE:
 			if (sampling_finished) begin

@@ -1,8 +1,11 @@
-module main_fsm(iClock, iReset, iRxDone, iSamplingDone, iSendingDone, oMemWrite, oMemAddr);
+module main_fsm(iClock, iReset, iRxDone, iSamplingDone, iSendingDone, 
+	oMemWrite, oMemAddr, oStartSampling, oStartSending);
 
-	parameter IDLE = 2'b00,
-		SAMPLING = 2'b01,
-		SENDING = 2'b10;
+	parameter IDLE = 3'b000,
+		SAMPLING = 3'b001,
+		SENDING = 3'b010,
+		START_SAMPLING = 3'b011,
+		START_SENDING = 3'b100;
 
 	input iClock;
 	input iReset;
@@ -12,28 +15,26 @@ module main_fsm(iClock, iReset, iRxDone, iSamplingDone, iSendingDone, oMemWrite,
 	
 	output oMemWrite;
 	output oMemAddr;
+	output oStartSampling;
+	output oStartSending;
 	
-	reg [1:0] current_state;
+	reg [2:0] state = IDLE;
+	wire [2:0] next_state;
 	
-	assign next_state = next_state_fun(current_state, iRxDone, iSamplingDone, iSendingDone);
-	assign current_state = IDLE;
+	assign next_state = next_state_fun(state, iRxDone, iSamplingDone, iSendingDone);
 	
-	function [1:0] next_state_fun;
-		input [1:0] current_state;
-		input iRxDone;
-		input iSamplingDone;
-		input iSendingDone;
-		
+	function [2:0] next_state_fun(input [2:0] current_state, input iRxDone,
+		input iSamplingDone, input iSendingDone);
 		case(current_state)
 		IDLE:
 			if (iRxDone) begin
-				next_state_fun = SAMPLING;
+				next_state_fun = START_SAMPLING;
 			end else begin
 				next_state_fun = IDLE;
 			end
 		SAMPLING:
 			if (iSamplingDone) begin
-				next_state_fun = SENDING;
+				next_state_fun = START_SENDING;
 			end else begin
 				next_state_fun = SAMPLING;
 			end
@@ -43,6 +44,10 @@ module main_fsm(iClock, iReset, iRxDone, iSamplingDone, iSendingDone, oMemWrite,
 			end else begin
 				next_state_fun = SENDING;
 			end
+		START_SAMPLING:
+			next_state_fun = SAMPLING;
+		START_SENDING:
+			next_state_fun = SENDING;
 		default:
 			next_state_fun = IDLE;
 		endcase
@@ -51,29 +56,33 @@ module main_fsm(iClock, iReset, iRxDone, iSamplingDone, iSendingDone, oMemWrite,
 	
 always@ (posedge iClock) begin
 	if (iReset) begin
-		current_state <= IDLE;
+		state <= IDLE;
 	end else begin
-		current_state <= next_state;
+		state <= next_state;
 	end
 end
 
 always@ (posedge iClock) begin
+	oMemAddr <= 0;
+	oMemWrite <= 0;
+	oStartSampling <= 0;
+	oStartSending <= 0;
 	if (iReset) begin
-		oMemAddr <= 0;
-		oMemWrite <= 0;
 	end else begin
-		case (current_state)
+		case (state)
 		IDLE: begin
-			oMemAddr <= 0;
-			oMemWrite <= 0;
 		end
 		SAMPLING: begin
-			oMemAddr <= 0;
 			oMemWrite <= 1;
 		end
 		SENDING: begin
 			oMemAddr <= 1;
-			oMemWrite <= 0;
+		end
+		START_SAMPLING: begin
+			oStartSampling <= 1;
+		end
+		START_SENDING: begin
+			oStartSending <= 1;
 		end
 		endcase
 	end
