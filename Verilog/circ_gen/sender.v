@@ -16,7 +16,7 @@ module sender(iClock, iReset, iData, iTxDone, iStartSignal, oAddress, oFinished,
 	output oFinished;
 	output [15:0] oAddress;
 	
-	wire [1:0] next_state;
+	wire [2:0] next_state;
 	
 	assign next_state = fsm_function(state, oAddress, iTxDone, iStartSignal);
 	
@@ -76,7 +76,7 @@ always@ (posedge iClock) begin
 	SENDING_PACKET: begin
 	end
 	INCREMENTING_ADDR: begin
-		oAddress <= oAddress + 1;
+		oAddress <= oAddress + 16'b1;
 	end
 	FINISHED_SENDING: begin
 		oFinished <= 1;

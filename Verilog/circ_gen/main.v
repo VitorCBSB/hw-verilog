@@ -13,16 +13,17 @@ module main(CLOCK_50, KEY, LEDR, SW, UART_RXD, UART_TXD);
 	
 	// Wires
 	wire [31:0] data_to_send;
+	wire [7:0] mem_out;
 	wire rx_done;
 	wire tx_done;
 	wire tx_send;
 	wire start_sampling;
 	wire start_sending;
 	wire mem_write;
-	wire [15:0] sampler_mem_addr, sender_mem_addr, mem_out;
+	wire [15:0] sampler_mem_addr, sender_mem_addr;
 	wire finished_sampling, finished_sending, mem_addr;
 	
-	assign LEDR[7:0] = received_data[7:0];
+	assign LEDR[7:0] = current_value;
 	assign data_to_send = {24'b0, current_value};
 
 always@ (posedge CLOCK_50) begin

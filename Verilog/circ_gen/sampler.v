@@ -57,7 +57,7 @@ always@(posedge iClock) begin
 	SAMPLING: begin
 	end
 	INCREMENTING_ADDR: begin
-		oAddress <= oAddress + 1;
+		oAddress <= oAddress + 16'b1;
 	end
 	FINISHED_SAMPLING: begin
 		oFinished <= 1;
