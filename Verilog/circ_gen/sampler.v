@@ -26,9 +26,9 @@ module sampler(iClock, iReset, iStartSignal, oAddress, oFinished);
 			end
 		SAMPLING:
 			if (address < 16'hFFFF) begin
-				next_state_fun = FINISHED_SAMPLING;
-			end else begin
 				next_state_fun = INCREMENTING_ADDR;
+			end else begin
+				next_state_fun = FINISHED_SAMPLING;
 			end
 		INCREMENTING_ADDR: 
 			next_state_fun = SAMPLING;
