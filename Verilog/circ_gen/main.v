@@ -24,7 +24,7 @@ module main(CLOCK_50, KEY, LEDR, SW, UART_RXD, UART_TXD);
 	wire finished_sampling, finished_sending, mem_addr;
 	
 	assign LEDR[7:0] = current_value;
-	assign data_to_send = {24'b0, current_value};
+	assign data_to_send = {24'b0, mem_out};
 
 always@ (posedge CLOCK_50) begin
 	if (rx_done)
@@ -44,7 +44,6 @@ sampler sampler(
 sender sender(
 	.iClock(CLOCK_50),
 	.iReset(~KEY[1]),
-	.iData(mem_out),
 	.iTxDone(tx_done),
 	.iStartSignal(start_sending),
 	.oAddress(sender_mem_addr),

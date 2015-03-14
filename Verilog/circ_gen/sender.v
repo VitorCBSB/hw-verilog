@@ -1,4 +1,4 @@
-module sender(iClock, iReset, iData, iTxDone, iStartSignal, oAddress, oFinished, oTxSend, state);
+module sender(iClock, iReset, iTxDone, iStartSignal, oAddress, oFinished, oTxSend, state);
 
 	parameter IDLE = 3'b000,
 		SENDING = 3'b001,
@@ -7,7 +7,6 @@ module sender(iClock, iReset, iData, iTxDone, iStartSignal, oAddress, oFinished,
 		INCREMENTING_ADDR = 3'b100,
 		FINISHED_SENDING = 3'b101;
 	
-	input [7:0] iData;
 	input iClock;
 	input iReset;
 	input iTxDone;
