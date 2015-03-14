@@ -36,7 +36,9 @@ sampler sampler(
 	.iReset(~KEY[1]),
 	.iStartSignal(start_sampling),
 	.oAddress(sampler_mem_addr),
-	.oFinished(finished_sampling)
+	.oFinished(finished_sampling),
+	
+	.state(LEDR[14:13])
 );
 
 sender sender(
@@ -47,7 +49,9 @@ sender sender(
 	.iStartSignal(start_sending),
 	.oAddress(sender_mem_addr),
 	.oFinished(finished_sending),
-	.oTxSend(tx_send)
+	.oTxSend(tx_send),
+	
+	.state(LEDR[12:10])
 );
 
 main_fsm fsm(
@@ -59,7 +63,9 @@ main_fsm fsm(
 	.oMemWrite(mem_write),
 	.oMemAddr(mem_addr),
 	.oStartSampling(start_sampling),
-	.oStartSending(start_sending)
+	.oStartSending(start_sending),
+	
+	.state(LEDR[17:15])
 );
 
 memoria memoria(
