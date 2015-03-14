@@ -50,6 +50,7 @@ int main(void) {
 			fprintf(output, "%d ", results[i][j]);
 		}
 		fprintf(output, "\n");
+		Sleep(1000);
 	}
 
 	fclose(output);
