@@ -7,12 +7,8 @@ module main(CLOCK_50, KEY, LEDR, SW, UART_RXD, UART_TXD);
 	input UART_RXD;
 	output UART_TXD;
 	
-	// Regs
-	reg [31:0] received_data;
-	reg [7:0] current_value;
-	
 	// Wires
-	wire [31:0] data_to_send;
+	wire [31:0] data_to_send, received_data;
 	wire [7:0] mem_out;
 	wire rx_done;
 	wire tx_done;
@@ -23,13 +19,8 @@ module main(CLOCK_50, KEY, LEDR, SW, UART_RXD, UART_TXD);
 	wire [15:0] sampler_mem_addr, sender_mem_addr;
 	wire finished_sampling, finished_sending, mem_addr;
 	
-	assign LEDR[7:0] = current_value;
+	assign LEDR[7:0] = received_data;
 	assign data_to_send = {24'b0, mem_out};
-
-always@ (posedge CLOCK_50) begin
-	if (rx_done)
-		 current_value <= received_data[7:0];
-end
 
 sampler sampler(
 	.iClock(CLOCK_50),
@@ -70,7 +61,7 @@ main_fsm fsm(
 memoria memoria(
 	.address(mem_addr ? sender_mem_addr : sampler_mem_addr),
 	.clock(CLOCK_50),
-	.data(current_value),
+	.data(received_data[7:0]),
 	.wren(mem_write),
 	.q(mem_out)
 );
