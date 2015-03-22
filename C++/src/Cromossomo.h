@@ -14,6 +14,8 @@
 #include <string>
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 #define BITS_TERMINAIS (int) ceil((log(R * C + NumIn) / log(2)))
 #define SAIDAS_LUT 16
@@ -42,10 +44,9 @@ public:
 
 	Cromossomo<NumIn, NumOut, LENumIn, R, C> gerar_filho(
 			const Cromossomo<NumIn, NumOut, LENumIn, R, C>& outro_pai) {
-		std::random_device rd;
 		auto this_serial = cromossomo_serial();
 		auto outro_serial = outro_pai.cromossomo_serial();
-		auto ponto_corte = rd() % (BITS_TOTAL);
+		auto ponto_corte = rand() % (BITS_TOTAL);
 		auto mascara = criar_mascara<BITS_TOTAL>(ponto_corte);
 		auto neg_mascara = ~mascara;
 
@@ -57,8 +58,7 @@ public:
 	}
 
 	void mutar() {
-		std::random_device rd;
-		auto aleatorio = rd() % (BITS_TOTAL);
+		auto aleatorio = rand() % (BITS_TOTAL);
 		auto this_serial = cromossomo_serial();
 
 		this_serial[aleatorio] = ~this_serial[aleatorio];
@@ -108,11 +108,10 @@ private:
 
 	template<int tamanho>
 	std::bitset<tamanho> aleatorio() {
-		std::random_device rd;
 		std::bitset<tamanho> resultado;
 
 		for (int i = 0; i < tamanho; i++) {
-			resultado[i] = rd() % 2;
+			resultado[i] = rand() % 2;
 		}
 		return resultado;
 	}
