@@ -24,7 +24,7 @@ int main(void) {
 	int j = 0;
 
 	if (RS232_OpenComport(comport_num, bauds, mode)) {
-		fprintf(stderr, "Nao consegui abrir COM port %d", comport_num + 1);
+		fprintf(stderr, "Nao consegui abrir COM port %d\n", comport_num + 1);
 		exit(1);
 	}
 
@@ -50,7 +50,7 @@ int main(void) {
 			fprintf(output, "%d ", results[i][j]);
 		}
 		fprintf(output, "\n");
-		Sleep(1000);
+		Sleep(500);
 	}
 
 	fclose(output);
