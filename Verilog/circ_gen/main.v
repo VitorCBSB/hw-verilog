@@ -14,7 +14,7 @@ module main(CLOCK_50, KEY, LEDR, SW, UART_RXD, UART_TXD);
 	wire [31:0] data_to_send, received_data;
 	wire [7:0] mem_out;
 	wire rx_done, tx_done, tx_send, start_sampling, start_sending, mem_write,
-		finished_sampling, finished_sending, mem_addr, fetch_value;
+		finished_sampling, finished_sending, mem_addr, fetch_value, genetico_out;
 	wire [15:0] sampler_mem_addr, sender_mem_addr;
 	
 	assign LEDR[7:0] = current_value;
@@ -65,7 +65,7 @@ main_fsm fsm(
 memoria memoria(
 	.address(mem_addr ? sender_mem_addr : sampler_mem_addr),
 	.clock(CLOCK_50),
-	.data(current_value),
+	.data(genetico_out),
 	.wren(mem_write),
 	.q(mem_out)
 );
@@ -84,6 +84,11 @@ uart rs232(
 	
 	.uart_rx(UART_RXD),
 	.uart_tx(UART_TXD)
+);
+
+genetico genetico(
+	.in(current_value),
+	.out(genetico_out)
 );
 
 endmodule

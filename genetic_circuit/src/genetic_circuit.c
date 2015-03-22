@@ -13,13 +13,14 @@
 #include "rs232.h"
 
 #define NUM_SAMPLES 65535
+#define NUM_INPUTS 16
 
 int main(void) {
 	int bauds = 115200;
 	int comport_num = 6;
 	char mode[10] = "8N1";
 	unsigned char buffer[4096];
-	unsigned char results[5][NUM_SAMPLES];
+	unsigned char results[NUM_INPUTS][NUM_SAMPLES];
 	int i = 0;
 	int j = 0;
 
@@ -34,7 +35,7 @@ int main(void) {
 		exit(1);
 	}
 
-	for (i = 0; i < 5; i++) {
+	for (i = 0; i < NUM_INPUTS; i++) {
 		int total = 0;
 		RS232_SendByte(comport_num, (unsigned char) i);
 		while (total < NUM_SAMPLES) {
@@ -50,7 +51,7 @@ int main(void) {
 			fprintf(output, "%d ", results[i][j]);
 		}
 		fprintf(output, "\n");
-		Sleep(500);
+		Sleep(1000);
 	}
 
 	fclose(output);
