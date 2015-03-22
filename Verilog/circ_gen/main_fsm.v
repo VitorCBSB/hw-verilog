@@ -1,11 +1,12 @@
 module main_fsm(iClock, iReset, iRxDone, iSamplingDone, iSendingDone, 
-	oMemWrite, oMemAddr, oStartSampling, oStartSending, state);
+	oMemWrite, oMemAddr, oStartSampling, oStartSending, oFetchValue, state);
 
 	parameter IDLE = 3'b000,
 		SAMPLING = 3'b001,
 		SENDING = 3'b010,
 		START_SAMPLING = 3'b011,
-		START_SENDING = 3'b100;
+		START_SENDING = 3'b100,
+		FETCH_VALUE = 3'b101;
 
 	input iClock;
 	input iReset;
@@ -17,6 +18,7 @@ module main_fsm(iClock, iReset, iRxDone, iSamplingDone, iSendingDone,
 	output oMemAddr;
 	output oStartSampling;
 	output oStartSending;
+	output oFetchValue;
 	
 	output reg [2:0] state = IDLE;
 	wire [2:0] next_state;
@@ -28,10 +30,12 @@ module main_fsm(iClock, iReset, iRxDone, iSamplingDone, iSendingDone,
 		case(current_state)
 		IDLE:
 			if (iRxDone) begin
-				next_state_fun = START_SAMPLING;
+				next_state_fun = FETCH_VALUE;
 			end else begin
 				next_state_fun = IDLE;
 			end
+		FETCH_VALUE:
+			next_state_fun = START_SAMPLING;
 		SAMPLING:
 			if (iSamplingDone) begin
 				next_state_fun = START_SENDING;
@@ -67,10 +71,14 @@ always@ (posedge iClock) begin
 	oMemWrite <= 0;
 	oStartSampling <= 0;
 	oStartSending <= 0;
+	oFetchValue <= 0;
 	if (iReset) begin
 	end else begin
 		case (state)
 		IDLE: begin
+		end
+		FETCH_VALUE: begin
+			oFetchValue <= 1;
 		end
 		SAMPLING: begin
 			oMemWrite <= 1;
