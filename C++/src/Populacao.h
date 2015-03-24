@@ -18,11 +18,13 @@
 template<int Tamanho>
 class Populacao {
 private:
+	std::mt19937& mt;
 	std::vector<Cromossomo<4, 1, 4, 5, 5>> populacao;
 	bool acabou = false;
 
 public:
-	Populacao() {
+	Populacao(std::mt19937& mt) :
+			mt(mt) {
 		for (int i = 0; i < Tamanho; i++) {
 			populacao.push_back(Cromossomo<4, 1, 4, 5, 5>());
 		}
@@ -34,11 +36,15 @@ public:
 			auto cromossomo1 = selecao_torneio();
 			auto cromossomo2 = selecao_torneio();
 
-			auto filho = cromossomo1.gerar_filho(cromossomo2);
+			auto filhos = cromossomo1.gerar_filhos(cromossomo2);
 			if (deve_mutar()) {
-				filho.mutar();
+				filhos[0].mutar();
 			}
-			nova_populacao.push_back(filho);
+			if (deve_mutar()) {
+				filhos[1].mutar();
+			}
+			nova_populacao.insert(nova_populacao.end(), filhos.begin(),
+					filhos.end());
 		}
 		populacao = nova_populacao;
 	}
@@ -67,8 +73,7 @@ private:
 	}
 
 	bool deve_mutar() {
-		std::random_device rd;
-		auto aleatorio = (double) rd() / (double) rd.max();
+		auto aleatorio = (double) mt() / (double) mt.max();
 		return aleatorio < TAXA_MUTACAO;
 	}
 };
