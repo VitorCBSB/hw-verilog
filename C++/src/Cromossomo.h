@@ -94,7 +94,6 @@ private:
 	FunctionCell aleatorio(int coluna) {
 		std::vector<unsigned int> inputs;
 		unsigned int function = random_func() % ((int) pow(2, SAIDAS_LUT));
-		printf("%d\n", function);
 		for (int i = 0; i < LENumIn; i++) {
 			if (feed_forward) {
 				inputs.push_back(random_func() % (NumIn + (coluna * R)));
