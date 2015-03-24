@@ -26,7 +26,7 @@ public:
 	Populacao(std::mt19937& mt) :
 			mt(mt) {
 		for (int i = 0; i < Tamanho; i++) {
-			populacao.push_back(Cromossomo<4, 1, 4, 5, 5>());
+			populacao.push_back(Cromossomo<4, 1, 4, 5, 5>(mt));
 		}
 	}
 
@@ -51,11 +51,10 @@ public:
 
 private:
 	Cromossomo<4, 1, 4, 5, 5> selecao_torneio() {
-		std::random_device rd;
 		std::vector<Cromossomo<4, 1, 4, 5, 5>> torneio;
 
 		for (int i = 0; i < TAMANHO_TORNEIO; i++) {
-			auto aleatorio = rd() % Tamanho;
+			auto aleatorio = mt() % Tamanho;
 			torneio.push_back(populacao[aleatorio]);
 		}
 
