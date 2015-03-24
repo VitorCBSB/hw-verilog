@@ -13,25 +13,31 @@
 
 class Cell {
 public:
-	Cell();
-	virtual ~Cell();
-};
-
-class FunctionCell : public Cell {
-public:
-	int function;
-	std::vector<int> inputs;
-
-public:
-	FunctionCell(int function, std::vector<int> inputs) : function(function), inputs(inputs) {
+	virtual ~Cell() {
 	}
 };
 
-class OutputCell : public Cell {
+class FunctionCell: public Cell {
 public:
-	int output;
+	unsigned int function;
+	std::vector<unsigned int> inputs;
 
-	OutputCell(int output) : output(output) {
+public:
+	FunctionCell() : function(0) {
+	}
+	FunctionCell(unsigned int function, std::vector<unsigned int> inputs) :
+			Cell(), function(function), inputs(inputs) {
+	}
+};
+
+class OutputCell: public Cell {
+public:
+	unsigned int input;
+
+	OutputCell() : input(0) {
+	}
+	OutputCell(unsigned int input) :
+			Cell(), input(input) {
 	}
 };
 

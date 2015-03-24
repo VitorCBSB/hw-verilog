@@ -15,7 +15,7 @@
 #define TAMANHO_TORNEIO 3
 #define TAXA_MUTACAO 0.1
 
-template <int Tamanho>
+template<int Tamanho>
 class Populacao {
 private:
 	std::vector<Cromossomo<4, 1, 4, 5, 5>> populacao;
