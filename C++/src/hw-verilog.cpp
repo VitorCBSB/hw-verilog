@@ -7,12 +7,15 @@
 //============================================================================
 
 #include <iostream>
+#include <random>
 #include <stdlib.h>
 #include <time.h>
 #include "Cromossomo.h"
 
 int main() {
-	Cromossomo<4, 1, 4, 5, 5> teste(true);
+	std::mt19937 mt;
+	mt.seed(time(nullptr));
+	Cromossomo<4, 1, 4, 5, 5> teste(mt, true);
 
 	teste.criar_arquivo_verilog("wow.v");
 

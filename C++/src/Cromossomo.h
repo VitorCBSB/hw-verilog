@@ -38,9 +38,8 @@ private:
 	}
 
 public:
-	Cromossomo(bool feed_forward = false) :
-			feed_forward(feed_forward) {
-		mt.seed(time(nullptr));
+	Cromossomo(std::mt19937 mt, bool feed_forward = false) :
+			mt(mt), feed_forward(feed_forward) {
 		for (unsigned int i = 0; i < R; i++) {
 			for (unsigned int j = 0; j < C; j++) {
 				elementos_logicos[i][j] = aleatorio(j);

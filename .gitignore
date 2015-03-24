@@ -35,3 +35,4 @@ Verilog/circ_gen/simulation/
 qar_info.json
 resultado.txt
 *.bak
+*.qws
