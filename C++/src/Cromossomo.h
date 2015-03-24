@@ -21,24 +21,25 @@
 #include <stdlib.h>
 #include <time.h>
 
-
-template<unsigned int NumIn, unsigned int NumOut, unsigned int LENumIn, unsigned int R, unsigned int C>
+template<unsigned int NumIn, unsigned int NumOut, unsigned int LENumIn,
+		unsigned int R, unsigned int C>
 class Cromossomo {
 private:
 	static const int SAIDAS_LUT = pow(2, LENumIn);
 	static const int NUM_PINOS_DISPONIVEIS = NumIn + R * C;
-	std::mt19937 mt;
+	std::mt19937& mt;
 
 	bool feed_forward = false;
-	std::array<std::array<FunctionCell, C>, R> elementos_logicos;
-	std::array<OutputCell, NumOut> saidas;
 
 	unsigned int random_func() {
 		return mt();
 	}
 
 public:
-	Cromossomo(std::mt19937 mt, bool feed_forward = false) :
+	std::array<std::array<FunctionCell, C>, R> elementos_logicos;
+	std::array<OutputCell, NumOut> saidas;
+
+	Cromossomo(std::mt19937& mt, bool feed_forward = false) :
 			mt(mt), feed_forward(feed_forward) {
 		for (unsigned int i = 0; i < R; i++) {
 			for (unsigned int j = 0; j < C; j++) {
@@ -54,10 +55,47 @@ public:
 	std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>> gerar_filhos(
 			const Cromossomo<NumIn, NumOut, LENumIn, R, C>& outro_pai) {
 		auto ponto_corte = random_func() % (R * C + NumOut);
-		std::array<std::array<FunctionCell, C>, R> elementos_logicos_filho;
-		std::array<OutputCell, NumOut> saidas_filho;
+		std::array<std::array<FunctionCell, C>, R> elementos_logicos_filho1;
+		std::array<std::array<FunctionCell, C>, R> elementos_logicos_filho2;
+		std::array<OutputCell, NumOut> saidas_filho1;
+		std::array<OutputCell, NumOut> saidas_filho2;
 
-		return std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>>();
+		unsigned int i;
+		for (i = 0; i < ponto_corte; i++) {
+			if (i < R * C) {
+				elementos_logicos_filho1[i / R][i % C] =
+						elementos_logicos[i / R][i % C];
+				elementos_logicos_filho2[i / R][i % C] =
+						outro_pai.elementos_logicos[i / R][i % C];
+			} else {
+				int temp = i - (R * C);
+				saidas_filho1[temp] = saidas[temp];
+				saidas_filho2[temp] = outro_pai.saidas[temp];
+			}
+		}
+
+		for (; i < R * C + NumOut; i++) {
+			if (i < R * C) {
+				elementos_logicos_filho1[i / R][i % C] =
+						outro_pai.elementos_logicos[i / R][i % C];
+				elementos_logicos_filho2[i / R][i % C] =
+						elementos_logicos[i / R][i % C];
+			} else {
+				int temp = i - (R * C);
+				saidas_filho1[temp] = outro_pai.saidas[temp];
+				saidas_filho2[temp] = saidas[temp];
+			}
+		}
+
+		std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>> resultado;
+		resultado.push_back(
+				Cromossomo<NumIn, NumOut, LENumIn, R, C>(
+						elementos_logicos_filho1, saidas_filho1));
+		resultado.push_back(
+				Cromossomo<NumIn, NumOut, LENumIn, R, C>(
+						elementos_logicos_filho2, saidas_filho2));
+
+		return resultado;
 	}
 
 	void mutar() {
@@ -74,7 +112,8 @@ public:
 		auto linha = ponto_a_mutar / R;
 		auto coluna = ponto_a_mutar % C;
 		if (componente_a_mutar == 0) {
-			elementos_logicos[linha][coluna].function = random_func() % SAIDAS_LUT;
+			elementos_logicos[linha][coluna].function = random_func()
+					% SAIDAS_LUT;
 		} else {
 			elementos_logicos[linha][coluna].inputs[componente_a_mutar - 1] =
 					random_func() % (NumIn + (coluna * R));
@@ -82,7 +121,8 @@ public:
 	}
 
 	void mutar_output_cell(int ponto_a_mutar) {
-		saidas[ponto_a_mutar] = OutputCell(random_func() % NUM_PINOS_DISPONIVEIS);
+		saidas[ponto_a_mutar] = OutputCell(
+				random_func() % NUM_PINOS_DISPONIVEIS);
 	}
 
 	int fitness() {
