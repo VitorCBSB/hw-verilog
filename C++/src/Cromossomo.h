@@ -17,19 +17,20 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define BITS_TERMINAIS (int) ceil((log(R * C + NumIn) / log(2)))
-#define SAIDAS_LUT 16
-#define BITS_TOTAL R * C * (BITS_LE) + NumOut * BITS_TERMINAIS
-#define BITS_LE SAIDAS_LUT + BITS_TERMINAIS * LENumIn
-
 template<int NumIn, int NumOut, int LENumIn, int R, int C>
 class Cromossomo {
-public:
+private:
+	static const int BITS_TERMINAIS = ceil((log(R * C + NumIn) / log(2)));
+	static const int SAIDAS_LUT = pow(2, LENumIn);
+	static const int BITS_LE = SAIDAS_LUT + BITS_TERMINAIS * LENumIn;
+	static const int BITS_TOTAL = R * C * BITS_LE + NumOut * BITS_TERMINAIS;
+
+	bool feed_forward = false;
 	std::array<std::bitset<BITS_LE>, R * C> elementos_logicos;
 	std::array<std::bitset<BITS_TERMINAIS >, NumOut> saidas;
 
 public:
-	Cromossomo() {
+	Cromossomo(bool feed_forward = false) : feed_forward(feed_forward) {
 		for (int i = 0; i < R * C; i++) {
 			elementos_logicos[i] = aleatorio<BITS_LE>();
 		}
