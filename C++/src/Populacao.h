@@ -23,16 +23,16 @@ private:
 	bool acabou = false;
 
 public:
-	Populacao(std::mt19937& mt) :
+	Populacao(std::mt19937& mt, bool feed_forward) :
 			mt(mt) {
 		for (int i = 0; i < Tamanho; i++) {
-			populacao.push_back(Cromossomo<4, 1, 4, 5, 5>(mt));
+			populacao.push_back(Cromossomo<4, 1, 4, 5, 5>(mt, feed_forward));
 		}
 	}
 
 	void proxima_geracao() {
 		std::vector<Cromossomo<4, 1, 4, 5, 5>> nova_populacao;
-		for (int i = 0; i < Tamanho; i++) {
+		while (nova_populacao.size() < Tamanho) {
 			auto cromossomo1 = selecao_torneio();
 			auto cromossomo2 = selecao_torneio();
 
