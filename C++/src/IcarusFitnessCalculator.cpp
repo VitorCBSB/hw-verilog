@@ -7,6 +7,8 @@
 
 #include "IcarusFitnessCalculator.h"
 
-int IcarusFitnessCalculator::fitness() {
+double IcarusFitnessCalculator::fitness() {
+	system("iverilog top.v genetico.v -o individuo");
+
 	return 0;
 }

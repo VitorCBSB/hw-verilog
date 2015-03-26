@@ -133,7 +133,7 @@ private:
 	FunctionCell aleatorio(int coluna) {
 		std::vector<unsigned int> inputs;
 		unsigned int function = random_func() % ((int) pow(2, SAIDAS_LUT));
-		for (int i = 0; i < LENumIn; i++) {
+		for (unsigned int i = 0; i < LENumIn; i++) {
 			if (feed_forward) {
 				inputs.push_back(random_func() % (NumIn + (coluna * R)));
 			} else {
@@ -147,7 +147,7 @@ private:
 		return OutputCell(random_func() % NUM_PINOS_DISPONIVEIS);
 	}
 
-	std::string decodificar_entrada(int input) {
+	std::string decodificar_entrada(unsigned int input) {
 		char entrada_str[20];
 		std::string retorno;
 
@@ -166,7 +166,7 @@ private:
 public:
 	void criar_arquivo_verilog(std::string nome_arquivo) {
 		FILE* fp = fopen(nome_arquivo.c_str(), "w");
-		int i;
+		unsigned int i;
 
 		fprintf(fp, "module genetico(in, out);\n");
 		fprintf(fp, "\n");
@@ -183,13 +183,13 @@ public:
 		fprintf(fp, "};\n\n");
 
 		for (i = 0; i < R; i++) {
-			for (int j = 0; j < C; j++) {
+			for (unsigned int j = 0; j < C; j++) {
 				fprintf(fp, "logic_e le%d%d (\n", i, j);
 				fprintf(fp, "\t.func(%d'b%s),\n", SAIDAS_LUT,
 						std::bitset<SAIDAS_LUT>(
 								elementos_logicos[i][j].function).to_string().c_str());
 				fprintf(fp, "\t.in({");
-				int k;
+				unsigned int k;
 				for (k = 0; k < LENumIn - 1; k++) {
 					fprintf(fp, "%s, ",
 							decodificar_entrada(

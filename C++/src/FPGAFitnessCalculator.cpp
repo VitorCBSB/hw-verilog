@@ -7,7 +7,7 @@
 
 #include "FPGAFitnessCalculator.h"
 
-int FPGAFitnessCalculator::fitness() {
+double FPGAFitnessCalculator::fitness() {
 	int bauds = 115200;
 	int comport_num = 6;
 	char mode[10] = "8N1";

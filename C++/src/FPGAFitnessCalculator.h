@@ -24,12 +24,12 @@
 
 class FPGAFitnessCalculator: public FitnessCalculator {
 public:
-	FPGAFitnessCalculator(int num_inputs,
-			std::function<int(const std::vector<std::vector<unsigned char>>&)> fitness_calculator) :
-			FitnessCalculator(num_inputs, fitness_calculator) {
+	FPGAFitnessCalculator(int num_inputs, int num_outputs,
+			std::function<double(const std::vector<std::vector<unsigned char>>&)> fitness_calculator) :
+			FitnessCalculator(num_inputs, num_outputs, fitness_calculator) {
 	}
 
-	int fitness();
+	double fitness();
 };
 
 #endif /* FPGAFITNESSCALCULATOR_H_ */

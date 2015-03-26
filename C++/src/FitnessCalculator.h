@@ -14,17 +14,18 @@
 class FitnessCalculator {
 protected:
 	int num_inputs;
-	std::function<int(std::vector<std::vector<unsigned char>>)> fitness_calculator;
+	int num_outputs;
+	std::function<double(std::vector<std::vector<unsigned char>>)> fitness_calculator;
 
 public:
-	FitnessCalculator(int num_inputs,
-			std::function<int(const std::vector<std::vector<unsigned char>>&)> fitness_calculator) :
-			num_inputs(num_inputs), fitness_calculator(fitness_calculator) {
+	FitnessCalculator(int num_inputs, int num_outputs,
+			std::function<double(const std::vector<std::vector<unsigned char>>&)> fitness_calculator) :
+			num_inputs(num_inputs), num_outputs(num_outputs), fitness_calculator(fitness_calculator) {
 	}
 	virtual ~FitnessCalculator() {
 	}
 
-	virtual int fitness() = 0;
+	virtual double fitness() = 0;
 };
 
 #endif /* FITNESSCALCULATOR_H_ */
