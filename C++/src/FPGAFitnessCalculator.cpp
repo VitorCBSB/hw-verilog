@@ -12,7 +12,7 @@ double FPGAFitnessCalculator::fitness() {
 	int comport_num = 6;
 	char mode[10] = "8N1";
 	unsigned char buffer[4096];
-	std::vector<std::vector<unsigned char>> results;
+	std::vector<std::vector<std::bitset<8>>> results;
 
 	if (RS232_OpenComport(comport_num, bauds, mode)) {
 		fprintf(stderr, "Nao consegui abrir COM port %d\n", comport_num + 1);
@@ -22,11 +22,11 @@ double FPGAFitnessCalculator::fitness() {
 	for (int i = 0; i < num_inputs; i++) {
 		int total = 0;
 		RS232_SendByte(comport_num, (unsigned char) i);
-		results.push_back(std::vector<unsigned char>(NUM_SAMPLES));
+		results.push_back(std::vector<std::bitset<8>>(NUM_SAMPLES));
 		while (total < NUM_SAMPLES) {
 			int n = RS232_PollComport(comport_num, buffer, 4096);
 			for (int j = 0; j < n; j++, total++) {
-				results[i].push_back(buffer[j]);
+				results[i].push_back(std::bitset<8>(buffer[j]));
 			}
 		}
 
