@@ -23,6 +23,9 @@ public:
 	}
 
 	double fitness();
+	std::unique_ptr<FitnessCalculator> clone() {
+		return std::unique_ptr<FitnessCalculator>(new IcarusFitnessCalculator(*this));
+	}
 
 private:
 	void gerar_arquivo_top();

@@ -9,12 +9,13 @@
 #define CROMOSSOMO_H_
 
 #include "Cell.h"
+#include "FitnessCalculator.h"
 #include <bitset>
 #include <array>
 #include <vector>
 #include <random>
 #include <string>
-#include <tuple>
+#include <memory>
 #include <random>
 #include <math.h>
 #include <stdio.h>
@@ -28,6 +29,7 @@ private:
 	static const int SAIDAS_LUT = pow(2, LENumIn);
 	static const int NUM_PINOS_DISPONIVEIS = NumIn + R * C;
 	std::mt19937& mt;
+	std::unique_ptr<FitnessCalculator> fitness_calculator;
 
 	bool feed_forward = false;
 
@@ -39,8 +41,11 @@ public:
 	std::array<std::array<FunctionCell, C>, R> elementos_logicos;
 	std::array<OutputCell, NumOut> saidas;
 
-	Cromossomo(std::mt19937& mt, bool feed_forward = false) :
-			mt(mt), feed_forward(feed_forward) {
+	Cromossomo(std::mt19937& mt,
+			std::unique_ptr<FitnessCalculator> fitness_calculator,
+			bool feed_forward = false) :
+			mt(mt), fitness_calculator(fitness_calculator), feed_forward(
+					feed_forward) {
 		for (unsigned int i = 0; i < R; i++) {
 			for (unsigned int j = 0; j < C; j++) {
 				elementos_logicos[i][j] = aleatorio(j);
@@ -125,8 +130,9 @@ public:
 				random_func() % NUM_PINOS_DISPONIVEIS);
 	}
 
-	int fitness() {
-		return 0;
+	double fitness() {
+		criar_arquivo_verilog("genetico.v");
+		return fitness_calculator->fitness();
 	}
 
 private:

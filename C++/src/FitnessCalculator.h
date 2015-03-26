@@ -11,12 +11,13 @@
 #include <functional>
 #include <vector>
 #include <bitset>
+#include <memory>
 
 class FitnessCalculator {
 protected:
 	int num_inputs;
 	int num_outputs;
-	std::function<double(std::vector<std::vector<std::bitset<8>>>)> fitness_calculator;
+	std::function<double(std::vector<std::vector<std::bitset<8>>>)>fitness_calculator;
 
 public:
 	FitnessCalculator(int num_inputs, int num_outputs,
@@ -28,6 +29,7 @@ public:
 	}
 
 	virtual double fitness() = 0;
+	virtual std::unique_ptr<FitnessCalculator> clone() = 0;
 };
 
 #endif /* FITNESSCALCULATOR_H_ */

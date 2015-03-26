@@ -9,8 +9,10 @@
 #define POPULACAO_H_
 
 #include "Cromossomo.h"
+#include "FitnessCalculator.h"
 #include <vector>
 #include <random>
+#include <memory>
 
 #define TAMANHO_TORNEIO 3
 #define TAXA_MUTACAO 0.1
@@ -20,13 +22,16 @@ class Populacao {
 private:
 	std::mt19937& mt;
 	std::vector<Cromossomo<4, 1, 4, 5, 5>> populacao;
+	std::unique_ptr<FitnessCalculator> fitness_calculator;
 	bool acabou = false;
 
 public:
 	Populacao(std::mt19937& mt, bool feed_forward) :
 			mt(mt) {
 		for (int i = 0; i < Tamanho; i++) {
-			populacao.push_back(Cromossomo<4, 1, 4, 5, 5>(mt, feed_forward));
+			populacao.push_back(
+					Cromossomo<4, 1, 4, 5, 5>(mt, fitness_calculator->clone(),
+							feed_forward));
 		}
 	}
 
@@ -58,10 +63,10 @@ private:
 			torneio.push_back(populacao[aleatorio]);
 		}
 
-		int max = 0;
+		double max = 0;
 		int ind_max = 0;
 		for (int i = 0; i < TAMANHO_TORNEIO; i++) {
-			int fitness = torneio[i].fitness();
+			double fitness = torneio[i].fitness();
 			if (fitness > max) {
 				max = fitness;
 				ind_max = i;

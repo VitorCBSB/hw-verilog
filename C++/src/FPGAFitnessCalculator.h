@@ -30,6 +30,9 @@ public:
 	}
 
 	double fitness();
+	std::unique_ptr<FitnessCalculator> clone() {
+		return std::unique_ptr<FitnessCalculator>(new FPGAFitnessCalculator(*this));
+	}
 };
 
 #endif /* FPGAFITNESSCALCULATOR_H_ */
