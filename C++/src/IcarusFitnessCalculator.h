@@ -12,9 +12,9 @@
 
 class IcarusFitnessCalculator: public FitnessCalculator {
 public:
-	IcarusFitnessCalculator(
-			std::function<int(std::vector<std::vector<unsigned int>>)> fitness_calculator) :
-			FitnessCalculator(fitness_calculator) {
+	IcarusFitnessCalculator(int num_inputs,
+			std::function<int(const std::vector<std::vector<unsigned char>>&)> fitness_calculator) :
+			FitnessCalculator(num_inputs, fitness_calculator) {
 	}
 
 	int fitness();

@@ -11,11 +11,13 @@
 #include "FitnessCalculator.h"
 #include "rs232.h"
 
+#define NUM_SAMPLES 65535
+
 class FPGAFitnessCalculator: public FitnessCalculator {
 public:
-	FPGAFitnessCalculator(
-			std::function<int(std::vector<std::vector<unsigned int>>)> fitness_calculator) :
-			FitnessCalculator(fitness_calculator) {
+	FPGAFitnessCalculator(int num_inputs,
+			std::function<int(const std::vector<std::vector<unsigned char>>&)> fitness_calculator) :
+			FitnessCalculator(num_inputs, fitness_calculator) {
 	}
 
 	int fitness();
