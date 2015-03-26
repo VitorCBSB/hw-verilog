@@ -30,7 +30,7 @@ int FPGAFitnessCalculator::fitness() {
 			}
 		}
 
-		Sleep(1000);
+		Sleep(500);
 	}
 
 	RS232_CloseComport(comport_num);
