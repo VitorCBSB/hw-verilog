@@ -17,11 +17,12 @@
 #define TAMANHO_TORNEIO 3
 #define TAXA_MUTACAO 0.1
 
-template<int Tamanho>
+template<unsigned int Tamanho, unsigned int NumIn, unsigned int NumOut,
+		unsigned int LENumIn, unsigned int R, unsigned int C>
 class Populacao {
 private:
 	std::mt19937& mt;
-	std::vector<Cromossomo<4, 1, 4, 5, 5>> populacao;
+	std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>> populacao;
 	std::unique_ptr<FitnessCalculator> fitness_calculator;
 	bool acabou = false;
 
@@ -30,13 +31,13 @@ public:
 			mt(mt) {
 		for (int i = 0; i < Tamanho; i++) {
 			populacao.push_back(
-					Cromossomo<4, 1, 4, 5, 5>(mt, fitness_calculator->clone(),
-							feed_forward));
+					Cromossomo<NumIn, NumOut, LENumIn, R, C>(mt,
+							fitness_calculator->clone(), feed_forward));
 		}
 	}
 
 	void proxima_geracao() {
-		std::vector<Cromossomo<4, 1, 4, 5, 5>> nova_populacao;
+		std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>> nova_populacao;
 		while (nova_populacao.size() < Tamanho) {
 			auto cromossomo1 = selecao_torneio();
 			auto cromossomo2 = selecao_torneio();
