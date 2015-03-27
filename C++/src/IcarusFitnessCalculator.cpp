@@ -8,8 +8,6 @@
 #include "IcarusFitnessCalculator.h"
 
 double IcarusFitnessCalculator::fitness() {
-	std::vector<std::vector<std::bitset<8>>> results;
-
 	gerar_arquivo_top();
 	system("iverilog top.v genetico.v -o individuo");
 	FILE* simulador = popen("vvp individuo", "r");
@@ -18,23 +16,11 @@ double IcarusFitnessCalculator::fitness() {
 		std::exit(1);
 	}
 
-	char entrada[100];
-	char saida[100];
-
-	// Ignorando os x's
-	fscanf(simulador, "%s", entrada);
-	fscanf(simulador, "%s", saida);
-
-	for (int i = 0; i < (int) pow(2, num_inputs); i++) {
-		fscanf(simulador, "%s", entrada);
-		fscanf(simulador, "%s", saida);
-		results.push_back(std::vector<std::bitset<8>>());
-		results[i].push_back(std::bitset<8>(saida));
-	}
+	auto parsed_output = parse_output(simulador);
 
 	pclose(simulador);
 
-	return fitness_calculator(results);
+	return fitness_calculator(parsed_output);
 }
 
 void IcarusFitnessCalculator::gerar_arquivo_top() {
@@ -72,4 +58,23 @@ void IcarusFitnessCalculator::gerar_arquivo_top() {
 	top << "\t.out(out)\n";
 	top << ");\n\n";
 	top << "endmodule";
+}
+
+std::vector<std::vector<std::bitset<8>>>
+	IcarusFitnessCalculator::parse_output(FILE* simulador) {
+	std::vector<std::vector<std::bitset<8>>> results;
+	char entrada[100];
+	char saida[100];
+
+	// Ignorando os x's
+	fscanf(simulador, "%s", entrada);
+	fscanf(simulador, "%s", saida);
+
+	for (int i = 0; i < (int) pow(2, num_inputs); i++) {
+		fscanf(simulador, "%s", entrada);
+		fscanf(simulador, "%s", saida);
+		results.push_back(std::vector<std::bitset<8>>());
+		results[i].push_back(std::bitset<8>(saida));
+	}
+	return results;
 }

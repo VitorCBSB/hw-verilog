@@ -29,6 +29,7 @@ public:
 
 private:
 	void gerar_arquivo_top();
+	std::vector<std::vector<std::bitset<8>>> parse_output(FILE* simulador);
 };
 
 #endif /* ICARUSFITNESSCALCULATOR_H_ */
