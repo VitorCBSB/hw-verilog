@@ -30,6 +30,7 @@ private:
 	static const int NUM_PINOS_DISPONIVEIS = NumIn + R * C;
 	std::mt19937& mt;
 	std::unique_ptr<FitnessCalculator> fitness_calculator;
+	std::unique_ptr<double> fitness_score;
 
 	bool feed_forward = false;
 
@@ -131,8 +132,11 @@ public:
 	}
 
 	double fitness() {
-		criar_arquivo_verilog("genetico.v");
-		return fitness_calculator->fitness();
+		if (fitness_score == nullptr) {
+			criar_arquivo_verilog("genetico.v");
+			fitness_score = new double(fitness_calculator->fitness());
+		}
+		return fitness_score;
 	}
 
 private:
