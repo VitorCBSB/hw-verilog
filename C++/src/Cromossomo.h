@@ -42,6 +42,23 @@ public:
 	std::array<std::array<FunctionCell, C>, R> elementos_logicos;
 	std::array<OutputCell, NumOut> saidas;
 
+	Cromossomo(const Cromossomo& other) :
+			mt(other.mt), fitness_calculator(other.fitness_calculator->clone()), fitness_score(
+					other.fitness_score == nullptr ?
+							nullptr : new double(*(other.fitness_score))) {
+	}
+
+	Cromossomo& operator=(const Cromossomo& other) {
+		mt = other.mt;
+		fitness_calculator = other.fitness_calculator->clone();
+		fitness_score =
+				other.fitness_score == nullptr ?
+						nullptr :
+						std::unique_ptr<double>(
+								new double(*(other.fitness_score)));
+		return *this;
+	}
+
 	Cromossomo(std::mt19937& mt,
 			std::unique_ptr<FitnessCalculator> fitness_calculator,
 			bool feed_forward = false) :
@@ -56,6 +73,12 @@ public:
 		for (unsigned int i = 0; i < NumOut; i++) {
 			saidas[i] = aleatorio_output();
 		}
+	}
+
+	Cromossomo(std::mt19937& mt,
+			std::array<std::array<FunctionCell, C>, R> elementos_logicos,
+			std::array<OutputCell, NumOut> saidas) :
+			mt(mt), elementos_logicos(elementos_logicos), saidas(saidas) {
 	}
 
 	std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>> gerar_filhos(
@@ -95,10 +118,10 @@ public:
 
 		std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>> resultado;
 		resultado.push_back(
-				Cromossomo<NumIn, NumOut, LENumIn, R, C>(
+				Cromossomo<NumIn, NumOut, LENumIn, R, C>(mt,
 						elementos_logicos_filho1, saidas_filho1));
 		resultado.push_back(
-				Cromossomo<NumIn, NumOut, LENumIn, R, C>(
+				Cromossomo<NumIn, NumOut, LENumIn, R, C>(mt,
 						elementos_logicos_filho2, saidas_filho2));
 
 		return resultado;
@@ -134,9 +157,10 @@ public:
 	double fitness() {
 		if (fitness_score == nullptr) {
 			criar_arquivo_verilog("genetico.v");
-			fitness_score = new double(fitness_calculator->fitness());
+			fitness_score = std::unique_ptr<double>(
+					new double(fitness_calculator->fitness()));
 		}
-		return fitness_score;
+		return *fitness_score;
 	}
 
 private:

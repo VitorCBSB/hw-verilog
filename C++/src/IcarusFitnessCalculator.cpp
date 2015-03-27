@@ -9,7 +9,10 @@
 
 double IcarusFitnessCalculator::fitness() {
 	gerar_arquivo_top();
-	system("iverilog top.v genetico.v -o individuo");
+	if (system("iverilog top.v genetico.v -o individuo") == -1) {
+		std::cerr << "Erro na chamada iverilog.\n";
+		exit(1);
+	}
 	FILE* simulador = popen("vvp individuo", "r");
 	if (simulador == nullptr) {
 		std::cerr << "Nao consegui executar o simulador vvp.\n";

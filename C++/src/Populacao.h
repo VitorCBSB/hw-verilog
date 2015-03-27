@@ -13,6 +13,8 @@
 #include <vector>
 #include <random>
 #include <memory>
+#include <algorithm>
+#include <numeric>
 
 #define TAMANHO_TORNEIO 3
 #define TAXA_MUTACAO 0.1
@@ -39,6 +41,9 @@ public:
 	}
 
 	void proxima_geracao() {
+		for (auto& individuo : populacao) {
+			individuo.fitness();
+		}
 		std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>> nova_populacao;
 		while (nova_populacao.size() < Tamanho) {
 			auto cromossomo1 = selecao_torneio();
@@ -55,6 +60,19 @@ public:
 					filhos.end());
 		}
 		populacao = nova_populacao;
+	}
+
+	Cromossomo<NumIn, NumOut, LENumIn, R, C>& melhor_individuo() {
+		double max_fitness = 0.0;
+		Cromossomo<NumIn, NumOut, LENumIn, R, C>& melhor_individuo =
+				populacao[0];
+		for (auto& individuo : populacao) {
+			if (individuo.fitness() > max_fitness) {
+				max_fitness = individuo.fitness();
+				melhor_individuo = individuo;
+			}
+		}
+		return melhor_individuo;
 	}
 
 private:
