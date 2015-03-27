@@ -45,7 +45,8 @@ public:
 	Cromossomo(const Cromossomo& other) :
 			mt(other.mt), fitness_calculator(other.fitness_calculator->clone()), fitness_score(
 					other.fitness_score == nullptr ?
-							nullptr : new double(*(other.fitness_score))) {
+							nullptr : new double(*(other.fitness_score))), elementos_logicos(
+					other.elementos_logicos), saidas(other.saidas) {
 	}
 
 	Cromossomo& operator=(const Cromossomo& other) {
@@ -56,6 +57,8 @@ public:
 						nullptr :
 						std::unique_ptr<double>(
 								new double(*(other.fitness_score)));
+		elementos_logicos = other.elementos_logicos;
+		saidas = other.saidas;
 		return *this;
 	}
 
