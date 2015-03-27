@@ -219,8 +219,8 @@ public:
 		fprintf(fp, "%s", decodificar_entrada(saidas[i].input).c_str());
 		fprintf(fp, "};\n\n");
 
-		for (i = 0; i < R; i++) {
-			for (unsigned int j = 0; j < C; j++) {
+		for (unsigned int j = 0; j < C; j++) {
+			for (i = 0; i < R; i++) {
 				fprintf(fp, "logic_e le%d%d (\n", i, j);
 				fprintf(fp, "\t.func(%d'b%s),\n", SAIDAS_LUT,
 						std::bitset<SAIDAS_LUT>(
@@ -236,7 +236,7 @@ public:
 						decodificar_entrada(elementos_logicos[i][j].inputs[k]).c_str());
 				fprintf(fp, "}),\n");
 
-				fprintf(fp, "\t.out(le_out[%d])\n", i * R + j);
+				fprintf(fp, "\t.out(le_out[%d])\n", j * C + i);
 				fprintf(fp, ");\n\n");
 			}
 		}
