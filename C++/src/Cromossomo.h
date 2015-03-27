@@ -79,9 +79,11 @@ public:
 	}
 
 	Cromossomo(std::mt19937& mt,
+			std::unique_ptr<FitnessCalculator> fitness_calculator,
 			std::array<std::array<FunctionCell, C>, R> elementos_logicos,
 			std::array<OutputCell, NumOut> saidas) :
-			mt(mt), elementos_logicos(elementos_logicos), saidas(saidas) {
+			mt(mt), fitness_calculator(std::move(fitness_calculator)), elementos_logicos(
+					elementos_logicos), saidas(saidas) {
 	}
 
 	std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>> gerar_filhos(
@@ -122,10 +124,12 @@ public:
 		std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>> resultado;
 		resultado.push_back(
 				Cromossomo<NumIn, NumOut, LENumIn, R, C>(mt,
-						elementos_logicos_filho1, saidas_filho1));
+						fitness_calculator->clone(), elementos_logicos_filho1,
+						saidas_filho1));
 		resultado.push_back(
 				Cromossomo<NumIn, NumOut, LENumIn, R, C>(mt,
-						elementos_logicos_filho2, saidas_filho2));
+						fitness_calculator->clone(), elementos_logicos_filho2,
+						saidas_filho2));
 
 		return resultado;
 	}
