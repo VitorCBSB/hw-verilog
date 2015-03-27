@@ -27,9 +27,11 @@ private:
 	bool acabou = false;
 
 public:
-	Populacao(std::mt19937& mt, bool feed_forward) :
-			mt(mt) {
-		for (int i = 0; i < Tamanho; i++) {
+	Populacao(std::mt19937& mt, bool feed_forward,
+			FitnessCalculator* fitness_calculator) :
+			mt(mt), fitness_calculator(
+					std::unique_ptr<FitnessCalculator>(fitness_calculator)) {
+		for (unsigned int i = 0; i < Tamanho; i++) {
 			populacao.push_back(
 					Cromossomo<NumIn, NumOut, LENumIn, R, C>(mt,
 							fitness_calculator->clone(), feed_forward));
@@ -56,8 +58,8 @@ public:
 	}
 
 private:
-	Cromossomo<4, 1, 4, 5, 5> selecao_torneio() {
-		std::vector<Cromossomo<4, 1, 4, 5, 5>> torneio;
+	Cromossomo<NumIn, NumOut, LENumIn, R, C> selecao_torneio() {
+		std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>> torneio;
 
 		for (int i = 0; i < TAMANHO_TORNEIO; i++) {
 			auto aleatorio = mt() % Tamanho;

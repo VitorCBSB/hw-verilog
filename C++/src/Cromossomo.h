@@ -44,7 +44,7 @@ public:
 	Cromossomo(std::mt19937& mt,
 			std::unique_ptr<FitnessCalculator> fitness_calculator,
 			bool feed_forward = false) :
-			mt(mt), fitness_calculator(fitness_calculator), feed_forward(
+			mt(mt), fitness_calculator(std::move(fitness_calculator)), feed_forward(
 					feed_forward) {
 		for (unsigned int i = 0; i < R; i++) {
 			for (unsigned int j = 0; j < C; j++) {
