@@ -30,7 +30,7 @@ int main() {
 						if (num_acertos == 16) {
 							return MELHOR_FITNESS;
 						}
-						return 1.0 / (double) num_acertos;
+						return 1.0 / (16.0 - (double) num_acertos);
 					}));
 
 	int geracao = 0;
