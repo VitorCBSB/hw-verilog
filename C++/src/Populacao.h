@@ -16,7 +16,7 @@
 #include <algorithm>
 #include <numeric>
 
-#define TAMANHO_TORNEIO 3
+#define TAMANHO_TORNEIO 2
 #define TAXA_MUTACAO 0.1
 
 template<unsigned int Tamanho, unsigned int NumIn, unsigned int NumOut,

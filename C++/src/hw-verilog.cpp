@@ -38,9 +38,8 @@ int main() {
 		populacao.proxima_geracao();
 		std::cout << ++geracao << ": " <<
 				populacao.melhor_individuo().fitness() << std::endl;
+		populacao.melhor_individuo().criar_arquivo_verilog("melhor.v");
 	}
-
-	populacao.melhor_individuo().criar_arquivo_verilog("melhor.v");
 
 	return 0;
 }

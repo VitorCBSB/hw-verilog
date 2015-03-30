@@ -45,7 +45,8 @@ public:
 	Cromossomo(const Cromossomo& other) :
 			mt(other.mt), fitness_calculator(other.fitness_calculator->clone()), fitness_score(
 					other.fitness_score == nullptr ?
-							nullptr : new double(*(other.fitness_score))), elementos_logicos(
+							nullptr : new double(*(other.fitness_score))), feed_forward(
+					other.feed_forward), elementos_logicos(
 					other.elementos_logicos), saidas(other.saidas) {
 	}
 
@@ -59,6 +60,7 @@ public:
 								new double(*(other.fitness_score)));
 		elementos_logicos = other.elementos_logicos;
 		saidas = other.saidas;
+		feed_forward = other.feed_forward;
 		return *this;
 	}
 
@@ -78,12 +80,13 @@ public:
 		}
 	}
 
-	Cromossomo(std::mt19937& mt,
+	Cromossomo(std::mt19937& mt, bool feed_forward,
 			std::unique_ptr<FitnessCalculator> fitness_calculator,
 			std::array<std::array<FunctionCell, C>, R> elementos_logicos,
 			std::array<OutputCell, NumOut> saidas) :
-			mt(mt), fitness_calculator(std::move(fitness_calculator)), elementos_logicos(
-					elementos_logicos), saidas(saidas) {
+			mt(mt), fitness_calculator(std::move(fitness_calculator)), feed_forward(
+					feed_forward), elementos_logicos(elementos_logicos), saidas(
+					saidas) {
 	}
 
 	std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>> gerar_filhos(
@@ -123,11 +126,11 @@ public:
 
 		std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>> resultado;
 		resultado.push_back(
-				Cromossomo<NumIn, NumOut, LENumIn, R, C>(mt,
+				Cromossomo<NumIn, NumOut, LENumIn, R, C>(mt, feed_forward,
 						fitness_calculator->clone(), elementos_logicos_filho1,
 						saidas_filho1));
 		resultado.push_back(
-				Cromossomo<NumIn, NumOut, LENumIn, R, C>(mt,
+				Cromossomo<NumIn, NumOut, LENumIn, R, C>(mt, feed_forward,
 						fitness_calculator->clone(), elementos_logicos_filho2,
 						saidas_filho2));
 
@@ -151,8 +154,13 @@ public:
 			elementos_logicos[linha][coluna].function = random_func()
 					% SAIDAS_LUT;
 		} else {
-			elementos_logicos[linha][coluna].inputs[componente_a_mutar - 1] =
-					random_func() % (NumIn + (coluna * R));
+			if (feed_forward) {
+				elementos_logicos[linha][coluna].inputs[componente_a_mutar - 1] =
+						random_func() % (NumIn + (coluna * R));
+			} else {
+				elementos_logicos[linha][coluna].inputs[componente_a_mutar - 1] =
+						random_func() % NUM_PINOS_DISPONIVEIS;
+			}
 		}
 	}
 
