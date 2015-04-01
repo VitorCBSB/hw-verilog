@@ -100,10 +100,10 @@ public:
 		unsigned int i;
 		for (i = 0; i < ponto_corte; i++) {
 			if (i < R * C) {
-				elementos_logicos_filho1[i / R][i % C] =
-						elementos_logicos[i / R][i % C];
-				elementos_logicos_filho2[i / R][i % C] =
-						outro_pai.elementos_logicos[i / R][i % C];
+				elementos_logicos_filho1[i / C][i % C] =
+						elementos_logicos[i / C][i % C];
+				elementos_logicos_filho2[i / C][i % C] =
+						outro_pai.elementos_logicos[i / C][i % C];
 			} else {
 				int temp = i - (R * C);
 				saidas_filho1[temp] = saidas[temp];
@@ -113,10 +113,10 @@ public:
 
 		for (; i < R * C + NumOut; i++) {
 			if (i < R * C) {
-				elementos_logicos_filho1[i / R][i % C] =
-						outro_pai.elementos_logicos[i / R][i % C];
-				elementos_logicos_filho2[i / R][i % C] =
-						elementos_logicos[i / R][i % C];
+				elementos_logicos_filho1[i / C][i % C] =
+						outro_pai.elementos_logicos[i / C][i % C];
+				elementos_logicos_filho2[i / C][i % C] =
+						elementos_logicos[i / C][i % C];
 			} else {
 				int temp = i - (R * C);
 				saidas_filho1[temp] = outro_pai.saidas[temp];
@@ -148,7 +148,7 @@ public:
 
 	void mutar_function_cell(int ponto_a_mutar) {
 		auto componente_a_mutar = random_func() % (LENumIn + 1);
-		auto linha = ponto_a_mutar / R;
+		auto linha = ponto_a_mutar / C;
 		auto coluna = ponto_a_mutar % C;
 		if (componente_a_mutar == 0) {
 			elementos_logicos[linha][coluna].function = random_func()

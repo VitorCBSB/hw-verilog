@@ -45,6 +45,8 @@ public:
 			individuo.fitness();
 		}
 		std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>> nova_populacao;
+		nova_populacao.push_back(melhor_individuo());
+		nova_populacao.push_back(populacao[1]);
 		while (nova_populacao.size() < Tamanho) {
 			auto cromossomo1 = selecao_torneio();
 			auto cromossomo2 = selecao_torneio();
@@ -63,16 +65,11 @@ public:
 	}
 
 	Cromossomo<NumIn, NumOut, LENumIn, R, C>& melhor_individuo() {
-		double max_fitness = 0.0;
-		Cromossomo<NumIn, NumOut, LENumIn, R, C>& melhor_individuo =
-				populacao[0];
-		for (auto& individuo : populacao) {
-			if (individuo.fitness() > max_fitness) {
-				max_fitness = individuo.fitness();
-				melhor_individuo = individuo;
-			}
-		}
-		return melhor_individuo;
+		std::sort(populacao.begin(), populacao.end(),
+				[](Cromossomo<NumIn, NumOut, LENumIn, R, C>& a, Cromossomo<NumIn, NumOut, LENumIn, R, C>& b) {
+					return a.fitness() > b.fitness();
+				});
+		return populacao[0];
 	}
 
 private:
