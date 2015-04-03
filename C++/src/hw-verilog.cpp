@@ -19,27 +19,27 @@ int main() {
 	const double MELHOR_FITNESS = 20000000.0;
 	std::mt19937 mt;
 	mt.seed(time(nullptr));
-	Populacao<15, 4, 3, 4, 5, 5> populacao(mt, true,
+	Populacao<15> populacao(mt, true, 4, 3, 4, 3, 3,
 			new IcarusFitnessCalculator(
 					[&](const std::vector<std::vector<std::bitset<8>>>& individual_output)
 					-> double {
 						int soma_distancias = 0;
 						soma_distancias += individual_output[0][0].to_ulong();
-						soma_distancias += abs((int) individual_output[1][0].to_ulong() - 0);
-						soma_distancias += abs((int) individual_output[2][0].to_ulong() - 0);
-						soma_distancias += abs((int) individual_output[3][0].to_ulong() - 0);
-						soma_distancias += abs((int) individual_output[4][0].to_ulong() - 0);
-						soma_distancias += abs((int) individual_output[5][0].to_ulong() - 0);
-						soma_distancias += abs((int) individual_output[6][0].to_ulong() - 0);
-						soma_distancias += abs((int) individual_output[7][0].to_ulong() - 0);
-						soma_distancias += abs((int) individual_output[8][0].to_ulong() - 0);
-						soma_distancias += abs((int) individual_output[9][0].to_ulong() - 0);
-						soma_distancias += abs((int) individual_output[10][0].to_ulong() - 0);
-						soma_distancias += abs((int) individual_output[11][0].to_ulong() - 0);
-						soma_distancias += abs((int) individual_output[12][0].to_ulong() - 0);
-						soma_distancias += abs((int) individual_output[13][0].to_ulong() - 0);
-						soma_distancias += abs((int) individual_output[14][0].to_ulong() - 0);
-						soma_distancias += abs((int) individual_output[15][0].to_ulong() - 7);
+						soma_distancias += abs((int) individual_output[1][0].to_ulong() - 1);
+						soma_distancias += abs((int) individual_output[2][0].to_ulong() - 2);
+						soma_distancias += abs((int) individual_output[3][0].to_ulong() - 3);
+						soma_distancias += abs((int) individual_output[4][0].to_ulong() - 1);
+						soma_distancias += abs((int) individual_output[5][0].to_ulong() - 2);
+						soma_distancias += abs((int) individual_output[6][0].to_ulong() - 3);
+						soma_distancias += abs((int) individual_output[7][0].to_ulong() - 4);
+						soma_distancias += abs((int) individual_output[8][0].to_ulong() - 2);
+						soma_distancias += abs((int) individual_output[9][0].to_ulong() - 3);
+						soma_distancias += abs((int) individual_output[10][0].to_ulong() - 4);
+						soma_distancias += abs((int) individual_output[11][0].to_ulong() - 5);
+						soma_distancias += abs((int) individual_output[12][0].to_ulong() - 3);
+						soma_distancias += abs((int) individual_output[13][0].to_ulong() - 4);
+						soma_distancias += abs((int) individual_output[14][0].to_ulong() - 5);
+						soma_distancias += abs((int) individual_output[15][0].to_ulong() - 6);
 						if (soma_distancias == 0) {
 							return MELHOR_FITNESS;
 						}

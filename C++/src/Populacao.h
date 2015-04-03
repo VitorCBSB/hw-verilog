@@ -19,23 +19,22 @@
 #define TAMANHO_TORNEIO 2
 #define TAXA_MUTACAO 0.1
 
-template<unsigned int Tamanho, unsigned int NumIn, unsigned int NumOut,
-		unsigned int LENumIn, unsigned int R, unsigned int C>
+template<unsigned int Tamanho>
 class Populacao {
 private:
 	std::mt19937& mt;
-	std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>> populacao;
+	std::vector<Cromossomo> populacao;
 	std::unique_ptr<FitnessCalculator> fitness_calculator;
 	bool acabou = false;
 
 public:
-	Populacao(std::mt19937& mt, bool feed_forward,
+	Populacao(std::mt19937& mt, bool feed_forward, int num_in, int num_out, int le_num_in, int r, int c,
 			FitnessCalculator* fitness_calculator) :
 			mt(mt), fitness_calculator(
 					std::unique_ptr<FitnessCalculator>(fitness_calculator)) {
 		for (unsigned int i = 0; i < Tamanho; i++) {
 			populacao.push_back(
-					Cromossomo<NumIn, NumOut, LENumIn, R, C>(mt,
+					Cromossomo(mt, num_in, num_out, le_num_in, r, c,
 							fitness_calculator->clone(), feed_forward));
 		}
 	}
@@ -44,7 +43,7 @@ public:
 		for (auto& individuo : populacao) {
 			individuo.fitness();
 		}
-		std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>> nova_populacao;
+		std::vector<Cromossomo> nova_populacao;
 		nova_populacao.push_back(melhor_individuo());
 		nova_populacao.push_back(populacao[1]);
 		while (nova_populacao.size() < Tamanho) {
@@ -64,17 +63,17 @@ public:
 		populacao = nova_populacao;
 	}
 
-	Cromossomo<NumIn, NumOut, LENumIn, R, C>& melhor_individuo() {
+	Cromossomo& melhor_individuo() {
 		std::sort(populacao.begin(), populacao.end(),
-				[](Cromossomo<NumIn, NumOut, LENumIn, R, C>& a, Cromossomo<NumIn, NumOut, LENumIn, R, C>& b) {
+				[](Cromossomo& a, Cromossomo& b) {
 					return a.fitness() > b.fitness();
 				});
 		return populacao[0];
 	}
 
 private:
-	Cromossomo<NumIn, NumOut, LENumIn, R, C> selecao_torneio() {
-		std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>> torneio;
+	Cromossomo selecao_torneio() {
+		std::vector<Cromossomo> torneio;
 
 		for (int i = 0; i < TAMANHO_TORNEIO; i++) {
 			auto aleatorio = mt() % Tamanho;
