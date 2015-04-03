@@ -17,19 +17,19 @@
 
 class IcarusFitnessCalculator: public FitnessCalculator {
 public:
-	IcarusFitnessCalculator(int num_inputs, int num_outputs,
+	IcarusFitnessCalculator(
 			std::function<double(const std::vector<std::vector<std::bitset<8>>>&)> fitness_calculator) :
-			FitnessCalculator(num_inputs, num_outputs, fitness_calculator) {
+			FitnessCalculator(fitness_calculator) {
 	}
 
-	double fitness();
+	double fitness(int num_inputs, int le_num_inputs, int num_outputs);
 	std::unique_ptr<FitnessCalculator> clone() {
 		return std::unique_ptr<FitnessCalculator>(new IcarusFitnessCalculator(*this));
 	}
 
 private:
-	void gerar_arquivo_top();
-	std::vector<std::vector<std::bitset<8>>> parse_output(FILE* simulador);
+	void gerar_arquivo_top(int num_inputs, int num_outputs);
+	std::vector<std::vector<std::bitset<8>>> parse_output(FILE* simulador, int num_inputs);
 };
 
 #endif /* ICARUSFITNESSCALCULATOR_H_ */

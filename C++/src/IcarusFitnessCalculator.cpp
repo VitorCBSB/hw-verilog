@@ -7,8 +7,9 @@
 
 #include "IcarusFitnessCalculator.h"
 
-double IcarusFitnessCalculator::fitness() {
-	gerar_arquivo_top();
+double IcarusFitnessCalculator::fitness(int num_inputs, int le_num_inputs, int num_outputs) {
+	gerar_arquivo_logic_e(le_num_inputs);
+	gerar_arquivo_top(num_inputs, num_outputs);
 	if (system("iverilog top.v genetico.v logic_e.v -o individuo") == -1) {
 		std::cerr << "Erro na chamada iverilog.\n";
 		exit(1);
@@ -19,14 +20,14 @@ double IcarusFitnessCalculator::fitness() {
 		std::exit(1);
 	}
 
-	auto parsed_output = parse_output(simulador);
+	auto parsed_output = parse_output(simulador, num_inputs);
 
 	pclose(simulador);
 
 	return fitness_calculator(parsed_output);
 }
 
-void IcarusFitnessCalculator::gerar_arquivo_top() {
+void IcarusFitnessCalculator::gerar_arquivo_top(int num_inputs, int num_outputs) {
 	std::ofstream top;
 	top.open("top.v");
 
@@ -50,7 +51,7 @@ void IcarusFitnessCalculator::gerar_arquivo_top() {
 	for (int i = num_outputs - 1; i >= 1; i--) {
 		top << "out[" << i << "], ";
 	}
-	top << "out);\n";
+	top << "out[0]);\n";
 	top << "\tfor (i = 0; i < " << (int) pow(2, num_inputs)
 			<< "; i = i + 1) begin\n";
 	top << "\t\t#5 in = i;\n";
@@ -64,7 +65,7 @@ void IcarusFitnessCalculator::gerar_arquivo_top() {
 }
 
 std::vector<std::vector<std::bitset<8>>>
-	IcarusFitnessCalculator::parse_output(FILE* simulador) {
+	IcarusFitnessCalculator::parse_output(FILE* simulador, int num_inputs) {
 	std::vector<std::vector<std::bitset<8>>> results;
 	char entrada[100];
 	char saida[100];

@@ -19,8 +19,8 @@ int main() {
 	const double MELHOR_FITNESS = 20000000.0;
 	std::mt19937 mt;
 	mt.seed(time(nullptr));
-	Populacao<15, 4, 3, 4, 3, 1> populacao(mt, true,
-			new IcarusFitnessCalculator(4, 3,
+	Populacao<15, 4, 3, 4, 5, 5> populacao(mt, true,
+			new IcarusFitnessCalculator(
 					[&](const std::vector<std::vector<std::bitset<8>>>& individual_output)
 					-> double {
 						int soma_distancias = 0;

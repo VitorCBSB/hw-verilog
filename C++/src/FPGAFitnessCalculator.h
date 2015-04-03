@@ -24,12 +24,12 @@
 
 class FPGAFitnessCalculator: public FitnessCalculator {
 public:
-	FPGAFitnessCalculator(int num_inputs, int num_outputs,
+	FPGAFitnessCalculator(
 			std::function<double(const std::vector<std::vector<std::bitset<8>>>&)> fitness_calculator) :
-			FitnessCalculator(num_inputs, num_outputs, fitness_calculator) {
+			FitnessCalculator(fitness_calculator) {
 	}
 
-	double fitness();
+	double fitness(int num_inputs, int le_num_inputs, int num_outputs);
 	std::unique_ptr<FitnessCalculator> clone() {
 		return std::unique_ptr<FitnessCalculator>(new FPGAFitnessCalculator(*this));
 	}

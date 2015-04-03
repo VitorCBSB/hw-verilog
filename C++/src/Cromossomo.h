@@ -173,7 +173,7 @@ public:
 		if (fitness_score == nullptr) {
 			criar_arquivo_verilog("genetico.v");
 			fitness_score = std::unique_ptr<double>(
-					new double(fitness_calculator->fitness()));
+					new double(fitness_calculator->fitness(NumIn, LENumIn, NumOut)));
 		}
 		return *fitness_score;
 	}
