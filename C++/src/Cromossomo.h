@@ -50,14 +50,13 @@ public:
 			num_in(other.num_in), num_out(other.num_out), le_num_in(
 					other.le_num_in), r(other.r), c(other.c), elementos_logicos(
 					other.elementos_logicos), saidas(other.saidas), mt(
-					other.mt), fitness_score(
-					other.fitness_score), feed_forward(
+					other.mt), fitness_score(other.fitness_score), feed_forward(
 					other.feed_forward) {
 	}
 
 	Cromossomo& operator=(const Cromossomo& other) {
 		mt = other.mt;
-		fitness_score =	other.fitness_score;
+		fitness_score = other.fitness_score;
 		num_in = other.num_in;
 		num_out = other.num_out;
 		le_num_in = other.le_num_in;

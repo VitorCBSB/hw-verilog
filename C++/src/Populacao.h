@@ -24,7 +24,8 @@ private:
 public:
 	Populacao(EvolutionaryStrategy* evolutionary_strategy) :
 			evolutionary_strategy(
-					std::unique_ptr<EvolutionaryStrategy>(evolutionary_strategy)) {
+					std::unique_ptr<EvolutionaryStrategy>(
+							evolutionary_strategy)) {
 		auto temp_populacao = std::vector<Cromossomo>();
 		populacao = evolutionary_strategy->proxima_geracao(temp_populacao);
 	}

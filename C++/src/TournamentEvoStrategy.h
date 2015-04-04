@@ -22,6 +22,7 @@ public:
 			EvolutionaryStrategy(mt, num_in, num_out, le_num_in, r, c,
 					feed_forward, fitness_calculator) {
 	}
+
 	std::vector<Cromossomo> proxima_geracao(
 			std::vector<Cromossomo>& populacao) {
 		if (primeira_populacao(populacao)) {
@@ -40,11 +41,13 @@ public:
 			if (deve_mutar()) {
 				filhos[1].mutar();
 			}
-			nova_populacao.insert(nova_populacao.end(), filhos.begin(), filhos.end());
+			nova_populacao.insert(nova_populacao.end(), filhos.begin(),
+					filhos.end());
 		}
 		return nova_populacao;
 	}
 
+private:
 	Cromossomo selecao_torneio(const std::vector<Cromossomo>& populacao) {
 		std::vector<Cromossomo> torneio;
 
@@ -79,7 +82,8 @@ public:
 		std::vector<Cromossomo> nova_populacao;
 		for (int i = 0; i < 20; i++) {
 			nova_populacao.emplace_back(
-					Cromossomo(mt, num_in, num_out, le_num_in, r, c, feed_forward));
+					Cromossomo(mt, num_in, num_out, le_num_in, r, c,
+							feed_forward));
 		}
 		return nova_populacao;
 	}
