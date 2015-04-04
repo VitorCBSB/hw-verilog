@@ -14,12 +14,13 @@
 #include "Cromossomo.h"
 #include "Populacao.h"
 #include "IcarusFitnessCalculator.h"
+#include "TournamentEvoStrategy.h"
 
 int main() {
 	const double MELHOR_FITNESS = 20000000.0;
 	std::mt19937 mt;
 	mt.seed(time(nullptr));
-	Populacao<15> populacao(mt, true, 4, 3, 4, 3, 3,
+	Populacao populacao(new TournamentEvoStrategy(mt, 4, 3, 4, 3, 3, true,
 			new IcarusFitnessCalculator(
 					[&](const std::vector<std::vector<std::bitset<8>>>& individual_output)
 					-> double {
@@ -44,7 +45,7 @@ int main() {
 							return MELHOR_FITNESS;
 						}
 						return 1.0 / ((double) soma_distancias);
-					}));
+					})));
 
 	int geracao = 0;
 	while (populacao.melhor_individuo().fitness() != MELHOR_FITNESS) {

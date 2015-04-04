@@ -8,6 +8,7 @@
 #ifndef FITNESSCALCULATOR_H_
 #define FITNESSCALCULATOR_H_
 
+#include "Cromossomo.h"
 #include <functional>
 #include <vector>
 #include <bitset>
@@ -29,7 +30,7 @@ public:
 	virtual ~FitnessCalculator() {
 	}
 
-	virtual double fitness(int num_inputs, int le_num_inputs, int num_outputs) = 0;
+	virtual void fitness(std::vector<Cromossomo>& populacao, int num_inputs, int le_num_inputs, int num_outputs) = 0;
 	virtual std::unique_ptr<FitnessCalculator> clone() = 0;
 	void gerar_arquivo_logic_e(int le_num_inputs) {
 		std::ofstream logic_e;

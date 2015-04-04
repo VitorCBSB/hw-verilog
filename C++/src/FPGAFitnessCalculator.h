@@ -29,7 +29,7 @@ public:
 			FitnessCalculator(fitness_calculator) {
 	}
 
-	double fitness(int num_inputs, int le_num_inputs, int num_outputs);
+	void fitness(std::vector<Cromossomo>& populacao, int num_inputs, int le_num_inputs, int num_outputs);
 	std::unique_ptr<FitnessCalculator> clone() {
 		return std::unique_ptr<FitnessCalculator>(new FPGAFitnessCalculator(*this));
 	}

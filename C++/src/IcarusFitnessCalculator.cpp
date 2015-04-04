@@ -7,24 +7,31 @@
 
 #include "IcarusFitnessCalculator.h"
 
-double IcarusFitnessCalculator::fitness(int num_inputs, int le_num_inputs, int num_outputs) {
+void IcarusFitnessCalculator::fitness(std::vector<Cromossomo>& populacao, int num_inputs, int le_num_inputs, int num_outputs) {
 	gerar_arquivo_logic_e(le_num_inputs);
 	gerar_arquivo_top(num_inputs, num_outputs);
-	if (system("iverilog top.v genetico.v logic_e.v -o individuo") == -1) {
-		std::cerr << "Erro na chamada iverilog.\n";
-		exit(1);
+
+	for (unsigned int i = 0; i < populacao.size(); i++) {
+		char system_call[200];
+		sprintf(system_call, "iverilog top.v genetico.v logic_e.v -o individuo%d", i);
+		if (system(system_call) == -1) {
+			std::cerr << "Erro na chamada iverilog.\n";
+			exit(1);
+		}
 	}
-	FILE* simulador = popen("vvp individuo", "r");
-	if (simulador == nullptr) {
-		std::cerr << "Nao consegui executar o simulador vvp.\n";
-		std::exit(1);
+
+	for (unsigned int i = 0; i < populacao.size(); i++) {
+		char program_call[200];
+		sprintf(program_call, "vvp individuo%d", i);
+		FILE* simulador = popen("vvp individuo", "r");
+		if (simulador == nullptr) {
+			std::cerr << "Nao consegui executar o simulador vvp.\n";
+			std::exit(1);
+		}
+		auto parsed_output = parse_output(simulador, num_inputs);
+		pclose(simulador);
+		populacao[i].set_fitness(fitness_calculator(parsed_output));
 	}
-
-	auto parsed_output = parse_output(simulador, num_inputs);
-
-	pclose(simulador);
-
-	return fitness_calculator(parsed_output);
 }
 
 void IcarusFitnessCalculator::gerar_arquivo_top(int num_inputs, int num_outputs) {

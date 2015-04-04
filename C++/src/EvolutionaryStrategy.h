@@ -9,19 +9,36 @@
 #define EVOLUTIONARYSTRATEGY_H_
 
 #include <vector>
+#include <random>
 #include "Cromossomo.h"
+#include "FitnessCalculator.h"
 
-template<unsigned int NumIn, unsigned int NumOut, unsigned int LENumIn,
-		unsigned int R, unsigned int C>
 class EvolutionaryStrategy {
+protected:
+	std::mt19937& mt;
+	int num_in;
+	int num_out;
+	int le_num_in;
+	int r;
+	int c;
+	bool feed_forward;
+	std::unique_ptr<FitnessCalculator> fitness_calculator;
+
 public:
+	EvolutionaryStrategy(std::mt19937& mt, int num_in, int num_out,
+			int le_num_in, int r, int c, bool feed_forward,
+			FitnessCalculator* fitness_calculator) :
+			mt(mt), num_in(num_in), num_out(num_out), le_num_in(le_num_in), r(
+					r), c(c), feed_forward(feed_forward), fitness_calculator(
+					fitness_calculator) {
+	}
 	virtual ~EvolutionaryStrategy() {
 	}
 
 	// Um vetor vazio de argumento indica a primeira população
 	// a ser gerada.
-	virtual std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>> proxima_geracao(
-			const std::vector<Cromossomo<NumIn, NumOut, LENumIn, R, C>>& populacao) = 0;
+	virtual std::vector<Cromossomo> proxima_geracao(
+			std::vector<Cromossomo>& populacao) = 0;
 };
 
 #endif /* EVOLUTIONARYSTRATEGY_H_ */

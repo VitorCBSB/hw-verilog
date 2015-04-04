@@ -7,7 +7,7 @@
 
 #include "FPGAFitnessCalculator.h"
 
-double FPGAFitnessCalculator::fitness(int num_inputs, int le_num_inputs, int num_outputs) {
+void FPGAFitnessCalculator::fitness(std::vector<Cromossomo>& populacao, int num_inputs, int le_num_inputs, int num_outputs) {
 	int bauds = 115200;
 	int comport_num = 6;
 	char mode[10] = "8N1";
@@ -34,6 +34,4 @@ double FPGAFitnessCalculator::fitness(int num_inputs, int le_num_inputs, int num
 	}
 
 	RS232_CloseComport(comport_num);
-
-	return fitness_calculator(results);
 }

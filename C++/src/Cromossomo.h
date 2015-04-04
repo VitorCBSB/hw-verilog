@@ -9,7 +9,6 @@
 #define CROMOSSOMO_H_
 
 #include "Cell.h"
-#include "FitnessCalculator.h"
 #include <bitset>
 #include <array>
 #include <vector>
@@ -37,8 +36,7 @@ private:
 	const int SAIDAS_LUT = pow(2, le_num_in);
 	const int NUM_PINOS_DISPONIVEIS = num_in + r * c;
 	std::mt19937& mt;
-	std::unique_ptr<FitnessCalculator> fitness_calculator;
-	std::unique_ptr<double> fitness_score;
+	double fitness_score = 0.0;
 
 	bool feed_forward = false;
 
@@ -52,21 +50,14 @@ public:
 			num_in(other.num_in), num_out(other.num_out), le_num_in(
 					other.le_num_in), r(other.r), c(other.c), elementos_logicos(
 					other.elementos_logicos), saidas(other.saidas), mt(
-					other.mt), fitness_calculator(
-					other.fitness_calculator->clone()), fitness_score(
-					other.fitness_score == nullptr ?
-							nullptr : new double(*(other.fitness_score))), feed_forward(
+					other.mt), fitness_score(
+					other.fitness_score), feed_forward(
 					other.feed_forward) {
 	}
 
 	Cromossomo& operator=(const Cromossomo& other) {
 		mt = other.mt;
-		fitness_calculator = other.fitness_calculator->clone();
-		fitness_score =
-				other.fitness_score == nullptr ?
-						nullptr :
-						std::unique_ptr<double>(
-								new double(*(other.fitness_score)));
+		fitness_score =	other.fitness_score;
 		num_in = other.num_in;
 		num_out = other.num_out;
 		le_num_in = other.le_num_in;
@@ -80,11 +71,9 @@ public:
 
 	Cromossomo(std::mt19937& mt, unsigned int num_in, unsigned int num_out,
 			unsigned int le_num_in, unsigned int r, unsigned int c,
-			std::unique_ptr<FitnessCalculator> fitness_calculator,
 			bool feed_forward = false) :
 			num_in(num_in), num_out(num_out), le_num_in(le_num_in), r(r), c(c), mt(
-					mt), fitness_calculator(std::move(fitness_calculator)), feed_forward(
-					feed_forward) {
+					mt), feed_forward(feed_forward) {
 		for (unsigned int i = 0; i < r; i++) {
 			elementos_logicos.emplace_back(std::vector<FunctionCell>());
 			for (unsigned int j = 0; j < c; j++) {
@@ -100,12 +89,11 @@ public:
 	Cromossomo(std::mt19937& mt, bool feed_forward, unsigned int num_in,
 			unsigned int num_out, unsigned int le_num_in, unsigned int r,
 			unsigned int c,
-			std::unique_ptr<FitnessCalculator> fitness_calculator,
 			std::vector<std::vector<FunctionCell>> elementos_logicos,
 			std::vector<OutputCell> saidas) :
 			num_in(num_in), num_out(num_out), le_num_in(le_num_in), r(r), c(c), elementos_logicos(
-					elementos_logicos), saidas(saidas), mt(mt), fitness_calculator(
-					std::move(fitness_calculator)), feed_forward(feed_forward) {
+					elementos_logicos), saidas(saidas), mt(mt), feed_forward(
+					feed_forward) {
 	}
 
 	std::vector<Cromossomo> gerar_filhos(const Cromossomo& outro_pai) {
@@ -157,12 +145,10 @@ public:
 		std::vector<Cromossomo> resultado;
 		resultado.push_back(
 				Cromossomo(mt, feed_forward, num_in, num_out, le_num_in, r, c,
-						fitness_calculator->clone(), elementos_logicos_filho1,
-						saidas_filho1));
+						elementos_logicos_filho1, saidas_filho1));
 		resultado.push_back(
 				Cromossomo(mt, feed_forward, num_in, num_out, le_num_in, r, c,
-						fitness_calculator->clone(), elementos_logicos_filho2,
-						saidas_filho2));
+						elementos_logicos_filho2, saidas_filho2));
 
 		return resultado;
 	}
@@ -200,14 +186,11 @@ public:
 	}
 
 	double fitness() {
-		if (fitness_score == nullptr) {
-			criar_arquivo_verilog("genetico.v");
-			fitness_score = std::unique_ptr<double>(
-					new double(
-							fitness_calculator->fitness(num_in, le_num_in,
-									num_out)));
-		}
-		return *fitness_score;
+		return fitness_score;
+	}
+
+	void set_fitness(double fitness_score) {
+		this->fitness_score = fitness_score;
 	}
 
 private:
@@ -267,8 +250,8 @@ public:
 			for (i = 0; i < r; i++) {
 				fprintf(fp, "logic_e le%d%d (\n", i, j);
 				fprintf(fp, "\t.func(%d'b%s),\n", SAIDAS_LUT,
-						to_bit_string(
-								elementos_logicos[i][j].function, SAIDAS_LUT).c_str());
+						to_bit_string(elementos_logicos[i][j].function,
+								SAIDAS_LUT).c_str());
 				fprintf(fp, "\t.in({");
 				unsigned int k;
 				for (k = 0; k < le_num_in - 1; k++) {

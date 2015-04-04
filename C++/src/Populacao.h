@@ -9,58 +9,28 @@
 #define POPULACAO_H_
 
 #include "Cromossomo.h"
-#include "FitnessCalculator.h"
+#include "EvolutionaryStrategy.h"
 #include <vector>
 #include <random>
 #include <memory>
 #include <algorithm>
 #include <numeric>
 
-#define TAMANHO_TORNEIO 2
-#define TAXA_MUTACAO 0.1
-
-template<unsigned int Tamanho>
 class Populacao {
 private:
-	std::mt19937& mt;
 	std::vector<Cromossomo> populacao;
-	std::unique_ptr<FitnessCalculator> fitness_calculator;
-	bool acabou = false;
+	std::unique_ptr<EvolutionaryStrategy> evolutionary_strategy;
 
 public:
-	Populacao(std::mt19937& mt, bool feed_forward, int num_in, int num_out, int le_num_in, int r, int c,
-			FitnessCalculator* fitness_calculator) :
-			mt(mt), fitness_calculator(
-					std::unique_ptr<FitnessCalculator>(fitness_calculator)) {
-		for (unsigned int i = 0; i < Tamanho; i++) {
-			populacao.push_back(
-					Cromossomo(mt, num_in, num_out, le_num_in, r, c,
-							fitness_calculator->clone(), feed_forward));
-		}
+	Populacao(EvolutionaryStrategy* evolutionary_strategy) :
+			evolutionary_strategy(
+					std::unique_ptr<EvolutionaryStrategy>(evolutionary_strategy)) {
+		auto temp_populacao = std::vector<Cromossomo>();
+		populacao = evolutionary_strategy->proxima_geracao(temp_populacao);
 	}
 
 	void proxima_geracao() {
-		for (auto& individuo : populacao) {
-			individuo.fitness();
-		}
-		std::vector<Cromossomo> nova_populacao;
-		nova_populacao.push_back(melhor_individuo());
-		nova_populacao.push_back(populacao[1]);
-		while (nova_populacao.size() < Tamanho) {
-			auto cromossomo1 = selecao_torneio();
-			auto cromossomo2 = selecao_torneio();
-
-			auto filhos = cromossomo1.gerar_filhos(cromossomo2);
-			if (deve_mutar()) {
-				filhos[0].mutar();
-			}
-			if (deve_mutar()) {
-				filhos[1].mutar();
-			}
-			nova_populacao.insert(nova_populacao.end(), filhos.begin(),
-					filhos.end());
-		}
-		populacao = nova_populacao;
+		populacao = evolutionary_strategy->proxima_geracao(populacao);
 	}
 
 	Cromossomo& melhor_individuo() {
@@ -69,33 +39,6 @@ public:
 					return a.fitness() > b.fitness();
 				});
 		return populacao[0];
-	}
-
-private:
-	Cromossomo selecao_torneio() {
-		std::vector<Cromossomo> torneio;
-
-		for (int i = 0; i < TAMANHO_TORNEIO; i++) {
-			auto aleatorio = mt() % Tamanho;
-			torneio.push_back(populacao[aleatorio]);
-		}
-
-		double max = 0;
-		int ind_max = 0;
-		for (int i = 0; i < TAMANHO_TORNEIO; i++) {
-			double fitness = torneio[i].fitness();
-			if (fitness > max) {
-				max = fitness;
-				ind_max = i;
-			}
-		}
-
-		return torneio[ind_max];
-	}
-
-	bool deve_mutar() {
-		auto aleatorio = (double) mt() / (double) mt.max();
-		return aleatorio < TAXA_MUTACAO;
 	}
 };
 
