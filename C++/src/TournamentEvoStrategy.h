@@ -16,10 +16,10 @@
 
 class TournamentEvoStrategy: public EvolutionaryStrategy {
 public:
-	TournamentEvoStrategy(std::mt19937& mt, int num_in, int num_out,
+	TournamentEvoStrategy(std::mt19937& mt, int population_size, int num_in, int num_out,
 			int le_num_in, int r, int c, bool feed_forward,
 			FitnessCalculator* fitness_calculator) :
-			EvolutionaryStrategy(mt, num_in, num_out, le_num_in, r, c,
+			EvolutionaryStrategy(mt, population_size, num_in, num_out, le_num_in, r, c,
 					feed_forward, fitness_calculator) {
 	}
 
@@ -83,7 +83,7 @@ private:
 
 	std::vector<Cromossomo> instancia_primeira_populacao() {
 		std::vector<Cromossomo> nova_populacao;
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < population_size; i++) {
 			nova_populacao.emplace_back(
 					Cromossomo(mt, num_in, num_out, le_num_in, r, c,
 							feed_forward));

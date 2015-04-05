@@ -16,6 +16,7 @@
 class EvolutionaryStrategy {
 protected:
 	std::mt19937& mt;
+	int population_size;
 	int num_in;
 	int num_out;
 	int le_num_in;
@@ -25,12 +26,12 @@ protected:
 	std::unique_ptr<FitnessCalculator> fitness_calculator;
 
 public:
-	EvolutionaryStrategy(std::mt19937& mt, int num_in, int num_out,
-			int le_num_in, int r, int c, bool feed_forward,
+	EvolutionaryStrategy(std::mt19937& mt, int population_size, int num_in,
+			int num_out, int le_num_in, int r, int c, bool feed_forward,
 			FitnessCalculator* fitness_calculator) :
-			mt(mt), num_in(num_in), num_out(num_out), le_num_in(le_num_in), r(
-					r), c(c), feed_forward(feed_forward), fitness_calculator(
-					fitness_calculator) {
+			mt(mt), population_size(population_size), num_in(num_in), num_out(
+					num_out), le_num_in(le_num_in), r(r), c(c), feed_forward(
+					feed_forward), fitness_calculator(fitness_calculator) {
 	}
 	virtual ~EvolutionaryStrategy() {
 	}
