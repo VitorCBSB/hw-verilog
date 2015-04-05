@@ -12,6 +12,7 @@ void IcarusFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 	gerar_arquivo_logic_e(le_num_inputs);
 	gerar_arquivo_top(num_inputs, num_outputs);
 
+#pragma omp parallel for
 	for (unsigned int i = 0; i < populacao.size(); i++) {
 		char individuo_file[100];
 		char modulo_file[100];
@@ -27,6 +28,7 @@ void IcarusFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 		}
 	}
 
+#pragma omp parallel for
 	for (unsigned int i = 0; i < populacao.size(); i++) {
 		char individuo_file[100];
 		sprintf(individuo_file, "individuo%d", i);
