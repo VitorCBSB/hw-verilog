@@ -49,11 +49,13 @@ int main() {
 							})));
 
 	int geracao = 0;
+	populacao.calcular_fitness();
 	while (populacao.melhor_individuo().fitness() != MELHOR_FITNESS) {
-		populacao.proxima_geracao();
-		std::cout << ++geracao << ": " << populacao.melhor_individuo().fitness()
+		std::cout << geracao++ << ": " << populacao.melhor_individuo().fitness()
 				<< std::endl;
 		populacao.melhor_individuo().criar_arquivo_verilog("melhor.v");
+		populacao.proxima_geracao();
+		populacao.calcular_fitness();
 	}
 
 	return 0;

@@ -34,6 +34,10 @@ public:
 		populacao = evolutionary_strategy->proxima_geracao(populacao);
 	}
 
+	void calcular_fitness() {
+		evolutionary_strategy->calcular_fitness(populacao);
+	}
+
 	Cromossomo& melhor_individuo() {
 		std::sort(populacao.begin(), populacao.end(),
 				[](Cromossomo& a, Cromossomo& b) {

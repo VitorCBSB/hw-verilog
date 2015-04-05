@@ -14,10 +14,13 @@ void IcarusFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 
 	for (unsigned int i = 0; i < populacao.size(); i++) {
 		char individuo_file[100];
+		char modulo_file[100];
 		sprintf(individuo_file, "individuo%d", i);
-		populacao[i].criar_arquivo_verilog(individuo_file);
-		std::string system_call = std::string(
-				"iverilog top.v genetico.v logic_e.v -o ") + individuo_file;
+		sprintf(modulo_file, "genetico%d.v", i);
+		populacao[i].criar_arquivo_verilog(modulo_file);
+		std::string system_call = std::string("iverilog top.v ")
+				+ std::string(modulo_file) + std::string(" logic_e.v -o ")
+				+ individuo_file;
 		if (system(system_call.c_str()) != 0) {
 			std::cerr << "Erro na chamada iverilog.\n";
 			exit(1);
@@ -77,7 +80,8 @@ void IcarusFitnessCalculator::gerar_arquivo_top(int num_inputs,
 	top << "endmodule";
 }
 
-std::vector<std::vector<std::bitset<8>>>IcarusFitnessCalculator::parse_output(FILE* simulador, int num_inputs) {
+std::vector<std::vector<std::bitset<8>>>
+	IcarusFitnessCalculator::parse_output(FILE* simulador, int num_inputs) {
 	std::vector<std::vector<std::bitset<8>>> results;
 	char entrada[100];
 	char saida[100];

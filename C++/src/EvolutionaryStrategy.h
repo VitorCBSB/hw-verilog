@@ -39,6 +39,7 @@ public:
 	// a ser gerada.
 	virtual std::vector<Cromossomo> proxima_geracao(
 			std::vector<Cromossomo>& populacao) = 0;
+	virtual void calcular_fitness(std::vector<Cromossomo>& populacao) = 0;
 };
 
 #endif /* EVOLUTIONARYSTRATEGY_H_ */

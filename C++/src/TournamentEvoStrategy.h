@@ -23,12 +23,15 @@ public:
 					feed_forward, fitness_calculator) {
 	}
 
+	void calcular_fitness(std::vector<Cromossomo>& populacao) {
+		fitness_calculator->fitness(populacao, num_in, le_num_in, num_out);
+	}
+
 	std::vector<Cromossomo> proxima_geracao(
 			std::vector<Cromossomo>& populacao) {
 		if (primeira_populacao(populacao)) {
 			return instancia_primeira_populacao();
 		}
-		fitness_calculator->fitness(populacao, num_in, le_num_in, num_out);
 		std::vector<Cromossomo> nova_populacao;
 		while (nova_populacao.size() < populacao.size()) {
 			auto cromossomo1 = selecao_torneio(populacao);
