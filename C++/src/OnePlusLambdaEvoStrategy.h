@@ -20,14 +20,18 @@ public:
 	}
 
 	void calcular_fitness(std::vector<Cromossomo>& populacao) {
-		std::vector<Cromossomo> filhos;
-		filhos.emplace_back(populacao[0]);
-		for (int i = 0; i < population_size - 1; i++) {
-			Cromossomo filho(populacao[0]);
-			filho.mutar();
-			filhos.emplace_back(filho);
+		if (populacao.size() == 1) {
+			std::vector<Cromossomo> filhos;
+			filhos.emplace_back(populacao[0]);
+			for (int i = 0; i < population_size - 1; i++) {
+				Cromossomo filho(populacao[0]);
+				filho.mutar();
+				filhos.emplace_back(filho);
+			}
+			fitness_calculator->fitness(filhos, num_in, le_num_in, num_out);
+		} else {
+			fitness_calculator->fitness(populacao, num_in, le_num_in, num_out);
 		}
-		fitness_calculator->fitness(filhos, num_in, le_num_in, num_out);
 	}
 
 	std::vector<Cromossomo> proxima_geracao(
@@ -56,8 +60,10 @@ public:
 
 	std::vector<Cromossomo> instancia_primeira_populacao() {
 		std::vector<Cromossomo> nova_populacao;
-		nova_populacao.emplace_back(
-				Cromossomo(mt, num_in, num_out, le_num_in, r, c, feed_forward));
+		for (int i = 0; i < population_size; i++) {
+			nova_populacao.emplace_back(
+					Cromossomo(mt, num_in, num_out, le_num_in, r, c, feed_forward));
+		}
 		return nova_populacao;
 	}
 };
