@@ -90,6 +90,14 @@ private:
 		}
 		return nova_populacao;
 	}
+
+	Cromossomo& melhor_individuo(std::vector<Cromossomo>& populacao) {
+		std::sort(populacao.begin(), populacao.end(),
+				[](Cromossomo& a, Cromossomo& b) {
+					return a.fitness() > b.fitness();
+				});
+		return populacao[0];
+	}
 };
 
 #endif /* TOURNAMENTEVOSTRATEGY_H_ */

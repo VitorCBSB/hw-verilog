@@ -39,11 +39,7 @@ public:
 	}
 
 	Cromossomo& melhor_individuo() {
-		std::sort(populacao.begin(), populacao.end(),
-				[](Cromossomo& a, Cromossomo& b) {
-					return a.fitness() > b.fitness();
-				});
-		return populacao[0];
+		return evolutionary_strategy->melhor_individuo(populacao);
 	}
 };
 
