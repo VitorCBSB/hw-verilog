@@ -184,7 +184,7 @@ public:
 				random_func() % NUM_PINOS_DISPONIVEIS);
 	}
 
-	double fitness() {
+	double fitness() const {
 		return fitness_score;
 	}
 
