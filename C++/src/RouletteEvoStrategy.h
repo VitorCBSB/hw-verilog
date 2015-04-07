@@ -27,7 +27,6 @@ public:
 			return instancia_primeira_populacao();
 		}
 		std::vector<Cromossomo> nova_populacao;
-
 		while (nova_populacao.size() < populacao.size()) {
 			auto cromossomo1 = seleciona_individuo(populacao, soma_fitness(populacao));
 			auto cromossomo2 = seleciona_individuo(populacao, soma_fitness(populacao));
@@ -90,8 +89,9 @@ public:
 			return a.fitness() > b.fitness();
 		});
 		int i = 0;
-		while (soma_fitness > 0) {
-			soma_fitness -= populacao[i].fitness();
+		double selecao = fmod(rand(), soma_fitness);
+		while (selecao > 0) {
+			selecao -= populacao[i].fitness();
 			i++;
 		}
 		return populacao[i - 1];

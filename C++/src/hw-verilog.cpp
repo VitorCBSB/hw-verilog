@@ -23,7 +23,7 @@ int main() {
 	std::mt19937 mt;
 	mt.seed(time(nullptr));
 	Populacao populacao(
-			new RouletteEvoStrategy(mt, 5, 4, 3, 4, 3, 3, true,
+			new RouletteEvoStrategy(mt, 20, 4, 3, 4, 3, 3, true,
 					new IcarusFitnessCalculator(
 							[&](const std::vector<std::vector<std::bitset<8>>>& individual_output)
 							-> double {
