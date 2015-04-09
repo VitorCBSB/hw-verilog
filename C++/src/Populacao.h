@@ -15,6 +15,7 @@
 #include <memory>
 #include <algorithm>
 #include <numeric>
+#include <functional>
 
 class Populacao {
 private:
@@ -36,6 +37,13 @@ public:
 
 	void calcular_fitness() {
 		evolutionary_strategy->calcular_fitness(populacao);
+	}
+
+	double fitness_medio() {
+		return std::accumulate(populacao.begin(), populacao.end(), 0.0,
+				[](double a, const Cromossomo& b) {
+					return a + b.fitness();
+				}) / populacao.size();
 	}
 
 	Cromossomo& melhor_individuo() {

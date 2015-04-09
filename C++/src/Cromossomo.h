@@ -262,7 +262,7 @@ public:
 						decodificar_entrada(elementos_logicos[i][j].inputs[k]).c_str());
 				fprintf(fp, "}),\n");
 
-				fprintf(fp, "\t.out(le_out[%d])\n", j * c + i);
+				fprintf(fp, "\t.out(le_out[%d])\n", j * r + i);
 				fprintf(fp, ");\n\n");
 			}
 		}

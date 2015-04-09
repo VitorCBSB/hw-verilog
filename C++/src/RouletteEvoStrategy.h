@@ -10,7 +10,7 @@
 
 #include "EvolutionaryStrategy.h"
 
-#define TAXA_MUTACAO 0.1
+#define TAXA_MUTACAO_ 0.5
 
 class RouletteEvoStrategy: public EvolutionaryStrategy {
 public:
@@ -27,9 +27,17 @@ public:
 			return instancia_primeira_populacao();
 		}
 		std::vector<Cromossomo> nova_populacao;
+		nova_populacao.emplace_back(melhor_individuo(populacao));
+		nova_populacao.emplace_back(populacao[1]);
 		while (nova_populacao.size() < populacao.size()) {
-			auto cromossomo1 = seleciona_individuo(populacao, soma_fitness(populacao));
-			auto cromossomo2 = seleciona_individuo(populacao, soma_fitness(populacao));
+			std::vector<Cromossomo> temp_populacao = populacao;
+			auto index1 = seleciona_individuo(temp_populacao,
+					soma_fitness(temp_populacao));
+			auto cromossomo1 = temp_populacao[index1];
+			temp_populacao.erase(temp_populacao.begin() + index1);
+			auto index2 = seleciona_individuo(temp_populacao,
+					soma_fitness(temp_populacao));
+			auto cromossomo2 = temp_populacao[index2];
 
 			auto filhos = cromossomo1.gerar_filhos(cromossomo2);
 			if (deve_mutar()) {
@@ -46,7 +54,7 @@ public:
 
 	bool deve_mutar() {
 		auto aleatorio = (double) rand() / (double) RAND_MAX;
-		return aleatorio < TAXA_MUTACAO;
+		return aleatorio < TAXA_MUTACAO_;
 	}
 
 	bool primeira_populacao(const std::vector<Cromossomo>& populacao) {
@@ -78,23 +86,23 @@ public:
 	Cromossomo& melhor_individuo(std::vector<Cromossomo>& populacao) {
 		std::sort(populacao.begin(), populacao.end(),
 				[](Cromossomo& a, Cromossomo& b) {
-			return a.fitness() > b.fitness();
-		});
+					return a.fitness() > b.fitness();
+				});
 		return populacao[0];
 	}
 
-	Cromossomo seleciona_individuo(std::vector<Cromossomo>& populacao, double soma_fitness) {
-		std::sort(populacao.begin(), populacao.end(),
-				[](Cromossomo& a, Cromossomo& b) {
-			return a.fitness() > b.fitness();
-		});
-		int i = 0;
+	int seleciona_individuo(std::vector<Cromossomo>& populacao,
+			double soma_fitness) {
+		unsigned int i = 0;
 		double selecao = fmod(rand(), soma_fitness);
 		while (selecao > 0) {
 			selecao -= populacao[i].fitness();
 			i++;
 		}
-		return populacao[i - 1];
+		if (i >= populacao.size()) {
+			i = populacao.size();
+		}
+		return i - 1;
 	}
 };
 
