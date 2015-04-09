@@ -21,17 +21,13 @@ public:
 
 	void calcular_fitness(std::vector<Cromossomo>& populacao) {
 		if (populacao.size() == 1) {
-			std::vector<Cromossomo> filhos;
-			filhos.emplace_back(populacao[0]);
 			for (int i = 0; i < population_size - 1; i++) {
 				Cromossomo filho(populacao[0]);
 				filho.mutar();
-				filhos.emplace_back(filho);
+				populacao.emplace_back(filho);
 			}
-			fitness_calculator->fitness(filhos, num_in, le_num_in, num_out);
-		} else {
-			fitness_calculator->fitness(populacao, num_in, le_num_in, num_out);
 		}
+		fitness_calculator->fitness(populacao, num_in, le_num_in, num_out);
 	}
 
 	std::vector<Cromossomo> proxima_geracao(

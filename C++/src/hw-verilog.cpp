@@ -23,7 +23,7 @@ int main() {
 	std::mt19937 mt;
 	mt.seed(time(nullptr));
 	Populacao populacao(
-			new TournamentEvoStrategy(mt, 20, 2, 2, 2, 1, 10, true,
+			new OnePlusLambdaEvoStrategy(mt, 5, 3, 2, 2, 2, 2, true,
 					new IcarusFitnessCalculator(
 							[&](const std::vector<std::vector<std::bitset<8>>>& individual_output)
 							-> double {
@@ -32,6 +32,10 @@ int main() {
 								soma_distancias += abs((int) individual_output[1][0].to_ulong() - 1);
 								soma_distancias += abs((int) individual_output[2][0].to_ulong() - 1);
 								soma_distancias += abs((int) individual_output[3][0].to_ulong() - 2);
+								soma_distancias += abs((int) individual_output[4][0].to_ulong() - 1);
+								soma_distancias += abs((int) individual_output[5][0].to_ulong() - 2);
+								soma_distancias += abs((int) individual_output[6][0].to_ulong() - 2);
+								soma_distancias += abs((int) individual_output[7][0].to_ulong() - 3);
 								if (soma_distancias == 0) {
 									return MELHOR_FITNESS;
 								}
