@@ -23,7 +23,7 @@ int main() {
 	std::mt19937 mt;
 	mt.seed(time(nullptr));
 	Populacao populacao(
-			new OnePlusLambdaEvoStrategy(mt, 5, 3, 2, 2, 2, 2, true,
+			new OnePlusLambdaEvoStrategy(mt, 5, 3, 2, 2, 3, 3, true,
 					new IcarusFitnessCalculator(
 							[&](const std::vector<std::vector<std::bitset<8>>>& individual_output)
 							-> double {
@@ -53,6 +53,7 @@ int main() {
 	}
 
 	populacao.melhor_individuo().criar_arquivo_verilog("melhor.v");
+	std::cout << "Solução encontrada!" << std::endl;
 
 	return 0;
 }
