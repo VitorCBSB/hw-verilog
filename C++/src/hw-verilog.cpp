@@ -30,13 +30,13 @@ int main() {
 							-> double {
 								int soma_distancias = 0;
 								soma_distancias += individual_output[0][0].to_ulong();
-								soma_distancias += abs((int) individual_output[1][0].to_ulong() - 1);
-								soma_distancias += abs((int) individual_output[2][0].to_ulong() - 1);
-								soma_distancias += abs((int) individual_output[3][0].to_ulong() - 2);
-								soma_distancias += abs((int) individual_output[4][0].to_ulong() - 1);
-								soma_distancias += abs((int) individual_output[5][0].to_ulong() - 2);
-								soma_distancias += abs((int) individual_output[6][0].to_ulong() - 2);
-								soma_distancias += abs((int) individual_output[7][0].to_ulong() - 3);
+								soma_distancias += abs((int) individual_output[1][30000].to_ulong() - 1);
+								soma_distancias += abs((int) individual_output[2][30000].to_ulong() - 1);
+								soma_distancias += abs((int) individual_output[3][30000].to_ulong() - 2);
+								soma_distancias += abs((int) individual_output[4][30000].to_ulong() - 1);
+								soma_distancias += abs((int) individual_output[5][30000].to_ulong() - 2);
+								soma_distancias += abs((int) individual_output[6][30000].to_ulong() - 2);
+								soma_distancias += abs((int) individual_output[7][30000].to_ulong() - 3);
 								if (soma_distancias == 0) {
 									return MELHOR_FITNESS;
 								}

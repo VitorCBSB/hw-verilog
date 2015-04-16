@@ -16,6 +16,7 @@ void FPGAFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 		auto project_path = std::string("Verilog/") + std::string(project_name)
 				+ "/";
 		gerar_arquivo_logic_e(project_path + "logic_e.v", le_num_inputs);
+		populacao[i].criar_arquivo_verilog(project_path + "genetico.v");
 		auto system_call = std::string("quartus_sh --flow compile ")
 				+ project_path + "circ_gen > NUL";
 		if (system(system_call.c_str()) != 0) {
@@ -23,6 +24,8 @@ void FPGAFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 			exit(1);
 		}
 	}
+
+	std::cout << "Compilacao concluida." << std::endl;
 
 	for (unsigned int i = 0; i < populacao.size(); i++) {
 		char project_name[100];
