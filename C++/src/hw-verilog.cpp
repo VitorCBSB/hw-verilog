@@ -58,7 +58,7 @@ int main() {
 
 	populacao.melhor_individuo().criar_arquivo_verilog("melhor.v");
 	if (populacao.melhor_individuo().fitness() == MELHOR_FITNESS) {
-		std::cout << "Solução encontrada na geracao " << geracao << std::endl;
+		std::cout << "Solucao encontrada na geracao " << geracao << std::endl;
 	}
 
 	return 0;
