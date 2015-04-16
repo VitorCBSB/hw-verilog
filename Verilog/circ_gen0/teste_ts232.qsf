@@ -1147,3 +1147,4 @@ set_global_assignment -name VERILOG_FILE sampler.v
 set_global_assignment -name VERILOG_FILE sender.v
 set_global_assignment -name VERILOG_FILE main_fsm.v
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+set_global_assignment -name CDF_FILE output_files/circ_gen.cdf

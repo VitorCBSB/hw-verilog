@@ -28,10 +28,10 @@
 *.app
 
 C++/Debug/
-Verilog/circ_gen/db/
-Verilog/circ_gen/incremental_db/
-Verilog/circ_gen/output_files/
-Verilog/circ_gen/simulation/
+db/
+incremental_db/
+output_files/
+simulation/
 qar_info.json
 resultado.txt
 *.bak
