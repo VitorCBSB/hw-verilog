@@ -36,3 +36,13 @@ qar_info.json
 resultado.txt
 *.bak
 *.qws
+*.fit.*
+*.map.*
+*.asm.*
+*.sta.*
+*.jdi
+*.pin
+*.pof
+*.sof
+*.done
+*.flow.*

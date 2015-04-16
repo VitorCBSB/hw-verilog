@@ -11,7 +11,10 @@
 #include "FitnessCalculator.h"
 #include "rs232.h"
 #include <thread>
+#include <fstream>
 #include <chrono>
+#include <stdlib.h>
+#include <string>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -33,6 +36,8 @@ public:
 	std::unique_ptr<FitnessCalculator> clone() {
 		return std::unique_ptr<FitnessCalculator>(new FPGAFitnessCalculator(*this));
 	}
+private:
+	std::vector<std::vector<std::bitset<8>>> receive_data(int num_inputs);
 };
 
 #endif /* FPGAFITNESSCALCULATOR_H_ */

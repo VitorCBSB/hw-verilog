@@ -10,6 +10,7 @@
 
 #include "Cromossomo.h"
 #include <functional>
+#include <string>
 #include <vector>
 #include <bitset>
 #include <memory>
@@ -32,9 +33,9 @@ public:
 
 	virtual void fitness(std::vector<Cromossomo>& populacao, int num_inputs, int le_num_inputs, int num_outputs) = 0;
 	virtual std::unique_ptr<FitnessCalculator> clone() = 0;
-	void gerar_arquivo_logic_e(int le_num_inputs) {
+	void gerar_arquivo_logic_e(const std::string& file_path, int le_num_inputs) {
 		std::ofstream logic_e;
-		logic_e.open("logic_e.v");
+		logic_e.open(file_path);
 
 		logic_e << "module logic_e(func, in, out);\n\n";
 

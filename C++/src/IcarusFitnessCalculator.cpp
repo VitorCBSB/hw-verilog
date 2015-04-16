@@ -9,7 +9,7 @@
 
 void IcarusFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 		int num_inputs, int le_num_inputs, int num_outputs) {
-	gerar_arquivo_logic_e(le_num_inputs);
+	gerar_arquivo_logic_e("logic_e.v", le_num_inputs);
 	gerar_arquivo_top(num_inputs, num_outputs);
 
 #pragma omp parallel for
