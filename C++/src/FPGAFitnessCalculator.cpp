@@ -32,6 +32,10 @@ void FPGAFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 		auto system_call = std::string(
 				"quartus_pgm -c USB-Blaster -m jtag -o p;") + project_path
 				+ "circ_gen.sof";
+		if (system(system_call.c_str()) != 0) {
+			std::cerr << "Erro na chamada quartus_pgm.\n";
+			exit(1);
+		}
 		populacao[i].set_fitness(fitness_calculator(receive_data(num_inputs)));
 	}
 }

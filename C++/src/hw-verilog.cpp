@@ -14,6 +14,7 @@
 #include "Cromossomo.h"
 #include "Populacao.h"
 #include "IcarusFitnessCalculator.h"
+#include "FPGAFitnessCalculator.h"
 #include "TournamentEvoStrategy.h"
 #include "OnePlusLambdaEvoStrategy.h"
 #include "RouletteEvoStrategy.h"
@@ -24,7 +25,7 @@ int main() {
 	mt.seed(time(nullptr));
 	Populacao populacao(
 			new OnePlusLambdaEvoStrategy(mt, 5, 3, 2, 2, 3, 3, true,
-					new IcarusFitnessCalculator(
+					new FPGAFitnessCalculator(
 							[&](const std::vector<std::vector<std::bitset<8>>>& individual_output)
 							-> double {
 								int soma_distancias = 0;
