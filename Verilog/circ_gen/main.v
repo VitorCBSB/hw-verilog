@@ -14,7 +14,8 @@ module main(CLOCK_50, KEY, LEDR, SW, UART_RXD, UART_TXD);
 	wire [31:0] data_to_send, received_data;
 	wire [7:0] mem_out;
 	wire rx_done, tx_done, tx_send, start_sampling, start_sending, mem_write,
-		finished_sampling, finished_sending, mem_addr, fetch_value, genetico_out;
+		finished_sampling, finished_sending, mem_addr, fetch_value, genetico_out, 
+		serial_reset;
 	wire [15:0] sampler_mem_addr, sender_mem_addr;
 	
 	assign LEDR[7:0] = current_value;
@@ -58,6 +59,7 @@ main_fsm fsm(
 	.oStartSampling(start_sampling),
 	.oStartSending(start_sending),
 	.oFetchValue(fetch_value),
+	.oResetSerial(serial_reset),
 	
 	.state(LEDR[17:15])
 );
@@ -72,7 +74,7 @@ memoria memoria(
 
 uart rs232(
 	.sys_clk(CLOCK_50),
-	.sys_rst(~KEY[1]),
+	.sys_rst(~KEY[1] | serial_reset),
 	
 	.csr_a(14'b0),
 	.csr_we(tx_send),
