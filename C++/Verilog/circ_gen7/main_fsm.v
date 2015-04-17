@@ -1,5 +1,5 @@
 module main_fsm(iClock, iReset, iRxDone, iSamplingDone, iSendingDone, 
-	oMemWrite, oMemAddr, oStartSampling, oStartSending, oFetchValue, oResetSerial, state);
+	oMemWrite, oMemAddr, oStartSampling, oStartSending, oFetchValue, oResetSerial);
 
 	parameter IDLE = 3'b000,
 		SAMPLING = 3'b001,
@@ -21,7 +21,7 @@ module main_fsm(iClock, iReset, iRxDone, iSamplingDone, iSendingDone,
 	output oFetchValue;
 	output oResetSerial;
 	
-	output reg [2:0] state = IDLE;
+	reg [2:0] state = IDLE;
 	wire [2:0] next_state;
 	
 	assign next_state = next_state_fun(state, iRxDone, iSamplingDone, iSendingDone);

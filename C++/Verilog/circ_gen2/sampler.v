@@ -1,4 +1,4 @@
-module sampler(iClock, iReset, iStartSignal, oAddress, oFinished, state);
+module sampler(iClock, iReset, iStartSignal, oAddress, oFinished);
 
 	parameter IDLE = 2'b00,
 		SAMPLING = 2'b01,
@@ -11,7 +11,7 @@ module sampler(iClock, iReset, iStartSignal, oAddress, oFinished, state);
 	output reg [15:0] oAddress;
 	output oFinished;
 	
-	output reg [1:0] state = IDLE;
+	reg [1:0] state = IDLE;
 	wire [1:0] next_state;
 	
 	assign next_state = next_state_fun(state, iStartSignal, oAddress);

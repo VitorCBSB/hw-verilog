@@ -1,4 +1,4 @@
-module sender(iClock, iReset, iTxDone, iStartSignal, oAddress, oFinished, oTxSend, state);
+module sender(iClock, iReset, iTxDone, iStartSignal, oAddress, oFinished, oTxSend);
 
 	parameter IDLE = 3'b000,
 		SENDING = 3'b001,
@@ -15,7 +15,7 @@ module sender(iClock, iReset, iTxDone, iStartSignal, oAddress, oFinished, oTxSen
 	output oFinished;
 	output [15:0] oAddress;
 	
-	output reg [2:0] state = IDLE;
+	reg [2:0] state = IDLE;
 	wire [2:0] next_state;
 	
 	assign next_state = fsm_function(state, oAddress, iTxDone, iStartSignal);
