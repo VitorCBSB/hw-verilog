@@ -19,6 +19,7 @@ module main(CLOCK_50, KEY, LEDR, SW, UART_RXD, UART_TXD);
 	wire [15:0] sampler_mem_addr, sender_mem_addr;
 	
 	assign LEDR[7:0] = current_value;
+	assign LEDR[17:10] = genetico_out;
 	assign data_to_send = {24'b0, mem_out};
 
 always @(posedge CLOCK_50) begin
@@ -31,9 +32,7 @@ sampler sampler(
 	.iReset(~KEY[1]),
 	.iStartSignal(start_sampling),
 	.oAddress(sampler_mem_addr),
-	.oFinished(finished_sampling),
-	
-	.state(LEDR[14:13])
+	.oFinished(finished_sampling)
 );
 
 sender sender(
@@ -43,9 +42,7 @@ sender sender(
 	.iStartSignal(start_sending),
 	.oAddress(sender_mem_addr),
 	.oFinished(finished_sending),
-	.oTxSend(tx_send),
-	
-	.state(LEDR[12:10])
+	.oTxSend(tx_send)
 );
 
 main_fsm fsm(
@@ -59,9 +56,7 @@ main_fsm fsm(
 	.oStartSampling(start_sampling),
 	.oStartSending(start_sending),
 	.oFetchValue(fetch_value),
-	.oResetSerial(serial_reset),
-	
-	.state(LEDR[17:15])
+	.oResetSerial(serial_reset)
 );
 
 memoria memoria(
