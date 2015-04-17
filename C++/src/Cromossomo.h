@@ -210,7 +210,7 @@ private:
 		return OutputCell(random_func() % NUM_PINOS_DISPONIVEIS);
 	}
 
-	std::string decodificar_entrada(unsigned int input) {
+	std::string decodificar_entrada(unsigned int input) const {
 		char entrada_str[20];
 		std::string retorno;
 
@@ -227,7 +227,7 @@ private:
 	}
 
 public:
-	void criar_arquivo_verilog(std::string nome_arquivo) {
+	void criar_arquivo_verilog(std::string nome_arquivo) const {
 		FILE* fp = fopen(nome_arquivo.c_str(), "w");
 		unsigned int i;
 
@@ -272,7 +272,7 @@ public:
 		fclose(fp);
 	}
 
-	std::string to_bit_string(unsigned int value, unsigned int size) {
+	std::string to_bit_string(unsigned int value, unsigned int size) const {
 		std::string rest;
 		std::string result;
 		while (value != 0) {

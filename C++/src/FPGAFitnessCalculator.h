@@ -38,6 +38,8 @@ public:
 	}
 private:
 	std::vector<std::vector<std::bitset<8>>> receive_data(int num_inputs);
+	void compilar(const Cromossomo& cromossomo, int num_projeto, int le_num_inputs);
+	void carregar(int num_projeto);
 };
 
 #endif /* FPGAFITNESSCALCULATOR_H_ */

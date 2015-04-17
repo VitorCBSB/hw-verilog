@@ -11,35 +11,43 @@ void FPGAFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 		int num_inputs, int le_num_inputs, int num_outputs) {
 #pragma omp parallel for
 	for (unsigned int i = 0; i < populacao.size(); i++) {
-		char project_name[100];
-		sprintf(project_name, "circ_gen%d", i);
-		auto project_path = std::string("Verilog/") + std::string(project_name)
-				+ "/";
-		gerar_arquivo_logic_e(project_path + "logic_e.v", le_num_inputs);
-		populacao[i].criar_arquivo_verilog(project_path + "genetico.v");
-		auto system_call = std::string("quartus_sh --flow compile ")
-				+ project_path + "circ_gen > NUL";
-		if (system(system_call.c_str()) != 0) {
-			std::cerr << "Erro na chamada quartus_sh.\n";
-			exit(1);
-		}
+		compilar(populacao[i], i, le_num_inputs);
 	}
 
 	std::cout << "Compilacao concluida." << std::endl;
 
 	for (unsigned int i = 0; i < populacao.size(); i++) {
-		char project_name[100];
-		sprintf(project_name, "circ_gen%d", i);
-		auto project_path = std::string("Verilog/") + std::string(project_name)
-				+ "/";
-		auto system_call = std::string(
-				"quartus_pgm -c USB-Blaster -m jtag -o p;") + project_path
-				+ "circ_gen.sof";
-		if (system(system_call.c_str()) != 0) {
-			std::cerr << "Erro na chamada quartus_pgm.\n";
-			exit(1);
-		}
+		carregar(i);
 		populacao[i].set_fitness(fitness_calculator(receive_data(num_inputs)));
+	}
+}
+
+void FPGAFitnessCalculator::compilar(const Cromossomo& cromossomo,
+		int num_projeto, int le_num_inputs) {
+	char project_name[100];
+	sprintf(project_name, "circ_gen%d", num_projeto);
+	auto project_path = std::string("Verilog/") + std::string(project_name)
+			+ "/";
+	gerar_arquivo_logic_e(project_path + "logic_e.v", le_num_inputs);
+	cromossomo.criar_arquivo_verilog(project_path + "genetico.v");
+	auto system_call = std::string("quartus_sh --flow compile ") + project_path
+			+ "circ_gen > NUL";
+	if (system(system_call.c_str()) != 0) {
+		std::cerr << "Erro na chamada quartus_sh.\n";
+		exit(1);
+	}
+}
+
+void FPGAFitnessCalculator::carregar(int num_projeto) {
+	char project_name[100];
+	sprintf(project_name, "circ_gen%d", num_projeto);
+	auto project_path = std::string("Verilog/") + std::string(project_name)
+			+ "/";
+	auto system_call = std::string("quartus_pgm -c USB-Blaster -m jtag -o p;")
+			+ project_path + "circ_gen.sof";
+	if (system(system_call.c_str()) != 0) {
+		std::cerr << "Erro na chamada quartus_pgm.\n";
+		exit(1);
 	}
 }
 
