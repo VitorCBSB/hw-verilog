@@ -56,7 +56,7 @@ std::vector<std::vector<std::bitset<8>>> FPGAFitnessCalculator::receive_data(
 		exit(1);
 	}
 
-	for (int i = 0; i < num_inputs; i++) {
+	for (int i = 0; i < (int) pow(2, num_inputs); i++) {
 		int total = 0;
 		RS232_SendByte(comport_num, (unsigned char) i);
 		results.emplace_back(std::vector<std::bitset<8>>(NUM_SAMPLES));

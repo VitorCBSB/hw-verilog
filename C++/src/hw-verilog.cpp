@@ -24,7 +24,7 @@ int main() {
 	std::mt19937 mt;
 	mt.seed(time(nullptr));
 	Populacao populacao(
-			new OnePlusLambdaEvoStrategy(mt, 5, 3, 2, 2, 3, 3, true,
+			new OnePlusLambdaEvoStrategy(mt, 4, 3, 2, 2, 3, 3, true,
 					new FPGAFitnessCalculator(
 							[&](const std::vector<std::vector<std::bitset<8>>>& individual_output)
 							-> double {
