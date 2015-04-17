@@ -45,11 +45,10 @@ int main() {
 
 	int geracao = 0;
 	populacao.calcular_fitness();
-	while (geracao < 10000 && populacao.melhor_individuo().fitness() != MELHOR_FITNESS) {
-		if (geracao % 100 == 0) {
-			std::cout << geracao << ": " << populacao.melhor_individuo().fitness()
-						<< ", " << populacao.fitness_medio() << std::endl;
-		}
+	while (geracao < 10000
+			&& populacao.melhor_individuo().fitness() != MELHOR_FITNESS) {
+		std::cout << geracao << ": " << populacao.melhor_individuo().fitness()
+				<< ", " << populacao.fitness_medio() << std::endl;
 		populacao.melhor_individuo().criar_arquivo_verilog("melhor.v");
 		populacao.proxima_geracao();
 		populacao.calcular_fitness();
