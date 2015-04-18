@@ -77,7 +77,7 @@ std::vector<std::vector<std::bitset<8>>> FPGAFitnessCalculator::receive_data(
 				std::cout << "TIMEOUT Detectado com " << total << " amostras coletadas." << std::endl;
 				std::cout << "Replicando a ultima amostra." << std::endl;
 				for (int j = total; j < NUM_SAMPLES; j++) {
-					results[i].emplace_back(std::bitset<8>(buffer[total - 1]));
+					results[i].emplace_back(results[i][total - 1]);
 				}
 				break;
 			}
