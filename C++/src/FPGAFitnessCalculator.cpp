@@ -68,8 +68,19 @@ std::vector<std::vector<std::bitset<8>>> FPGAFitnessCalculator::receive_data(
 		int total = 0;
 		RS232_SendByte(comport_num, (unsigned char) i);
 		results.emplace_back(std::vector<std::bitset<8>>(NUM_SAMPLES));
+
+		Timer timeout_timer;
+		timeout_timer.start(1000);
 		while (total < NUM_SAMPLES) {
+			timeout_timer.update();
+			if (timeout_timer.isDone()) {
+				std::cout << "TIMEOUT Detectado com " << total << " amostras coletadas." << std::endl;
+				break;
+			}
 			int n = RS232_PollComport(comport_num, buffer, 4096);
+			if (n != 0) { // Se dados foram recebidos
+				timeout_timer.start(1000);
+			}
 			for (int j = 0; j < n; j++, total++) {
 				results[i].emplace_back(std::bitset<8>(buffer[j]));
 			}

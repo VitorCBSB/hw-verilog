@@ -19,7 +19,6 @@ private:
 	unsigned int pausedTimeInMilliseconds;
 public:
 	Timer();
-	virtual ~Timer();
 
 	void start(int newGoalTimeInMilliseconds);
 	void resume();

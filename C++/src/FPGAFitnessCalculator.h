@@ -10,6 +10,7 @@
 
 #include "FitnessCalculator.h"
 #include "rs232.h"
+#include "Timer.h"
 #include <thread>
 #include <fstream>
 #include <chrono>

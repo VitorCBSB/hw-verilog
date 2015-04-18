@@ -19,7 +19,7 @@
 #include "OnePlusLambdaEvoStrategy.h"
 #include "RouletteEvoStrategy.h"
 
-int main() {
+int main(int argc, char* argv[]) {
 	const double MELHOR_FITNESS = 20000000.0;
 	std::mt19937 mt;
 	mt.seed(time(nullptr));

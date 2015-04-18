@@ -15,9 +15,6 @@ Timer::Timer() {
 	pausedTimeInMilliseconds = 0;
 }
 
-Timer::~Timer() {
-}
-
 void Timer::update() {
 	if (!done && !paused && started
 			&& SDL_GetTicks() >= goalTimeInMilliseconds) {
