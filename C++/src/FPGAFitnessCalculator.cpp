@@ -28,10 +28,22 @@ void FPGAFitnessCalculator::compilar(const Cromossomo& cromossomo,
 			+ "/";
 	gerar_arquivo_logic_e(project_path + "logic_e.v", le_num_inputs);
 	cromossomo.criar_arquivo_verilog(project_path + "genetico.v");
-	auto system_call = std::string("quartus_sh --flow compile ") + project_path
+	auto system_call = std::string("quartus_map ") + project_path
 			+ "circ_gen > NUL";
 	if (system(system_call.c_str()) != 0) {
-		std::cerr << "Erro na chamada quartus_sh.\n";
+		std::cerr << "Erro na chamada quartus_map.\n";
+		exit(1);
+	}
+	system_call = std::string("quartus_fit ") + project_path
+			+ "circ_gen > NUL";
+	if (system(system_call.c_str()) != 0) {
+		std::cerr << "Erro na chamada quartus_fit.\n";
+		exit(1);
+	}
+	system_call = std::string("quartus_asm ") + project_path
+			+ "circ_gen > NUL";
+	if (system(system_call.c_str()) != 0) {
+		std::cerr << "Erro na chamada quartus_asm.\n";
 		exit(1);
 	}
 }
