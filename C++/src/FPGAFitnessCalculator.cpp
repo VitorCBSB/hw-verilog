@@ -14,8 +14,6 @@ void FPGAFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 		compilar(populacao[i], i, le_num_inputs);
 	}
 
-	std::cout << "Compilacao concluida." << std::endl;
-
 	for (unsigned int i = 0; i < populacao.size(); i++) {
 		carregar(i);
 		populacao[i].set_fitness(fitness_calculator(receive_data(num_inputs)));
@@ -44,7 +42,7 @@ void FPGAFitnessCalculator::carregar(int num_projeto) {
 	auto project_path = std::string("Verilog/") + std::string(project_name)
 			+ "/";
 	auto system_call = std::string("quartus_pgm -c USB-Blaster -m jtag -o p;")
-			+ project_path + "circ_gen.sof";
+			+ project_path + "circ_gen.sof > NUL";
 	if (system(system_call.c_str()) != 0) {
 		std::cerr << "Erro na chamada quartus_pgm.\n";
 		exit(1);
@@ -90,7 +88,7 @@ std::vector<std::vector<std::bitset<8>>> FPGAFitnessCalculator::receive_data(
 			}
 		}
 
-		Sleep(500);
+		Sleep(100);
 	}
 
 	RS232_CloseComport(comport_num);
