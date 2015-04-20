@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
 							[&](const std::vector<std::vector<std::bitset<8>>>& individual_output)
 							-> double {
 								int soma_distancias = 0;
-								soma_distancias += individual_output[0][0].to_ulong();
+								soma_distancias += individual_output[0][30000].to_ulong();
 								soma_distancias += abs((int) individual_output[1][30000].to_ulong() - 1);
 								soma_distancias += abs((int) individual_output[2][30000].to_ulong() - 1);
 								soma_distancias += abs((int) individual_output[3][30000].to_ulong() - 2);
