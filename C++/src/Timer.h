@@ -8,15 +8,19 @@
 #ifndef TIMER_H_
 #define TIMER_H_
 
-#include <SDL2/SDL.h>
+#include <chrono>
+
+typedef std::chrono::time_point<std::chrono::system_clock,
+		std::chrono::duration<uint64_t, std::nano>> time_var;
 
 class Timer {
 private:
 	bool done;
 	bool paused;
 	bool started;
-	unsigned int goalTimeInMilliseconds;
-	unsigned int pausedTimeInMilliseconds;
+	time_var goalTimeInNanoseconds;
+	time_var pausedTimeInMilliseconds;
+
 public:
 	Timer();
 
@@ -24,7 +28,7 @@ public:
 	void resume();
 	void pause();
 	void update();
-	unsigned int remainingTime();
+	std::chrono::duration<uint64_t, std::nano> remainingTime();
 
 	bool isDone() const {
 		return done;

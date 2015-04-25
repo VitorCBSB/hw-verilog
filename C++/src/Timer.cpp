@@ -7,24 +7,28 @@
 
 #include "Timer.h"
 
+using namespace std::chrono;
+
 Timer::Timer() {
 	done = false;
 	paused = false;
 	started = false;
-	goalTimeInMilliseconds = 0;
-	pausedTimeInMilliseconds = 0;
 }
 
 void Timer::update() {
-	if (!done && !paused && started
-			&& SDL_GetTicks() >= goalTimeInMilliseconds) {
+	time_point<system_clock, duration<uint64_t, std::milli>> now;
+	if (!done && !paused && started && now >= goalTimeInNanoseconds) {
 		done = true;
 		started = false;
 	}
 }
 
 void Timer::start(int newGoalTimeInMilliseconds) {
-	this->goalTimeInMilliseconds = SDL_GetTicks() + newGoalTimeInMilliseconds;
+	newGoalTimeInMilliseconds *= 1000;
+	time_point<system_clock, duration<uint64_t, std::nano>> now;
+	this->goalTimeInNanoseconds = now
+			+ duration<uint64_t, std::nano>(newGoalTimeInMilliseconds);
+
 	done = false;
 	paused = false;
 	started = true;
@@ -33,24 +37,25 @@ void Timer::start(int newGoalTimeInMilliseconds) {
 void Timer::pause() {
 	if (!paused && started) {
 		paused = true;
-		pausedTimeInMilliseconds = SDL_GetTicks();
+		pausedTimeInMilliseconds = high_resolution_clock::now();
 	}
 }
 
 void Timer::resume() {
 	if (paused) {
 		paused = false;
-		goalTimeInMilliseconds = goalTimeInMilliseconds
-				+ (SDL_GetTicks() - pausedTimeInMilliseconds);
+		goalTimeInNanoseconds = goalTimeInNanoseconds
+				+ (high_resolution_clock::now() - pausedTimeInMilliseconds);
 	}
 }
 
-unsigned int Timer::remainingTime() {
+duration<uint64_t, std::nano> Timer::remainingTime() {
 	if (done || !started) {
-		return 0;
+		return duration<uint64_t, std::nano>(0);
 	}
 	if (paused) {
-		return goalTimeInMilliseconds - pausedTimeInMilliseconds;
+		return goalTimeInNanoseconds - pausedTimeInMilliseconds;
 	}
-	return goalTimeInMilliseconds - SDL_GetTicks();
+	auto now = high_resolution_clock::now();
+	return goalTimeInNanoseconds - now;
 }
