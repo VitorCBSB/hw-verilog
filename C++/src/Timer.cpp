@@ -16,7 +16,7 @@ Timer::Timer() {
 }
 
 void Timer::update() {
-	time_point<system_clock, duration<uint64_t, std::milli>> now;
+	auto now = high_resolution_clock::now();
 	if (!done && !paused && started && now >= goalTimeInNanoseconds) {
 		done = true;
 		started = false;
@@ -24,11 +24,10 @@ void Timer::update() {
 }
 
 void Timer::start(int newGoalTimeInMilliseconds) {
-	newGoalTimeInMilliseconds *= 1000;
-	time_point<system_clock, duration<uint64_t, std::nano>> now;
+	newGoalTimeInMilliseconds *= 1000000;
+	auto now = high_resolution_clock::now();
 	this->goalTimeInNanoseconds = now
 			+ duration<uint64_t, std::nano>(newGoalTimeInMilliseconds);
-
 	done = false;
 	paused = false;
 	started = true;

@@ -9,6 +9,7 @@
 #define TIMER_H_
 
 #include <chrono>
+#include <iostream>
 
 typedef std::chrono::time_point<std::chrono::system_clock,
 		std::chrono::duration<uint64_t, std::nano>> time_var;
