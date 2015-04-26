@@ -8,14 +8,14 @@ module main(CLOCK_50, KEY, LEDR, SW, UART_RXD, UART_TXD);
 	output UART_TXD;
 	
 	// Regs
-	reg [7:0] current_value;
+	reg [7:0] current_value, value_into_genetico;
 	
 	// Wires
 	wire [31:0] data_to_send, received_data;
 	wire [7:0] mem_out;
 	wire rx_done, tx_done, tx_send, start_sampling, start_sending, mem_write,
 		finished_sampling, finished_sending, mem_addr, fetch_value, genetico_out, 
-		serial_reset;
+		serial_reset, insert_value;
 	wire [15:0] sampler_mem_addr, sender_mem_addr;
 	
 	assign LEDR[7:0] = current_value;
@@ -25,6 +25,8 @@ module main(CLOCK_50, KEY, LEDR, SW, UART_RXD, UART_TXD);
 always @(posedge CLOCK_50) begin
 	if (fetch_value)
 		current_value <= received_data[7:0];
+	if (insert_value)
+		value_into_genetico <= current_value;
 end	
 
 sampler sampler(
@@ -56,6 +58,7 @@ main_fsm fsm(
 	.oStartSampling(start_sampling),
 	.oStartSending(start_sending),
 	.oFetchValue(fetch_value),
+	.oInsertValue(insert_value),
 	.oResetSerial(serial_reset)
 );
 
@@ -84,7 +87,7 @@ uart rs232(
 );
 
 genetico genetico(
-	.in(current_value),
+	.in(value_into_genetico),
 	.out(genetico_out)
 );
 
