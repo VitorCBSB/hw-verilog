@@ -40,7 +40,7 @@ public:
 	}
 private:
 	std::vector<std::vector<std::bitset<8>>> receive_data(int num_inputs, int comport_num);
-	void compilar(std::vector<Cromossomo>& populacao, int le_num_inputs);
+	void compilar(const std::vector<Cromossomo>& populacao, int le_num_inputs);
 	void carregar();
 
 	enum Message {

@@ -30,7 +30,7 @@ void FPGAFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 	RS232_CloseComport(comport_num);
 }
 
-void FPGAFitnessCalculator::compilar(std::vector<Cromossomo>& populacao,
+void FPGAFitnessCalculator::compilar(const std::vector<Cromossomo>& populacao,
 		int le_num_inputs) {
 	auto project_path = std::string("Verilog/circ_gen/");
 	gerar_arquivo_logic_e(project_path + "logic_e.v", le_num_inputs);
