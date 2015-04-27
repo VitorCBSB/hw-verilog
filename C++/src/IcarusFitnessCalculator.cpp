@@ -14,13 +14,11 @@ void IcarusFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 
 #pragma omp parallel for
 	for (unsigned int i = 0; i < populacao.size(); i++) {
-		char individuo_file[100];
-		char modulo_file[100];
-		sprintf(individuo_file, "individuo%d", i);
-		sprintf(modulo_file, "genetico%d.v", i);
-		populacao[i].criar_arquivo_verilog(modulo_file);
+		auto individuo_file = std::string("individuo") + to_string(i);
+		auto modulo_file = std::string("genetico") + to_string(i);
+		populacao[i].criar_arquivo_verilog(modulo_file, "genetico");
 		std::string system_call = std::string("iverilog top.v ")
-				+ std::string(modulo_file) + std::string(" logic_e.v -o ")
+				+ modulo_file + std::string(" logic_e.v -o ")
 				+ individuo_file;
 		if (system(system_call.c_str()) != 0) {
 			std::cerr << "Erro na chamada iverilog.\n";
@@ -30,8 +28,7 @@ void IcarusFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 
 #pragma omp parallel for
 	for (unsigned int i = 0; i < populacao.size(); i++) {
-		char individuo_file[100];
-		sprintf(individuo_file, "individuo%d", i);
+		auto individuo_file = std::string("individuo") + to_string(i);
 		std::string program_call = std::string("vvp ") + individuo_file;
 		FILE* simulador = popen(program_call.c_str(), "r");
 		if (simulador == nullptr) {

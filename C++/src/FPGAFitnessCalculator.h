@@ -11,6 +11,7 @@
 #include "FitnessCalculator.h"
 #include "rs232.h"
 #include "Timer.h"
+#include "Utils.h"
 #include <thread>
 #include <fstream>
 #include <chrono>
@@ -38,9 +39,14 @@ public:
 		return std::unique_ptr<FitnessCalculator>(new FPGAFitnessCalculator(*this));
 	}
 private:
-	std::vector<std::vector<std::bitset<8>>> receive_data(int num_inputs);
-	void compilar(const Cromossomo& cromossomo, int num_projeto, int le_num_inputs);
-	void carregar(int num_projeto);
+	std::vector<std::vector<std::bitset<8>>> receive_data(int num_inputs, int comport_num);
+	void compilar(std::vector<Cromossomo>& populacao, int le_num_inputs);
+	void carregar();
+
+	enum Message {
+		SET_VALUE = 0,
+		SET_CIRCUIT = 1
+	};
 };
 
 #endif /* FPGAFITNESSCALCULATOR_H_ */

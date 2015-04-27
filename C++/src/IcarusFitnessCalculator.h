@@ -9,6 +9,7 @@
 #define ICARUSFITNESSCALCULATOR_H_
 
 #include "FitnessCalculator.h"
+#include "Utils.h"
 #include <iostream>
 #include <fstream>
 #include <math.h>

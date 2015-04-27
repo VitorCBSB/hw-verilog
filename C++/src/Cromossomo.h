@@ -227,11 +227,11 @@ private:
 	}
 
 public:
-	void criar_arquivo_verilog(std::string nome_arquivo) const {
+	void criar_arquivo_verilog(std::string nome_arquivo, std::string nome_modulo) const {
 		FILE* fp = fopen(nome_arquivo.c_str(), "w");
 		unsigned int i;
 
-		fprintf(fp, "module genetico(in, out);\n");
+		fprintf(fp, "module %s(in, out);\n", nome_modulo.c_str());
 		fprintf(fp, "\n");
 		fprintf(fp, "\tinput [%d:0] in;\n", num_in - 1);
 		fprintf(fp, "\toutput [%d:0] out;\n", num_out - 1);
