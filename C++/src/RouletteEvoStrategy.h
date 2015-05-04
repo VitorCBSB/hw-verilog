@@ -84,10 +84,7 @@ public:
 	}
 
 	Cromossomo& melhor_individuo(std::vector<Cromossomo>& populacao) {
-		std::sort(populacao.begin(), populacao.end(),
-				[](const Cromossomo& a, const Cromossomo& b) {
-					return a.fitness() > b.fitness();
-				});
+		std::sort(populacao.begin(), populacao.end(), std::greater<Cromossomo>());
 		return populacao[0];
 	}
 
