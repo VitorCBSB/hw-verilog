@@ -41,8 +41,12 @@ public:
 			auto filhos = cromossomo1.gerar_filhos(cromossomo2);
 			if (deve_mutar()) {
 				filhos[0].mutar();
+				filhos[0].mutar();
+				filhos[0].mutar();
 			}
 			if (deve_mutar()) {
+				filhos[1].mutar();
+				filhos[1].mutar();
 				filhos[1].mutar();
 			}
 			nova_populacao.insert(nova_populacao.end(), filhos.begin(),
