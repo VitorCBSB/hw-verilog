@@ -10,6 +10,7 @@
 
 #include "EvolutionaryStrategy.h"
 #include <stdlib.h>
+#include <algorithm>
 
 #define TAMANHO_TORNEIO 2
 #define TAXA_MUTACAO 0.1
@@ -52,24 +53,15 @@ public:
 
 private:
 	Cromossomo selecao_torneio(const std::vector<Cromossomo>& populacao) {
+		auto temp_populacao = populacao;
 		std::vector<Cromossomo> torneio;
-
 		for (int i = 0; i < TAMANHO_TORNEIO; i++) {
-			auto aleatorio = rand() % populacao.size();
-			torneio.push_back(populacao[aleatorio]);
+			auto aleatorio = rand() % temp_populacao.size();
+			torneio.push_back(temp_populacao[aleatorio]);
+			temp_populacao.erase(temp_populacao.begin() + aleatorio);
 		}
 
-		double max = 0;
-		int ind_max = 0;
-		for (int i = 0; i < TAMANHO_TORNEIO; i++) {
-			double fitness = torneio[i].fitness();
-			if (fitness > max) {
-				max = fitness;
-				ind_max = i;
-			}
-		}
-
-		return torneio[ind_max];
+		return *std::max_element(torneio.begin(), torneio.end());
 	}
 
 	bool deve_mutar() {
@@ -91,12 +83,8 @@ private:
 		return nova_populacao;
 	}
 
-	Cromossomo& melhor_individuo(std::vector<Cromossomo>& populacao) {
-		std::sort(populacao.begin(), populacao.end(),
-				[](const Cromossomo& a, const Cromossomo& b) {
-					return a.fitness() > b.fitness();
-				});
-		return populacao[0];
+	Cromossomo& melhor_individuo(const std::vector<Cromossomo>& populacao) {
+		return *std::max_element(populacao.begin(), populacao.end());
 	}
 };
 
