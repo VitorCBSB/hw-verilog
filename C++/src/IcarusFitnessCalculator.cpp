@@ -14,31 +14,37 @@ void IcarusFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 
 #pragma omp parallel for
 	for (unsigned int i = 0; i < populacao.size(); i++) {
-		auto individuo_file = std::string("individuo") + to_string(i);
-		auto modulo_file = std::string("genetico") + to_string(i);
-		populacao[i].criar_arquivo_verilog(modulo_file, "genetico");
-		std::string system_call = std::string("iverilog top.v ")
-				+ modulo_file + std::string(" logic_e.v -o ")
-				+ individuo_file;
-		if (system(system_call.c_str()) != 0) {
-			std::cerr << "Erro na chamada iverilog.\n";
-			exit(1);
-		}
-	}
+		compilar(populacao[i], i);
 
-#pragma omp parallel for
-	for (unsigned int i = 0; i < populacao.size(); i++) {
-		auto individuo_file = std::string("individuo") + to_string(i);
-		std::string program_call = std::string("vvp ") + individuo_file;
-		FILE* simulador = popen(program_call.c_str(), "r");
-		if (simulador == nullptr) {
-			std::cerr << "Nao consegui executar o simulador vvp.\n";
-			std::exit(1);
-		}
-		auto parsed_output = parse_output(simulador, num_inputs);
-		pclose(simulador);
+		auto parsed_output = simular(i, num_inputs);
 		populacao[i].set_fitness(fitness_calculator(parsed_output));
 	}
+}
+
+void IcarusFitnessCalculator::compilar(const Cromossomo& individuo, int index) {
+	auto individuo_file = std::string("individuo") + to_string(index);
+	auto modulo_file = std::string("genetico") + to_string(index);
+	individuo.criar_arquivo_verilog(modulo_file, "genetico");
+	std::string system_call = std::string("iverilog top.v ") + modulo_file
+			+ std::string(" logic_e.v -o ") + individuo_file;
+	if (system(system_call.c_str()) != 0) {
+		std::cerr << "Erro na chamada iverilog.\n";
+		exit(1);
+	}
+}
+
+std::vector<std::vector<std::bitset<8>>>
+	IcarusFitnessCalculator::simular(int index, int num_inputs) {
+	auto individuo_file = std::string("individuo") + to_string(index);
+	std::string program_call = std::string("vvp ") + individuo_file;
+	FILE* simulador = popen(program_call.c_str(), "r");
+	if (simulador == nullptr) {
+		std::cerr << "Nao consegui executar o simulador vvp.\n";
+		std::exit(1);
+	}
+	auto parsed_output = parse_output(simulador, num_inputs);
+	pclose(simulador);
+	return parsed_output;
 }
 
 void IcarusFitnessCalculator::gerar_arquivo_top(int num_inputs,

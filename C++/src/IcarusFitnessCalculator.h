@@ -31,6 +31,9 @@ public:
 private:
 	void gerar_arquivo_top(int num_inputs, int num_outputs);
 	std::vector<std::vector<std::bitset<8>>> parse_output(FILE* simulador, int num_inputs);
+
+	void compilar(const Cromossomo& individuo, int index);
+	std::vector<std::vector<std::bitset<8>>> simular(int index, int num_inputs);
 };
 
 #endif /* ICARUSFITNESSCALCULATOR_H_ */
