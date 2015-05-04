@@ -87,7 +87,7 @@ private:
 		return nova_populacao;
 	}
 
-	Cromossomo& melhor_individuo(const std::vector<Cromossomo>& populacao) {
+	Cromossomo& melhor_individuo(std::vector<Cromossomo>& populacao) {
 		return *std::max_element(populacao.begin(), populacao.end());
 	}
 };
