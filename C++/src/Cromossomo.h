@@ -68,6 +68,22 @@ public:
 		return *this;
 	}
 
+	bool operator<(const Cromossomo& other) const {
+		return fitness() < other.fitness();
+	}
+
+	bool operator<=(const Cromossomo& other) const {
+		return fitness() <= other.fitness();
+	}
+
+	bool operator>(const Cromossomo& other) const {
+		return fitness() > other.fitness();
+	}
+
+	bool operator>=(const Cromossomo& other) const {
+		return fitness() >= other.fitness();
+	}
+
 	Cromossomo(std::mt19937& mt, unsigned int num_in, unsigned int num_out,
 			unsigned int le_num_in, unsigned int r, unsigned int c,
 			bool feed_forward = false) :
