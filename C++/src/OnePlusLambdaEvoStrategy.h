@@ -24,6 +24,8 @@ public:
 			for (int i = 0; i < population_size - 1; i++) {
 				Cromossomo filho(populacao[0]);
 				filho.mutar();
+				filho.mutar();
+				filho.mutar();
 				populacao.emplace_back(filho);
 			}
 		}
