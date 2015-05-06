@@ -27,7 +27,7 @@
 *.out
 *.app
 
-C++/Debug/
+Debug/
 db/
 incremental_db/
 output_files/
