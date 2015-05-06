@@ -8,6 +8,9 @@
 #ifndef CROMOSSOMO_H_
 #define CROMOSSOMO_H_
 
+#include "random.h"
+#include "genetic_params.h"
+
 /*
  * Cada byte da le_defs e responsavel por um
  * campo distinto do elemento logico, dentre eles:
@@ -25,5 +28,6 @@ typedef struct _cromossomo {
 	char outs[10];
 } cromossomo;
 
+cromossomo cromossomo_aleatorio(genetic_params params);
 
 #endif /* CROMOSSOMO_H_ */
