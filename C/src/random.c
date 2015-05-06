@@ -9,11 +9,11 @@
 
 int next = 42;
 
-int random() {
+int _random_() {
 	next = (next * 1103515245 + 12345) & RAND_MAX;
-	return 0;
+	return next;
 }
 
-void srandom(int seed) {
+void _srandom_(int seed) {
 	next = seed;
 }
