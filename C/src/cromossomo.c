@@ -10,7 +10,7 @@
 cromossomo cromossomo_aleatorio(genetic_params params) {
 	cromossomo resultado;
 	const int num_pinos = params.num_in + params.r * params.c;
-	const int num_tamanho_le = params.le_num_in + 3; // em bytes
+	const int num_tamanho_le = params.le_num_in + 1; // em bytes
 
 	// Define cada LE.
 	int i;
@@ -23,9 +23,13 @@ cromossomo cromossomo_aleatorio(genetic_params params) {
 			int k;
 			for (k = 1; k <= params.le_num_in; k++) {
 				const int num_pinos_ff = params.num_in + j * params.r;
-				resultado.le_defs[num_tamanho_le * current + k] =
-						_random_() % params.feed_forward ?
-								num_pinos_ff : num_pinos;
+				if (params.feed_forward) {
+					resultado.le_defs[num_tamanho_le * current + k] =
+							_random_() % num_pinos_ff;
+				} else {
+					resultado.le_defs[num_tamanho_le * current + k] =
+							_random_() % num_pinos;
+				}
 			}
 		}
 	}
