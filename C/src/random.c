@@ -7,13 +7,13 @@
 
 #include "random.h"
 
-int next = 42;
+unsigned int next = 0;
 
-int _random_() {
+unsigned int _random_() {
 	next = (next * 1103515245 + 12345) & RAND_MAX;
 	return next;
 }
 
-void _srandom_(int seed) {
+void _srandom_(unsigned int seed) {
 	next = seed;
 }
