@@ -18,5 +18,4 @@ typedef struct _genetic_params {
 	int feed_forward; // Booleano
 } genetic_params;
 
-
 #endif /* GENETIC_PARAMS_H_ */
