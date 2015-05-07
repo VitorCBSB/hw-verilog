@@ -9,10 +9,13 @@
 #define POPULACAO_H_
 
 #include "cromossomo.h"
+#include "genetic_params.h"
 
 typedef struct _populacao {
 	cromossomo populacao[30];
 	int tamanho;
 } populacao;
+
+populacao populacao_aleatoria(genetic_params params, int tamanho);
 
 #endif /* POPULACAO_H_ */
