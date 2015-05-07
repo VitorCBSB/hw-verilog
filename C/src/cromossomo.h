@@ -30,6 +30,7 @@ typedef struct _cromossomo {
 } cromossomo;
 
 cromossomo cromossomo_aleatorio(genetic_params params);
+cromossomo mutacao(genetic_params params, const cromossomo* a_mutar);
 void fitness(genetic_params params, cromossomo* individuo);
 
 #endif /* CROMOSSOMO_H_ */
