@@ -10,7 +10,7 @@
 
 #define RAND_MAX ((1U << 31) - 1)
 
-unsigned int _random_();
-void _srandom_(unsigned int seed);
+unsigned long _random_();
+void _srandom_(unsigned long seed);
 
 #endif /* RANDOM_H_ */
