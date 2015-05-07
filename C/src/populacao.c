@@ -19,7 +19,7 @@ populacao populacao_aleatoria(genetic_params params, int tamanho) {
 	return resultado;
 }
 
-cromossomo melhor_individuo(populacao populacao) {
+cromossomo melhor_individuo(const populacao* populacao) {
 	int i;
 	int max_idx = 0;
 	int max_fitness = 0;
