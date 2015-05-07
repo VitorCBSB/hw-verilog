@@ -23,8 +23,13 @@
  *
  * 	1 para funcao + 2 para entradas
  */
+typedef struct _logic_elem {
+	char function;
+	char inputs[4];
+} logic_element;
+
 typedef struct _cromossomo {
-	char le_defs[300];
+	logic_element logic_elements[25];
 	char outs[10];
 	int fitness;
 } cromossomo;
