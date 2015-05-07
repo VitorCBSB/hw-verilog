@@ -12,10 +12,11 @@
 #include "genetic_params.h"
 
 typedef struct _populacao {
-	cromossomo populacao[30];
+	cromossomo individuos[30];
 	int tamanho;
 } populacao;
 
 populacao populacao_aleatoria(genetic_params params, int tamanho);
+cromossomo melhor_individuo(populacao populacao);
 
 #endif /* POPULACAO_H_ */
