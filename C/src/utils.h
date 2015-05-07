@@ -8,11 +8,6 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
-int absolute(int value) {
-	if (value < 0) {
-		return value * (-1);
-	}
-	return value;
-}
+int absolute(int value);
 
 #endif /* UTILS_H_ */
