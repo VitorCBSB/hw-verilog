@@ -19,19 +19,19 @@ populacao populacao_aleatoria(genetic_params params, int tamanho) {
 	return resultado;
 }
 
-cromossomo melhor_individuo(const populacao* populacao) {
+cromossomo melhor_individuo(const populacao* param_populacao) {
 	int i;
 	int max_idx = 0;
 	int max_fitness = 0;
 
-	for (i = 0; i < populacao.tamanho; i++) {
-		if (populacao.individuos[i].fitness > max_fitness) {
-			max_fitness = populacao.individuos[i].fitness;
+	for (i = 0; i < param_populacao->tamanho; i++) {
+		if (param_populacao->individuos[i].fitness > max_fitness) {
+			max_fitness = param_populacao->individuos[i].fitness;
 			max_idx = i;
 		}
 	}
 
-	return populacao[max_idx];
+	return param_populacao->individuos[max_idx];
 }
 
 void avaliar_individuos(genetic_params params, populacao* populacao) {
