@@ -13,7 +13,7 @@
 #include "fitness_func.h"
 #include "selecao.h"
 
-int main(void) {
+int main() {
 	genetic_params params;
 	params.r = 2;
 	params.c = 2;
