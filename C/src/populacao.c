@@ -33,3 +33,10 @@ cromossomo melhor_individuo(populacao populacao) {
 
 	return populacao[max_idx];
 }
+
+void avaliar_individuos(genetic_params params, populacao* populacao) {
+	int i;
+	for (i = 0; i < populacao->tamanho; i++) {
+		fitness(params, &(populacao->individuos[i]));
+	}
+}

@@ -17,6 +17,7 @@ typedef struct _populacao {
 } populacao;
 
 populacao populacao_aleatoria(genetic_params params, int tamanho);
+void avaliar_individuos(genetic_params params, populacao* populacao);
 cromossomo melhor_individuo(populacao populacao);
 
 #endif /* POPULACAO_H_ */
