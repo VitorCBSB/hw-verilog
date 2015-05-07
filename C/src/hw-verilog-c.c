@@ -26,7 +26,7 @@ int main(void) {
 	populacao populacao = populacao_aleatoria(params, 5);
 	avaliar_individuos(params, &populacao);
 	while (melhor_individuo(&populacao).fitness != MAX_FITNESS) {
-		populacao = selecao_one_plus_lambda(params, &populacao);
+		populacao = selecao_one_plus_lambda(params, &populacao, 4);
 		avaliar_individuos(params, &populacao);
 	}
 
