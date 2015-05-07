@@ -9,6 +9,7 @@
 
 cromossomo cromossomo_aleatorio(genetic_params params) {
 	cromossomo resultado;
+	resultado.fitness = 0;
 	const int num_pinos = params.num_in + params.r * params.c;
 	const int num_tamanho_le = params.le_num_in + 1; // em bytes
 
@@ -42,9 +43,9 @@ cromossomo cromossomo_aleatorio(genetic_params params) {
 	return resultado;
 }
 
-int fitness(genetic_params params, cromossomo individuo) {
+void fitness(genetic_params params, cromossomo* individuo) {
 	// Carrega o individuo no circuito
 	// Amostra a saida
 	// Faz a analise
-	return 0;
+	// Grava no individuo
 }
