@@ -8,17 +8,17 @@
 #include "selecao.h"
 
 populacao selecao_one_plus_lambda(genetic_params params,
-		populacao* antiga_populacao) {
+		populacao* antiga_populacao, int lambda) {
 	populacao nova_populacao;
 
 	// Caso nao seja a primeira populacao
 	if (antiga_populacao->tamanho == 1) {
 		int i;
-		for (i = 1; i < 5; i++) {
+		for (i = 1; i < lambda + 1; i++) {
 			antiga_populacao->individuos[i] = mutacao(params,
 					&(antiga_populacao->individuos[0]));
 		}
-		antiga_populacao->tamanho = 5;
+		antiga_populacao->tamanho = 1 + lambda;
 	}
 	nova_populacao.tamanho = 1;
 	nova_populacao.individuos[0] = melhor_individuo(antiga_populacao);

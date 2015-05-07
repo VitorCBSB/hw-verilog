@@ -13,7 +13,7 @@
 
 // TODO One plus lambda
 populacao selecao_one_plus_lambda(genetic_params params,
-		populacao* antiga_populacao);
+		populacao* antiga_populacao, int lambda);
 
 // TODO Tournament
 
