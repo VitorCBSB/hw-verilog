@@ -8,6 +8,8 @@
 #ifndef FITNESS_FUNC_H_
 #define FITNESS_FUNC_H_
 
+#define MAX_FITNESS 1000000000
+
 #include "genetic_params.h"
 #include "utils.h"
 
