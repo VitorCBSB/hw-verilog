@@ -13,6 +13,6 @@
 #include "genetic_params.h"
 #include "utils.h"
 
-int calculate_fitness(char* results, int num_samples);
+int calcular_fitness(char* results, int num_samples);
 
 #endif /* FITNESS_FUNC_H_ */

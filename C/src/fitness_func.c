@@ -7,7 +7,7 @@
 
 #include "fitness_func.h"
 
-int calculate_fitness(char* results, int num_samples) {
+int calcular_fitness(char* results, int num_samples) {
 	int soma_distancias = 0;
 	soma_distancias += results[0];
 	soma_distancias += absolute(results[1 * num_samples] - 1);
