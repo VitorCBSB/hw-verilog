@@ -42,3 +42,9 @@ cromossomo cromossomo_aleatorio(genetic_params params) {
 	return resultado;
 }
 
+int fitness(genetic_params params, cromossomo individuo) {
+	// Carrega o individuo no circuito
+	// Amostra a saida
+	// Faz a analise
+	return 0;
+}

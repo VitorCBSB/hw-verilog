@@ -29,5 +29,6 @@ typedef struct _cromossomo {
 } cromossomo;
 
 cromossomo cromossomo_aleatorio(genetic_params params);
+int fitness(genetic_params params, cromossomo individuo);
 
 #endif /* CROMOSSOMO_H_ */
