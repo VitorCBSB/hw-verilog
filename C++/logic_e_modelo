@@ -1,0 +1,10 @@
+module logic_e(conf_func, conf_ins, all_inputs, out);
+
+	input [#bits_func:0] conf_func;
+	input [#bits_inputs:0] conf_ins;
+	input [#total_pinos:0] all_inputs;
+	output out;
+	
+	assign out = conf_func[{#all_inputs_le_out}];
+
+endmodule
