@@ -131,6 +131,8 @@ void FPGAFitnessCalculator::cria_arquivo_genetico() {
 			to_string(genetic_params.num_in - 1));
 	replace(arquivo_modelo_str, "#num_out",
 			to_string(genetic_params.num_out - 1));
+	replace(arquivo_modelo_str, "#num_out",
+			to_string(genetic_params.num_out - 1));
 	replace(arquivo_modelo_str, "#r_x_c",
 			to_string(genetic_params.r * genetic_params.c - 1));
 	replace(arquivo_modelo_str, "#bits_pinos", to_string(bits_pinos - 1));
@@ -159,12 +161,12 @@ void FPGAFitnessCalculator::cria_arquivo_logic_e() {
 	replace(arquivo_modelo_str, "#total_pinos", to_string(total_pinos - 1));
 
 	std::string output;
-	for (int i = genetic_params.num_in - 1; i >= 0; i++) {
+	for (int i = genetic_params.le_num_in; i > 0; i--) {
 		const int current_max = (i * bits_pinos) - 1;
 		const int current_min = current_max - (bits_pinos - 1);
 		output += std::string("all_inputs[conf_ins[") + to_string(current_max)
 				+ ":" + to_string(current_min) + "]]";
-		if (i != 0) {
+		if (i != 1) {
 			output += ", ";
 		}
 	}
@@ -176,8 +178,8 @@ void FPGAFitnessCalculator::cria_arquivo_logic_e() {
 
 std::string FPGAFitnessCalculator::gera_string_saida() {
 	std::string resultado;
-	for (int i = genetic_params.num_out - 1; i >= 0; i++) {
-		resultado += std::string("all_inputs[conf_out[") + to_string(i) + "]]";
+	for (int i = genetic_params.num_out - 1; i >= 0; i--) {
+		resultado += std::string("all_inputs[conf_outs[") + to_string(i) + "]]";
 		if (i != 0) {
 			resultado += ", ";
 		}
@@ -188,12 +190,16 @@ std::string FPGAFitnessCalculator::gera_string_saida() {
 std::string FPGAFitnessCalculator::gera_les() {
 	std::string resultado;
 	const std::string base = std::string("logic_e le#r#c(\n")
-			+ std::string("\t.conf_func(conf_les[#n][#bits_func:0]),\n")
-			+ std::string("\t.conf_ins(conf_les[#n]),\n")
+			+ std::string("\t.conf_func(conf_les[#n][#bits_top:#bits_next]),\n")
+			+ std::string("\t.conf_ins(conf_les[#n][#bits_rest:0]),\n")
 			+ std::string("\t.all_inputs(all_inputs),\n")
 			+ std::string("\t.out(le_out[#n])\n") + ");\n\n";
 
+	const int total_pinos = genetic_params.r * genetic_params.c
+			+ genetic_params.num_in;
+	const int bits_pinos = ceil(log2(total_pinos));
 	const int bits_func = ceil(log2(genetic_params.num_funcs));
+	const int bits_top = bits_func + genetic_params.le_num_in * bits_pinos;
 
 	for (unsigned int j = 0; j < genetic_params.c; j++) {
 		for (unsigned int i = 0; i < genetic_params.r; i++) {
@@ -204,7 +210,9 @@ std::string FPGAFitnessCalculator::gera_les() {
 			replace(current_le, "#n", to_string(current));
 			replace(current_le, "#n", to_string(current));
 			replace(current_le, "#n", to_string(current));
-			replace(current_le, "#bits_func", to_string(bits_func - 1));
+			replace(current_le, "#bits_top", to_string(bits_top - 1));
+			replace(current_le, "#bits_next", to_string(bits_top - bits_func));
+			replace(current_le, "#bits_rest", to_string((bits_top - bits_func) - 1));
 			resultado += current_le;
 		}
 	}
