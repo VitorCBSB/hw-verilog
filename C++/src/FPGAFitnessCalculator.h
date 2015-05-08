@@ -13,7 +13,7 @@
 #include "GeneticParams.h"
 #include "Timer.h"
 #include "Utils.h"
-#include <thread>
+#include "math.h"
 #include <fstream>
 #include <chrono>
 #include <stdlib.h>
@@ -35,6 +35,8 @@ public:
 	FPGAFitnessCalculator(GeneticParams genetic_params,
 			std::function<double(const std::vector<std::vector<std::bitset<8>>>&)> fitness_calculator) :
 			FitnessCalculator(fitness_calculator), genetic_params(genetic_params) {
+		cria_arquivo_genetico();
+		cria_arquivo_logic_e();
 	}
 
 	void fitness(std::vector<Cromossomo>& populacao, int num_inputs, int le_num_inputs, int num_outputs);
@@ -45,6 +47,10 @@ private:
 	std::vector<std::vector<std::bitset<8>>> receive_data(int num_inputs, int comport_num);
 	void compilar(const std::vector<Cromossomo>& populacao, int le_num_inputs);
 	void carregar();
+	void cria_arquivo_genetico();
+	void cria_arquivo_logic_e();
+	std::string gera_string_saida();
+	std::string gera_les();
 
 	enum Message {
 		SET_VALUE = 0,

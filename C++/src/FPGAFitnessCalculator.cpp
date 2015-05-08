@@ -24,7 +24,8 @@ void FPGAFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 	for (unsigned int i = 0; i < populacao.size(); i++) {
 		RS232_SendByte(comport_num, (unsigned char) SET_CIRCUIT);
 		RS232_SendByte(comport_num, (unsigned char) i);
-		populacao[i].set_fitness(fitness_calculator(receive_data(num_inputs, comport_num)));
+		populacao[i].set_fitness(
+				fitness_calculator(receive_data(num_inputs, comport_num)));
 	}
 
 	RS232_CloseComport(comport_num);
@@ -103,4 +104,110 @@ std::vector<std::vector<std::bitset<8>>> FPGAFitnessCalculator::receive_data(
 	}
 
 	return results;
+}
+
+void replace(std::string& source, const std::string& to_replace,
+		const std::string& replace_with) {
+	source.replace(source.find(to_replace), to_replace.length(), replace_with);
+}
+
+void FPGAFitnessCalculator::cria_arquivo_genetico() {
+	std::ifstream arquivo_modelo("genetico_modelo");
+	std::ofstream arquivo_resultado("genetico.v");
+	std::stringstream buffer;
+	buffer << arquivo_modelo.rdbuf();
+	auto arquivo_modelo_str = buffer.str();
+
+	const int total_pinos = genetic_params.r * genetic_params.c
+			+ genetic_params.num_in;
+	const int bits_pinos = ceil(log2(total_pinos));
+	const int tam_le = ceil(log2(genetic_params.num_funcs))
+			+ ceil(log2(total_pinos)) * genetic_params.le_num_in;
+
+	replace(arquivo_modelo_str, "#tam_le", to_string(tam_le - 1));
+	replace(arquivo_modelo_str, "#r_x_c",
+			to_string(genetic_params.r * genetic_params.c - 1));
+	replace(arquivo_modelo_str, "#num_in",
+			to_string(genetic_params.num_in - 1));
+	replace(arquivo_modelo_str, "#num_out",
+			to_string(genetic_params.num_out - 1));
+	replace(arquivo_modelo_str, "#r_x_c",
+			to_string(genetic_params.r * genetic_params.c - 1));
+	replace(arquivo_modelo_str, "#bits_pinos", to_string(bits_pinos - 1));
+	replace(arquivo_modelo_str, "#num_pinos", to_string(total_pinos - 1));
+	replace(arquivo_modelo_str, "#all_inputs_for_out", gera_string_saida());
+	replace(arquivo_modelo_str, "#les", gera_les());
+
+	arquivo_resultado << arquivo_modelo_str;
+}
+
+void FPGAFitnessCalculator::cria_arquivo_logic_e() {
+	std::ifstream arquivo_modelo("logic_e_modelo");
+	std::ofstream arquivo_resultado("logic_e.v");
+	std::stringstream buffer;
+	buffer << arquivo_modelo.rdbuf();
+	auto arquivo_modelo_str = buffer.str();
+
+	const int bits_func = ceil(log2(genetic_params.num_funcs));
+	const int total_pinos = genetic_params.r * genetic_params.c
+			+ genetic_params.num_in;
+	const int bits_pinos = ceil(log2(total_pinos));
+	const int bits_inputs = bits_pinos * genetic_params.le_num_in;
+
+	replace(arquivo_modelo_str, "#bits_func", to_string(bits_func - 1));
+	replace(arquivo_modelo_str, "#bits_inputs", to_string(bits_inputs - 1));
+	replace(arquivo_modelo_str, "#total_pinos", to_string(total_pinos - 1));
+
+	std::string output;
+	for (int i = genetic_params.num_in - 1; i >= 0; i++) {
+		const int current_max = (i * bits_pinos) - 1;
+		const int current_min = current_max - (bits_pinos - 1);
+		output += std::string("all_inputs[conf_ins[") + to_string(current_max)
+				+ ":" + to_string(current_min) + "]]";
+		if (i != 0) {
+			output += ", ";
+		}
+	}
+
+	replace(arquivo_modelo_str, "#all_inputs_le_out", output);
+
+	arquivo_resultado << arquivo_modelo_str;
+}
+
+std::string FPGAFitnessCalculator::gera_string_saida() {
+	std::string resultado;
+	for (int i = genetic_params.num_out - 1; i >= 0; i++) {
+		resultado += std::string("all_inputs[conf_out[") + to_string(i) + "]]";
+		if (i != 0) {
+			resultado += ", ";
+		}
+	}
+	return resultado;
+}
+
+std::string FPGAFitnessCalculator::gera_les() {
+	std::string resultado;
+	const std::string base = std::string("logic_e le#r#c(\n")
+			+ std::string("\t.conf_func(conf_les[#n][#bits_func:0]),\n")
+			+ std::string("\t.conf_ins(conf_les[#n]),\n")
+			+ std::string("\t.all_inputs(all_inputs),\n")
+			+ std::string("\t.out(le_out[#n])\n") + ");\n\n";
+
+	const int bits_func = ceil(log2(genetic_params.num_funcs));
+
+	for (unsigned int j = 0; j < genetic_params.c; j++) {
+		for (unsigned int i = 0; i < genetic_params.r; i++) {
+			const int current = j * genetic_params.r + i;
+			auto current_le = base;
+			replace(current_le, "#r", to_string(i));
+			replace(current_le, "#c", to_string(j));
+			replace(current_le, "#n", to_string(current));
+			replace(current_le, "#n", to_string(current));
+			replace(current_le, "#n", to_string(current));
+			replace(current_le, "#bits_func", to_string(bits_func - 1));
+			resultado += current_le;
+		}
+	}
+
+	return resultado;
 }
