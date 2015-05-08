@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
 
 	Populacao populacao(
 			new OnePlusLambdaEvoStrategy(mt, 4, genetic_params,
-					new FPGAFitnessCalculator(fitness)));
+					new FPGAFitnessCalculator(genetic_params, fitness)));
 
 	int geracao = 0;
 	populacao.calcular_fitness();

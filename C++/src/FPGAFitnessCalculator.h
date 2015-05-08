@@ -10,6 +10,7 @@
 
 #include "FitnessCalculator.h"
 #include "rs232.h"
+#include "GeneticParams.h"
 #include "Timer.h"
 #include "Utils.h"
 #include <thread>
@@ -28,10 +29,12 @@
 #define NUM_SAMPLES 65535
 
 class FPGAFitnessCalculator: public FitnessCalculator {
+private:
+	GeneticParams genetic_params;
 public:
-	FPGAFitnessCalculator(
+	FPGAFitnessCalculator(GeneticParams genetic_params,
 			std::function<double(const std::vector<std::vector<std::bitset<8>>>&)> fitness_calculator) :
-			FitnessCalculator(fitness_calculator) {
+			FitnessCalculator(fitness_calculator), genetic_params(genetic_params) {
 	}
 
 	void fitness(std::vector<Cromossomo>& populacao, int num_inputs, int le_num_inputs, int num_outputs);
