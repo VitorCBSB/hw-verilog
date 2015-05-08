@@ -30,4 +30,4 @@ Utilizando um programa feito puramente em C, sem auxílio de bibliotecas externa
 
 ###Problemas encontrados
 
-	
+O processador MIPS foi feito para ser utilizado pela placa DE2-70 e não pela DE2-115. A memória SRAM usada na 70 é diferente da 115. O projeto teria que ser consideravelmente modificado.
