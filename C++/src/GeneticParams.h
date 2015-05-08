@@ -12,10 +12,10 @@ class GeneticParams {
 public:
 	unsigned int num_in;
 	unsigned int num_out;
+	unsigned int num_funcs;
 	unsigned int le_num_in;
 	unsigned int r;
 	unsigned int c;
-	unsigned int num_funcs;
 	bool feed_forward;
 
 	GeneticParams(unsigned int num_in, unsigned int num_out,
