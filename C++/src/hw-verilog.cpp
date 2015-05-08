@@ -18,6 +18,7 @@
 #include "TournamentEvoStrategy.h"
 #include "OnePlusLambdaEvoStrategy.h"
 #include "RouletteEvoStrategy.h"
+#include "GeneticParams.h"
 
 const double MELHOR_FITNESS = 20000000.0;
 
@@ -40,8 +41,10 @@ double fitness(const std::vector<std::vector<std::bitset<8>>>& individual_output
 int main(int argc, char* argv[]) {
 	std::mt19937 mt;
 	mt.seed(time(nullptr));
+	GeneticParams genetic_params(3, 2, 2, 3, 3, true);
+
 	Populacao populacao(
-			new OnePlusLambdaEvoStrategy(mt, 4, 3, 2, 2, 3, 3, true,
+			new OnePlusLambdaEvoStrategy(mt, 4, genetic_params,
 					new FPGAFitnessCalculator(fitness)));
 
 	int geracao = 0;

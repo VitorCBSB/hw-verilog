@@ -17,15 +17,15 @@
 
 class TournamentEvoStrategy: public EvolutionaryStrategy {
 public:
-	TournamentEvoStrategy(std::mt19937& mt, int population_size, int num_in, int num_out,
-			int le_num_in, int r, int c, bool feed_forward,
-			FitnessCalculator* fitness_calculator) :
-			EvolutionaryStrategy(mt, population_size, num_in, num_out, le_num_in, r, c,
-					feed_forward, fitness_calculator) {
+	TournamentEvoStrategy(std::mt19937& mt, int population_size,
+			GeneticParams genetic_params, FitnessCalculator* fitness_calculator) :
+			EvolutionaryStrategy(mt, population_size, genetic_params,
+					fitness_calculator) {
 	}
 
 	void calcular_fitness(std::vector<Cromossomo>& populacao) {
-		fitness_calculator->fitness(populacao, num_in, le_num_in, num_out);
+		fitness_calculator->fitness(populacao, genetic_params.num_in,
+				genetic_params.le_num_in, genetic_params.num_out);
 	}
 
 	std::vector<Cromossomo> proxima_geracao(
@@ -81,8 +81,7 @@ private:
 		std::vector<Cromossomo> nova_populacao;
 		for (int i = 0; i < population_size; i++) {
 			nova_populacao.emplace_back(
-					Cromossomo(mt, num_in, num_out, le_num_in, r, c,
-							feed_forward));
+					Cromossomo(mt, genetic_params));
 		}
 		return nova_populacao;
 	}

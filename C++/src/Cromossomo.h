@@ -9,6 +9,7 @@
 #define CROMOSSOMO_H_
 
 #include "Cell.h"
+#include "GeneticParams.h"
 #include <bitset>
 #include <array>
 #include <vector>
@@ -24,21 +25,16 @@
 
 class Cromossomo {
 public:
-	unsigned int num_in;
-	unsigned int num_out;
-	unsigned int le_num_in;
-	unsigned int r;
-	unsigned int c;
+	GeneticParams genetic_params;
 	std::vector<std::vector<FunctionCell>> elementos_logicos;
 	std::vector<OutputCell> saidas;
 
 private:
-	const int SAIDAS_LUT = pow(2, le_num_in);
-	const int NUM_PINOS_DISPONIVEIS = num_in + r * c;
+	const int SAIDAS_LUT = pow(2, genetic_params.le_num_in);
+	const int NUM_PINOS_DISPONIVEIS = genetic_params.num_in
+			+ genetic_params.r * genetic_params.c;
 	std::mt19937& mt;
 	double fitness_score = 0.0;
-
-	bool feed_forward = false;
 
 	unsigned int random_func() {
 		return mt();
@@ -47,24 +43,17 @@ private:
 public:
 
 	Cromossomo(const Cromossomo& other) :
-			num_in(other.num_in), num_out(other.num_out), le_num_in(
-					other.le_num_in), r(other.r), c(other.c), elementos_logicos(
+			genetic_params(other.genetic_params), elementos_logicos(
 					other.elementos_logicos), saidas(other.saidas), mt(
-					other.mt), fitness_score(other.fitness_score), feed_forward(
-					other.feed_forward) {
+					other.mt), fitness_score(other.fitness_score) {
 	}
 
 	Cromossomo& operator=(const Cromossomo& other) {
 		mt = other.mt;
 		fitness_score = other.fitness_score;
-		num_in = other.num_in;
-		num_out = other.num_out;
-		le_num_in = other.le_num_in;
-		r = other.r;
-		c = other.c;
+		genetic_params = other.genetic_params;
 		elementos_logicos = other.elementos_logicos;
 		saidas = other.saidas;
-		feed_forward = other.feed_forward;
 		return *this;
 	}
 
@@ -84,35 +73,33 @@ public:
 		return fitness() >= other.fitness();
 	}
 
-	Cromossomo(std::mt19937& mt, unsigned int num_in, unsigned int num_out,
-			unsigned int le_num_in, unsigned int r, unsigned int c,
+	Cromossomo(std::mt19937& mt, GeneticParams genetic_params,
 			bool feed_forward = false) :
-			num_in(num_in), num_out(num_out), le_num_in(le_num_in), r(r), c(c), mt(
-					mt), feed_forward(feed_forward) {
-		for (unsigned int i = 0; i < r; i++) {
+			genetic_params(genetic_params), mt(mt) {
+		for (unsigned int i = 0; i < genetic_params.r; i++) {
 			elementos_logicos.emplace_back(std::vector<FunctionCell>());
-			for (unsigned int j = 0; j < c; j++) {
+			for (unsigned int j = 0; j < genetic_params.c; j++) {
 				elementos_logicos[i].emplace_back(aleatorio(j));
 			}
 		}
 
-		for (unsigned int i = 0; i < num_out; i++) {
+		for (unsigned int i = 0; i < genetic_params.num_out; i++) {
 			saidas.emplace_back(aleatorio_output());
 		}
 	}
 
-	Cromossomo(std::mt19937& mt, bool feed_forward, unsigned int num_in,
-			unsigned int num_out, unsigned int le_num_in, unsigned int r,
-			unsigned int c,
+	Cromossomo(std::mt19937& mt, GeneticParams genetic_params,
 			std::vector<std::vector<FunctionCell>> elementos_logicos,
 			std::vector<OutputCell> saidas) :
-			num_in(num_in), num_out(num_out), le_num_in(le_num_in), r(r), c(c), elementos_logicos(
-					elementos_logicos), saidas(saidas), mt(mt), feed_forward(
-					feed_forward) {
+			genetic_params(genetic_params), elementos_logicos(
+					elementos_logicos), saidas(saidas), mt(mt) {
 	}
 
 	std::vector<Cromossomo> gerar_filhos(const Cromossomo& outro_pai) {
-		auto ponto_corte = random_func() % (r * c + num_out);
+		auto ponto_corte =
+				random_func()
+						% (genetic_params.r * genetic_params.c
+								+ genetic_params.num_out);
 		std::vector<std::vector<FunctionCell>> elementos_logicos_filho1;
 		std::vector<std::vector<FunctionCell>> elementos_logicos_filho2;
 		std::vector<OutputCell> saidas_filho1;
@@ -120,38 +107,43 @@ public:
 
 		unsigned int i;
 		for (i = 0; i < ponto_corte; i++) {
-			if (i < r * c) {
-				if (i % c == 0) {
+			if (i < genetic_params.r * genetic_params.c) {
+				if (i % genetic_params.c == 0) {
 					elementos_logicos_filho1.emplace_back(
 							std::vector<FunctionCell>());
 					elementos_logicos_filho2.emplace_back(
 							std::vector<FunctionCell>());
 				}
-				elementos_logicos_filho1[i / c].emplace_back(
-						elementos_logicos[i / c][i % c]);
-				elementos_logicos_filho2[i / c].emplace_back(
-						outro_pai.elementos_logicos[i / c][i % c]);
+				elementos_logicos_filho1[i / genetic_params.c].emplace_back(
+						elementos_logicos[i / genetic_params.c][i
+								% genetic_params.c]);
+				elementos_logicos_filho2[i / genetic_params.c].emplace_back(
+						outro_pai.elementos_logicos[i / genetic_params.c][i
+								% genetic_params.c]);
 			} else {
-				int temp = i - (r * c);
+				int temp = i - (genetic_params.r * genetic_params.c);
 				saidas_filho1.emplace_back(saidas[temp]);
 				saidas_filho2.emplace_back(outro_pai.saidas[temp]);
 			}
 		}
 
-		for (; i < r * c + num_out; i++) {
-			if (i < r * c) {
-				if (i % c == 0) {
+		for (; i < genetic_params.r * genetic_params.c + genetic_params.num_out;
+				i++) {
+			if (i < genetic_params.r * genetic_params.c) {
+				if (i % genetic_params.c == 0) {
 					elementos_logicos_filho1.emplace_back(
 							std::vector<FunctionCell>());
 					elementos_logicos_filho2.emplace_back(
 							std::vector<FunctionCell>());
 				}
-				elementos_logicos_filho1[i / c].emplace_back(
-						outro_pai.elementos_logicos[i / c][i % c]);
-				elementos_logicos_filho2[i / c].emplace_back(
-						elementos_logicos[i / c][i % c]);
+				elementos_logicos_filho1[i / genetic_params.c].emplace_back(
+						outro_pai.elementos_logicos[i / genetic_params.c][i
+								% genetic_params.c]);
+				elementos_logicos_filho2[i / genetic_params.c].emplace_back(
+						elementos_logicos[i / genetic_params.c][i
+								% genetic_params.c]);
 			} else {
-				int temp = i - (r * c);
+				int temp = i - (genetic_params.r * genetic_params.c);
 				saidas_filho1.emplace_back(outro_pai.saidas[temp]);
 				saidas_filho2.emplace_back(saidas[temp]);
 			}
@@ -159,35 +151,42 @@ public:
 
 		std::vector<Cromossomo> resultado;
 		resultado.push_back(
-				Cromossomo(mt, feed_forward, num_in, num_out, le_num_in, r, c,
-						elementos_logicos_filho1, saidas_filho1));
+				Cromossomo(mt, genetic_params, elementos_logicos_filho1,
+						saidas_filho1));
 		resultado.push_back(
-				Cromossomo(mt, feed_forward, num_in, num_out, le_num_in, r, c,
-						elementos_logicos_filho2, saidas_filho2));
+				Cromossomo(mt, genetic_params, elementos_logicos_filho2,
+						saidas_filho2));
 
 		return resultado;
 	}
 
 	void mutar() {
-		auto ponto_a_mutar = random_func() % (r * c + num_out);
-		if (ponto_a_mutar < r * c) {
+		auto ponto_a_mutar =
+				random_func()
+						% (genetic_params.r * genetic_params.c
+								+ genetic_params.num_out);
+		if (ponto_a_mutar < genetic_params.r * genetic_params.c) {
 			mutar_function_cell(ponto_a_mutar);
 		} else {
-			mutar_output_cell(ponto_a_mutar - (r * c));
+			mutar_output_cell(
+					ponto_a_mutar - (genetic_params.r * genetic_params.c));
 		}
 	}
 
 	void mutar_function_cell(int ponto_a_mutar) {
-		auto componente_a_mutar = random_func() % (le_num_in + 1);
-		auto linha = ponto_a_mutar / c;
-		auto coluna = ponto_a_mutar % c;
+		auto componente_a_mutar = random_func()
+				% (genetic_params.le_num_in + 1);
+		auto linha = ponto_a_mutar / genetic_params.c;
+		auto coluna = ponto_a_mutar % genetic_params.c;
 		if (componente_a_mutar == 0) {
 			auto bit_a_mutar = random_func() % SAIDAS_LUT;
 			elementos_logicos[linha][coluna].function ^= 1 << bit_a_mutar;
 		} else {
-			if (feed_forward) {
+			if (genetic_params.feed_forward) {
 				elementos_logicos[linha][coluna].inputs[componente_a_mutar - 1] =
-						random_func() % (num_in + (coluna * r));
+						random_func()
+								% (genetic_params.num_in
+										+ (coluna * genetic_params.r));
 			} else {
 				elementos_logicos[linha][coluna].inputs[componente_a_mutar - 1] =
 						random_func() % NUM_PINOS_DISPONIVEIS;
@@ -212,9 +211,12 @@ private:
 	FunctionCell aleatorio(int coluna) {
 		std::vector<unsigned int> inputs;
 		unsigned int function = random_func() % ((int) pow(2, SAIDAS_LUT));
-		for (unsigned int i = 0; i < le_num_in; i++) {
-			if (feed_forward) {
-				inputs.push_back(random_func() % (num_in + (coluna * r)));
+		for (unsigned int i = 0; i < genetic_params.le_num_in; i++) {
+			if (genetic_params.feed_forward) {
+				inputs.push_back(
+						random_func()
+								% (genetic_params.num_in
+										+ (coluna * genetic_params.r)));
 			} else {
 				inputs.push_back(random_func() % NUM_PINOS_DISPONIVEIS);
 			}
@@ -230,8 +232,8 @@ private:
 		char entrada_str[20];
 		std::string retorno;
 
-		if (input > num_in - 1) {
-			input -= num_in;
+		if (input > genetic_params.num_in - 1) {
+			input -= genetic_params.num_in;
 			retorno = "le_out[";
 		} else {
 			retorno = "in[";
@@ -243,33 +245,35 @@ private:
 	}
 
 public:
-	void criar_arquivo_verilog(std::string nome_arquivo, std::string nome_modulo) const {
+	void criar_arquivo_verilog(std::string nome_arquivo,
+			std::string nome_modulo) const {
 		FILE* fp = fopen(nome_arquivo.c_str(), "w");
 		unsigned int i;
 
 		fprintf(fp, "module %s(in, out);\n", nome_modulo.c_str());
 		fprintf(fp, "\n");
-		fprintf(fp, "\tinput [%d:0] in;\n", num_in - 1);
-		fprintf(fp, "\toutput [%d:0] out;\n", num_out - 1);
-		fprintf(fp, "\twire le_out[%d:0];\n", (r * c) - 1);
+		fprintf(fp, "\tinput [%d:0] in;\n", genetic_params.num_in - 1);
+		fprintf(fp, "\toutput [%d:0] out;\n", genetic_params.num_out - 1);
+		fprintf(fp, "\twire le_out[%d:0];\n",
+				(genetic_params.r * genetic_params.c) - 1);
 		fprintf(fp, "\n");
 
 		fprintf(fp, "\tassign out = {");
-		for (i = 0; i < num_out - 1; i++) {
+		for (i = 0; i < genetic_params.num_out - 1; i++) {
 			fprintf(fp, "%s, ", decodificar_entrada(saidas[i].input).c_str());
 		}
 		fprintf(fp, "%s", decodificar_entrada(saidas[i].input).c_str());
 		fprintf(fp, "};\n\n");
 
-		for (unsigned int j = 0; j < c; j++) {
-			for (i = 0; i < r; i++) {
+		for (unsigned int j = 0; j < genetic_params.c; j++) {
+			for (i = 0; i < genetic_params.r; i++) {
 				fprintf(fp, "logic_e le%d%d (\n", i, j);
 				fprintf(fp, "\t.func(%d'b%s),\n", SAIDAS_LUT,
 						to_bit_string(elementos_logicos[i][j].function,
 								SAIDAS_LUT).c_str());
 				fprintf(fp, "\t.in({");
 				unsigned int k;
-				for (k = 0; k < le_num_in - 1; k++) {
+				for (k = 0; k < genetic_params.le_num_in - 1; k++) {
 					fprintf(fp, "%s, ",
 							decodificar_entrada(
 									elementos_logicos[i][j].inputs[k]).c_str());
@@ -278,7 +282,7 @@ public:
 						decodificar_entrada(elementos_logicos[i][j].inputs[k]).c_str());
 				fprintf(fp, "}),\n");
 
-				fprintf(fp, "\t.out(le_out[%d])\n", j * r + i);
+				fprintf(fp, "\t.out(le_out[%d])\n", j * genetic_params.r + i);
 				fprintf(fp, ");\n\n");
 			}
 		}
