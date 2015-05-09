@@ -151,6 +151,7 @@ void FPGAFitnessCalculator::cria_arquivo_logic_e() {
 	auto arquivo_modelo_str = buffer.str();
 
 	const int bits_func = ceil(log2(genetic_params.num_funcs));
+	const int bits_bits_func = log2(bits_func);
 	const int total_pinos = genetic_params.r * genetic_params.c
 			+ genetic_params.num_in;
 	const int bits_pinos = ceil(log2(total_pinos));
@@ -161,7 +162,7 @@ void FPGAFitnessCalculator::cria_arquivo_logic_e() {
 	replace(arquivo_modelo_str, "#total_pinos", to_string(total_pinos - 1));
 
 	std::string output;
-	for (int i = genetic_params.le_num_in; i > 0; i--) {
+	for (int i = bits_bits_func; i > 0; i--) {
 		const int current_max = (i * bits_pinos) - 1;
 		const int current_min = current_max - (bits_pinos - 1);
 		output += std::string("all_inputs[conf_ins[") + to_string(current_max)
