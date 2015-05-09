@@ -37,6 +37,7 @@ public:
 			FitnessCalculator(fitness_calculator), genetic_params(genetic_params) {
 		cria_arquivo_genetico();
 		cria_arquivo_logic_e();
+		cria_arquivo_data_receiver();
 	}
 
 	void fitness(std::vector<Cromossomo>& populacao, int num_inputs, int le_num_inputs, int num_outputs);
@@ -49,6 +50,7 @@ private:
 	void carregar();
 	void cria_arquivo_genetico();
 	void cria_arquivo_logic_e();
+	void cria_arquivo_data_receiver();
 	std::string gera_string_saida();
 	std::string gera_les();
 

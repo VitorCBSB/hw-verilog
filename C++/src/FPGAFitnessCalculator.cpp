@@ -111,12 +111,16 @@ void replace(std::string& source, const std::string& to_replace,
 	source.replace(source.find(to_replace), to_replace.length(), replace_with);
 }
 
-void FPGAFitnessCalculator::cria_arquivo_genetico() {
-	std::ifstream arquivo_modelo("genetico_modelo");
-	std::ofstream arquivo_resultado("genetico.v");
+std::string le_conteudo_arquivo(const std::string& nome_arquivo) {
+	std::ifstream arquivo_modelo(nome_arquivo);
 	std::stringstream buffer;
 	buffer << arquivo_modelo.rdbuf();
-	auto arquivo_modelo_str = buffer.str();
+	return buffer.str();
+}
+
+void FPGAFitnessCalculator::cria_arquivo_genetico() {
+	auto arquivo_modelo = le_conteudo_arquivo("genetico_modelo");
+	std::ofstream arquivo_resultado("genetico.v");
 
 	const int total_pinos = genetic_params.r * genetic_params.c
 			+ genetic_params.num_in;
@@ -124,31 +128,25 @@ void FPGAFitnessCalculator::cria_arquivo_genetico() {
 	const int tam_le = ceil(log2(genetic_params.num_funcs))
 			+ ceil(log2(total_pinos)) * genetic_params.le_num_in;
 
-	replace(arquivo_modelo_str, "#tam_le", to_string(tam_le - 1));
-	replace(arquivo_modelo_str, "#r_x_c",
+	replace(arquivo_modelo, "#tam_le", to_string(tam_le - 1));
+	replace(arquivo_modelo, "#r_x_c",
 			to_string(genetic_params.r * genetic_params.c - 1));
-	replace(arquivo_modelo_str, "#num_in",
-			to_string(genetic_params.num_in - 1));
-	replace(arquivo_modelo_str, "#num_out",
-			to_string(genetic_params.num_out - 1));
-	replace(arquivo_modelo_str, "#num_out",
-			to_string(genetic_params.num_out - 1));
-	replace(arquivo_modelo_str, "#r_x_c",
+	replace(arquivo_modelo, "#num_in", to_string(genetic_params.num_in - 1));
+	replace(arquivo_modelo, "#num_out", to_string(genetic_params.num_out - 1));
+	replace(arquivo_modelo, "#num_out", to_string(genetic_params.num_out - 1));
+	replace(arquivo_modelo, "#r_x_c",
 			to_string(genetic_params.r * genetic_params.c - 1));
-	replace(arquivo_modelo_str, "#bits_pinos", to_string(bits_pinos - 1));
-	replace(arquivo_modelo_str, "#num_pinos", to_string(total_pinos - 1));
-	replace(arquivo_modelo_str, "#all_inputs_for_out", gera_string_saida());
-	replace(arquivo_modelo_str, "#les", gera_les());
+	replace(arquivo_modelo, "#bits_pinos", to_string(bits_pinos - 1));
+	replace(arquivo_modelo, "#num_pinos", to_string(total_pinos - 1));
+	replace(arquivo_modelo, "#all_inputs_for_out", gera_string_saida());
+	replace(arquivo_modelo, "#les", gera_les());
 
-	arquivo_resultado << arquivo_modelo_str;
+	arquivo_resultado << arquivo_modelo;
 }
 
 void FPGAFitnessCalculator::cria_arquivo_logic_e() {
-	std::ifstream arquivo_modelo("logic_e_modelo");
+	auto arquivo_modelo = le_conteudo_arquivo("logic_e_modelo");
 	std::ofstream arquivo_resultado("logic_e.v");
-	std::stringstream buffer;
-	buffer << arquivo_modelo.rdbuf();
-	auto arquivo_modelo_str = buffer.str();
 
 	const int bits_func = ceil(log2(genetic_params.num_funcs));
 	const int bits_bits_func = log2(bits_func);
@@ -157,9 +155,9 @@ void FPGAFitnessCalculator::cria_arquivo_logic_e() {
 	const int bits_pinos = ceil(log2(total_pinos));
 	const int bits_inputs = bits_pinos * genetic_params.le_num_in;
 
-	replace(arquivo_modelo_str, "#bits_func", to_string(bits_func - 1));
-	replace(arquivo_modelo_str, "#bits_inputs", to_string(bits_inputs - 1));
-	replace(arquivo_modelo_str, "#total_pinos", to_string(total_pinos - 1));
+	replace(arquivo_modelo, "#bits_func", to_string(bits_func - 1));
+	replace(arquivo_modelo, "#bits_inputs", to_string(bits_inputs - 1));
+	replace(arquivo_modelo, "#total_pinos", to_string(total_pinos - 1));
 
 	std::string output;
 	for (int i = bits_bits_func; i > 0; i--) {
@@ -172,9 +170,18 @@ void FPGAFitnessCalculator::cria_arquivo_logic_e() {
 		}
 	}
 
-	replace(arquivo_modelo_str, "#all_inputs_le_out", output);
+	replace(arquivo_modelo, "#all_inputs_le_out", output);
 
-	arquivo_resultado << arquivo_modelo_str;
+	arquivo_resultado << arquivo_modelo;
+}
+
+void FPGAFitnessCalculator::cria_arquivo_data_receiver() {
+	auto arquivo_modelo = le_conteudo_arquivo("data_receiver_modelo");
+	std::ofstream arquivo_resultado("data_receiver.v");
+	const int tam_circuito = (genetic_params.r * genetic_params.c)
+			* (genetic_params.le_num_in + 1) + genetic_params.num_out;
+	replace(arquivo_modelo, "#tam_circuito", to_string(tam_circuito));
+	arquivo_resultado << arquivo_modelo;
 }
 
 std::string FPGAFitnessCalculator::gera_string_saida() {
@@ -213,7 +220,8 @@ std::string FPGAFitnessCalculator::gera_les() {
 			replace(current_le, "#n", to_string(current));
 			replace(current_le, "#bits_top", to_string(bits_top - 1));
 			replace(current_le, "#bits_next", to_string(bits_top - bits_func));
-			replace(current_le, "#bits_rest", to_string((bits_top - bits_func) - 1));
+			replace(current_le, "#bits_rest",
+					to_string((bits_top - bits_func) - 1));
 			resultado += current_le;
 		}
 	}
