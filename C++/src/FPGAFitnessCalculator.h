@@ -38,6 +38,7 @@ public:
 		cria_arquivo_genetico();
 		cria_arquivo_logic_e();
 		cria_arquivo_data_receiver();
+		cria_arquivo_main();
 	}
 
 	void fitness(std::vector<Cromossomo>& populacao, int num_inputs, int le_num_inputs, int num_outputs);
@@ -51,8 +52,10 @@ private:
 	void cria_arquivo_genetico();
 	void cria_arquivo_logic_e();
 	void cria_arquivo_data_receiver();
+	void cria_arquivo_main();
 	std::string gera_string_saida();
 	std::string gera_les();
+	std::string gera_le_input_assignments();
 
 	enum Message {
 		SET_VALUE = 0,

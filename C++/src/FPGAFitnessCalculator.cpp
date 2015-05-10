@@ -228,3 +228,65 @@ std::string FPGAFitnessCalculator::gera_les() {
 
 	return resultado;
 }
+
+void FPGAFitnessCalculator::cria_arquivo_main() {
+	auto arquivo_modelo = le_conteudo_arquivo("main_modelo");
+	std::ofstream arquivo_resultado("main.v");
+
+	const int bits_func = ceil(log2(genetic_params.num_funcs));
+	const int num_les = genetic_params.r * genetic_params.c;
+	const int bits_pinos = ceil(log2(num_les + genetic_params.num_in));
+	const int bits_le = bits_func + bits_pinos * genetic_params.le_num_in;
+	const int num_campos_le = genetic_params.le_num_in + 1;
+	const int bits_bottom_le_func = bits_le - bits_func;
+	const int num_outs = genetic_params.num_out;
+	const int num_total_componentes_les = num_les * num_campos_le;
+
+	replace(arquivo_modelo, "#bits_le_1", to_string(bits_le - 1));
+	replace(arquivo_modelo, "#num_les_1", to_string(num_les - 1));
+	replace(arquivo_modelo, "#bits_pinos_1", to_string(bits_pinos - 1));
+	replace(arquivo_modelo, "#num_outs_1", to_string(num_outs - 1));
+	replace(arquivo_modelo, "#num_les", to_string(num_les));
+	replace(arquivo_modelo, "#num_campos_le", to_string(num_campos_le));
+	replace(arquivo_modelo, "#bits_le_1", to_string(bits_le - 1));
+	replace(arquivo_modelo, "#bits_bottom_le_func",
+			to_string(bits_bottom_le_func));
+	replace(arquivo_modelo, "#num_campos_le", to_string(num_campos_le));
+	replace(arquivo_modelo, "#bits_func_1", to_string(bits_func - 1));
+	replace(arquivo_modelo, "#circuit_le_input_assignments",
+			gera_le_input_assignments());
+	replace(arquivo_modelo, "#num_outs", to_string(num_outs));
+	replace(arquivo_modelo, "#num_total_componentes_les",
+			to_string(num_total_componentes_les));
+	replace(arquivo_modelo, "#bits_pinos_1", to_string(bits_pinos - 1));
+
+	arquivo_resultado << arquivo_modelo;
+}
+
+std::string FPGAFitnessCalculator::gera_le_input_assignments() {
+	std::string resultado;
+	const std::string modelo =
+			std::string("\t\t\tcurrent_circuit_les[i][#current_bits_max:#current_bits_min] <= ") +
+			"received_data[(i * #num_campos_le) + #current_offset][#bits_pinos_1:0];\n";
+
+	const int num_les = genetic_params.r * genetic_params.c;
+	const int bits_pinos = ceil(log2(num_les + genetic_params.num_in));
+	const int num_campos_le = genetic_params.le_num_in + 1;
+
+	for (int i = genetic_params.le_num_in; i > 0; i--) {
+		std::string current_modelo = modelo;
+		const int current_offset = (2 + genetic_params.le_num_in) - i;
+		const int current_bits_max = (i * bits_pinos) - 1;
+		const int current_bits_min = current_bits_max - (bits_pinos - 1);
+
+		replace(current_modelo, "#current_bits_max", to_string(current_bits_max));
+		replace(current_modelo, "#current_bits_min", to_string(current_bits_min));
+		replace(current_modelo, "#num_campos_le", to_string(num_campos_le));
+		replace(current_modelo, "#current_offset", to_string(current_offset));
+		replace(current_modelo, "#bits_pinos_1", to_string(bits_pinos - 1));
+
+		resultado += current_modelo;
+	}
+
+	return resultado;
+}
