@@ -120,7 +120,7 @@ std::string le_conteudo_arquivo(const std::string& nome_arquivo) {
 
 void FPGAFitnessCalculator::cria_arquivo_genetico() {
 	auto arquivo_modelo = le_conteudo_arquivo("genetico_modelo");
-	std::ofstream arquivo_resultado("genetico.v");
+	std::ofstream arquivo_resultado("Verilog/circ_gen/genetico.v");
 
 	const int total_pinos = genetic_params.r * genetic_params.c
 			+ genetic_params.num_in;
@@ -146,7 +146,7 @@ void FPGAFitnessCalculator::cria_arquivo_genetico() {
 
 void FPGAFitnessCalculator::cria_arquivo_logic_e() {
 	auto arquivo_modelo = le_conteudo_arquivo("logic_e_modelo");
-	std::ofstream arquivo_resultado("logic_e.v");
+	std::ofstream arquivo_resultado("Verilog/circ_gen/logic_e.v");
 
 	const int bits_func = ceil(log2(genetic_params.num_funcs));
 	const int bits_bits_func = log2(bits_func);
@@ -177,7 +177,7 @@ void FPGAFitnessCalculator::cria_arquivo_logic_e() {
 
 void FPGAFitnessCalculator::cria_arquivo_data_receiver() {
 	auto arquivo_modelo = le_conteudo_arquivo("data_receiver_modelo");
-	std::ofstream arquivo_resultado("data_receiver.v");
+	std::ofstream arquivo_resultado("Verilog/circ_gen/data_receiver.v");
 	const int tam_circuito = (genetic_params.r * genetic_params.c)
 			* (genetic_params.le_num_in + 1) + genetic_params.num_out;
 	replace(arquivo_modelo, "#tam_circuito", to_string(tam_circuito));
@@ -231,7 +231,7 @@ std::string FPGAFitnessCalculator::gera_les() {
 
 void FPGAFitnessCalculator::cria_arquivo_main() {
 	auto arquivo_modelo = le_conteudo_arquivo("main_modelo");
-	std::ofstream arquivo_resultado("main.v");
+	std::ofstream arquivo_resultado("Verilog/circ_gen/main.v");
 
 	const int bits_func = ceil(log2(genetic_params.num_funcs));
 	const int num_les = genetic_params.r * genetic_params.c;
