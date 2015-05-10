@@ -9,10 +9,6 @@
 
 void FPGAFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 		int num_inputs, int le_num_inputs, int num_outputs) {
-	compilar(populacao, le_num_inputs);
-
-	carregar();
-
 	int bauds = 115200;
 	int comport_num = 6;
 	char mode[10] = "8N1";
@@ -22,8 +18,7 @@ void FPGAFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 	}
 
 	for (unsigned int i = 0; i < populacao.size(); i++) {
-		RS232_SendByte(comport_num, (unsigned char) SET_CIRCUIT);
-		RS232_SendByte(comport_num, (unsigned char) i);
+		enviar_individuo(comport_num, populacao[i]);
 		populacao[i].set_fitness(
 				fitness_calculator(receive_data(num_inputs, comport_num)));
 	}
@@ -31,27 +26,37 @@ void FPGAFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 	RS232_CloseComport(comport_num);
 }
 
-void FPGAFitnessCalculator::compilar(const std::vector<Cromossomo>& populacao,
-		int le_num_inputs) {
-	auto project_path = std::string("Verilog/circ_gen/");
-	gerar_arquivo_logic_e(project_path + "logic_e.v", le_num_inputs);
-	for (unsigned int i = 0; i < populacao.size(); i++) {
-		populacao[i].criar_arquivo_verilog(
-				project_path + "genetico" + to_string(i) + ".v",
-				"genetico" + to_string(i));
+void FPGAFitnessCalculator::enviar_individuo(int comport_num,
+		const Cromossomo& individuo) {
+	RS232_SendByte(comport_num, (unsigned char) SET_CIRCUIT);
+	for (unsigned int j = 0; j < genetic_params.c; j++) {
+		for (unsigned int i = 0; i < genetic_params.r; i++) {
+			RS232_SendByte(comport_num,
+					(unsigned char) individuo.elementos_logicos[i][j].function);
+			for (unsigned int k = 0; k < genetic_params.le_num_in; k++) {
+				RS232_SendByte(comport_num,
+						(unsigned char) individuo.elementos_logicos[i][j].inputs[k]);
+			}
+		}
 	}
-	auto system_call = std::string("quartus_map ") + project_path
-			+ "circ_gen > NUL";
+	for (unsigned int i = 0; i < genetic_params.num_out; i++) {
+		RS232_SendByte(comport_num, (unsigned char) individuo.saidas[i].input);
+	}
+}
+
+void FPGAFitnessCalculator::compilar() {
+	auto system_call = std::string(
+			"quartus_map Verilog/circ_gen/circ_gen > NUL");
 	if (system(system_call.c_str()) != 0) {
 		std::cerr << "Erro na chamada quartus_map.\n";
 		exit(1);
 	}
-	system_call = std::string("quartus_fit ") + project_path + "circ_gen > NUL";
+	system_call = std::string("quartus_fit Verilog/circ_gen/circ_gen > NUL");
 	if (system(system_call.c_str()) != 0) {
 		std::cerr << "Erro na chamada quartus_fit.\n";
 		exit(1);
 	}
-	system_call = std::string("quartus_asm ") + project_path + "circ_gen > NUL";
+	system_call = std::string("quartus_asm Verilog/circ_gen/circ_gen > NUL");
 	if (system(system_call.c_str()) != 0) {
 		std::cerr << "Erro na chamada quartus_asm.\n";
 		exit(1);
@@ -266,8 +271,9 @@ void FPGAFitnessCalculator::cria_arquivo_main() {
 std::string FPGAFitnessCalculator::gera_le_input_assignments() {
 	std::string resultado;
 	const std::string modelo =
-			std::string("\t\t\tcurrent_circuit_les[i][#current_bits_max:#current_bits_min] <= ") +
-			"received_data[(i * #num_campos_le) + #current_offset][#bits_pinos_1:0];\n";
+			std::string(
+					"\t\t\tcurrent_circuit_les[i][#current_bits_max:#current_bits_min] <= ")
+					+ "received_data[(i * #num_campos_le) + #current_offset][#bits_pinos_1:0];\n";
 
 	const int num_les = genetic_params.r * genetic_params.c;
 	const int bits_pinos = ceil(log2(num_les + genetic_params.num_in));
@@ -279,8 +285,10 @@ std::string FPGAFitnessCalculator::gera_le_input_assignments() {
 		const int current_bits_max = (i * bits_pinos) - 1;
 		const int current_bits_min = current_bits_max - (bits_pinos - 1);
 
-		replace(current_modelo, "#current_bits_max", to_string(current_bits_max));
-		replace(current_modelo, "#current_bits_min", to_string(current_bits_min));
+		replace(current_modelo, "#current_bits_max",
+				to_string(current_bits_max));
+		replace(current_modelo, "#current_bits_min",
+				to_string(current_bits_min));
 		replace(current_modelo, "#num_campos_le", to_string(num_campos_le));
 		replace(current_modelo, "#current_offset", to_string(current_offset));
 		replace(current_modelo, "#bits_pinos_1", to_string(bits_pinos - 1));

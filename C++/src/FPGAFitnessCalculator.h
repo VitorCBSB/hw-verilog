@@ -39,6 +39,8 @@ public:
 		cria_arquivo_logic_e();
 		cria_arquivo_data_receiver();
 		cria_arquivo_main();
+		compilar();
+		carregar();
 	}
 
 	void fitness(std::vector<Cromossomo>& populacao, int num_inputs, int le_num_inputs, int num_outputs);
@@ -47,7 +49,7 @@ public:
 	}
 private:
 	std::vector<std::vector<std::bitset<8>>> receive_data(int num_inputs, int comport_num);
-	void compilar(const std::vector<Cromossomo>& populacao, int le_num_inputs);
+	void compilar();
 	void carregar();
 	void cria_arquivo_genetico();
 	void cria_arquivo_logic_e();
@@ -56,6 +58,7 @@ private:
 	std::string gera_string_saida();
 	std::string gera_les();
 	std::string gera_le_input_assignments();
+	void enviar_individuo(int comport_num, const Cromossomo& individuo);
 
 	enum Message {
 		SET_VALUE = 0,
