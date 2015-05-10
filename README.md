@@ -31,3 +31,10 @@ Utilizando um programa feito puramente em C, sem auxílio de bibliotecas externa
 ###Problemas encontrados
 
 O processador MIPS foi feito para ser utilizado pela placa DE2-70 e não pela DE2-115. A memória SRAM usada na 70 é diferente da 115. O projeto teria que ser consideravelmente modificado.
+
+##Proposta: gerar arquivos Verilog dinamicamente (2)
+
+Voltando à ideia de gerar arquivos Verilog dinamicamente, mas com a diferença de que o computador não modifica o circuito, compila e envia os dados. O circuito é compilado uma vez, com a descrição dos indivíduos sendo enviadas pela interface serial, evitando-se a espera de compilações.
+
+###Problemas encontrados
+
