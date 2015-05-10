@@ -8,14 +8,16 @@ module main_fsm(iClock, iReset, iDoneReceiving, iReceivedData, iSamplingDone, iS
 		START_SAMPLING = 3'b011,
 		START_SENDING = 3'b100,
 		FETCH_VALUE = 3'b101,
-		SET_CURRENT_CIRCUIT = 3'b110;
+		SET_CURRENT_CIRCUIT = 3'b110,
+		INPUT_MESSAGE = 2'b00,
+		CIRCUIT_MESSAGE = 2'b01;
 
 	input iClock;
 	input iReset;
 	input iDoneReceiving;
 	input iSamplingDone;
 	input iSendingDone;
-	input [15:0] iReceivedData;
+	input [7:0] iReceivedData[199:0];
 	
 	output oMemWrite;
 	output oMemAddr;
@@ -32,12 +34,12 @@ module main_fsm(iClock, iReset, iDoneReceiving, iReceivedData, iSamplingDone, iS
 	assign next_state = next_state_fun(state, iReceivedData, iDoneReceiving, 
 		iSamplingDone, iSendingDone);
 	
-	function [2:0] next_state_fun(input [2:0] current_state, input [15:0] received_data, 
+	function [2:0] next_state_fun(input [2:0] current_state, input [7:0] received_data[199:0], 
 		input iDoneReceiving, input iSamplingDone, input iSendingDone);
 		case(current_state)
 		IDLE:
 			if (iDoneReceiving) begin
-				if (iReceivedData[15:8] == 8'b0) begin
+				if (received_data[0] == INPUT_MESSAGE) begin
 					next_state_fun = FETCH_VALUE;
 				end else begin
 					next_state_fun = SET_CURRENT_CIRCUIT;

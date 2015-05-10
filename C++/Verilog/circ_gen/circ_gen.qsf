@@ -568,35 +568,13 @@ set_location_assignment PIN_V22 -to HSMC_TX_D_N[16]
 set_location_assignment PIN_T22 -to HSMC_RX_D_N[16]
 set_location_assignment PIN_V24 -to HSMC_CLKOUT_N2
 set_location_assignment PIN_G24 -to HSMC_CLKOUT_N1
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name VERILOG_INPUT_VERSION SYSTEMVERILOG_2005
 set_global_assignment -name VERILOG_SHOW_LMF_MAPPING_MESSAGES OFF
-set_global_assignment -name VERILOG_FILE genetico19.v
-set_global_assignment -name VERILOG_FILE genetico18.v
-set_global_assignment -name VERILOG_FILE genetico17.v
-set_global_assignment -name VERILOG_FILE genetico16.v
-set_global_assignment -name VERILOG_FILE genetico15.v
-set_global_assignment -name VERILOG_FILE genetico14.v
-set_global_assignment -name VERILOG_FILE genetico13.v
-set_global_assignment -name VERILOG_FILE genetico12.v
-set_global_assignment -name VERILOG_FILE genetico11.v
-set_global_assignment -name VERILOG_FILE genetico10.v
-set_global_assignment -name VERILOG_FILE genetico9.v
-set_global_assignment -name VERILOG_FILE genetico8.v
-set_global_assignment -name VERILOG_FILE genetico7.v
-set_global_assignment -name VERILOG_FILE genetico6.v
-set_global_assignment -name VERILOG_FILE genetico5.v
-set_global_assignment -name VERILOG_FILE genetico4.v
-set_global_assignment -name VERILOG_FILE genetico3.v
-set_global_assignment -name VERILOG_FILE genetico2.v
-set_global_assignment -name VERILOG_FILE genetico1.v
-set_global_assignment -name VERILOG_FILE genetico0.v
+set_global_assignment -name VERILOG_FILE genetico.v
 set_global_assignment -name VERILOG_FILE uart_transceiver.v
 set_global_assignment -name VERILOG_FILE uart.v
 set_global_assignment -name VERILOG_FILE sender.v
@@ -607,4 +585,7 @@ set_global_assignment -name VERILOG_FILE main_fsm.v
 set_global_assignment -name VERILOG_FILE main.v
 set_global_assignment -name VERILOG_FILE logic_e.v
 set_global_assignment -name VERILOG_FILE data_receiver.v
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
