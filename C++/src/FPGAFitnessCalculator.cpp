@@ -252,7 +252,6 @@ void FPGAFitnessCalculator::cria_arquivo_main() {
 	replace(arquivo_modelo, "#bits_pinos_1", to_string(bits_pinos - 1));
 	replace(arquivo_modelo, "#num_outs_1", to_string(num_outs - 1));
 	replace(arquivo_modelo, "#num_les", to_string(num_les));
-	replace(arquivo_modelo, "#num_campos_le", to_string(num_campos_le));
 	replace(arquivo_modelo, "#bits_le_1", to_string(bits_le - 1));
 	replace(arquivo_modelo, "#bits_bottom_le_func",
 			to_string(bits_bottom_le_func));

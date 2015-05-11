@@ -33,7 +33,7 @@ always @(posedge CLOCK_50) begin
 	if (insert_value)
 		value_into_genetico <= current_value;
 	if (set_current_circuit) begin
-		for (i = 0; i < #num_les; i = i + #num_campos_le) begin
+		for (i = 0; i < #num_les; i = i + 1) begin
 			current_circuit_les[i][#bits_le_1:#bits_bottom_le_func] <= received_data[(i * #num_campos_le) + 1][#bits_func_1:0];
 #circuit_le_input_assignments
 		end
