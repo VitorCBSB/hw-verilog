@@ -26,18 +26,18 @@
 #define Sleep(x) usleep((x)*1000)
 #endif
 
-#define NUM_SAMPLES 65535
-
 class FPGAFitnessCalculator: public FitnessCalculator {
 private:
 	GeneticParams genetic_params;
+	unsigned int num_samples;
 public:
-	FPGAFitnessCalculator(GeneticParams genetic_params,
+	FPGAFitnessCalculator(GeneticParams genetic_params, unsigned int num_samples,
 			std::function<double(const std::vector<std::vector<std::bitset<8>>>&)> fitness_calculator) :
-			FitnessCalculator(fitness_calculator), genetic_params(genetic_params) {
+			FitnessCalculator(fitness_calculator), genetic_params(genetic_params), num_samples(num_samples) {
 		cria_arquivo_genetico();
 		cria_arquivo_logic_e();
 		cria_arquivo_data_receiver();
+		cria_arquivo_sender();
 		cria_arquivo_main();
 		compilar();
 		carregar();
@@ -54,6 +54,7 @@ private:
 	void cria_arquivo_genetico();
 	void cria_arquivo_logic_e();
 	void cria_arquivo_data_receiver();
+	void cria_arquivo_sender();
 	void cria_arquivo_main();
 	std::string gera_string_saida();
 	std::string gera_les();

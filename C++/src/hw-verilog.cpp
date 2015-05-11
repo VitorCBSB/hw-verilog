@@ -21,17 +21,18 @@
 #include "GeneticParams.h"
 
 const double MELHOR_FITNESS = 20000000.0;
+const unsigned int NUM_SAMPLES = 100;
 
 double fitness(const std::vector<std::vector<std::bitset<8>>>& individual_output) {
 	int soma_distancias = 0;
-	soma_distancias += individual_output[0][30000].to_ulong();
-	soma_distancias += abs((int) individual_output[1][30000].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[2][30000].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[3][30000].to_ulong() - 2);
-	soma_distancias += abs((int) individual_output[4][30000].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[5][30000].to_ulong() - 2);
-	soma_distancias += abs((int) individual_output[6][30000].to_ulong() - 2);
-	soma_distancias += abs((int) individual_output[7][30000].to_ulong() - 3);
+	soma_distancias += individual_output[0][50].to_ulong();
+	soma_distancias += abs((int) individual_output[1][50].to_ulong() - 1);
+	soma_distancias += abs((int) individual_output[2][50].to_ulong() - 1);
+	soma_distancias += abs((int) individual_output[3][50].to_ulong() - 2);
+	soma_distancias += abs((int) individual_output[4][50].to_ulong() - 1);
+	soma_distancias += abs((int) individual_output[5][50].to_ulong() - 2);
+	soma_distancias += abs((int) individual_output[6][50].to_ulong() - 2);
+	soma_distancias += abs((int) individual_output[7][50].to_ulong() - 3);
 	if (soma_distancias == 0) {
 		return MELHOR_FITNESS;
 	}
@@ -41,11 +42,11 @@ double fitness(const std::vector<std::vector<std::bitset<8>>>& individual_output
 int main(int argc, char* argv[]) {
 	std::mt19937 mt;
 	mt.seed(time(nullptr));
-	GeneticParams genetic_params(3, 4, 16, 2, 5, 5, true);
+	GeneticParams genetic_params(3, 2, 16, 2, 3, 3, true);
 
 	Populacao populacao(
 			new OnePlusLambdaEvoStrategy(mt, 4, genetic_params,
-					new FPGAFitnessCalculator(genetic_params, fitness)));
+					new FPGAFitnessCalculator(genetic_params, NUM_SAMPLES, fitness)));
 
 	int geracao = 0;
 	populacao.calcular_fitness();

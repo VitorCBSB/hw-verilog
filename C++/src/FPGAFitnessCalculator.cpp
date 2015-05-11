@@ -79,19 +79,19 @@ std::vector<std::vector<std::bitset<8>>> FPGAFitnessCalculator::receive_data(
 	std::vector<std::vector<std::bitset<8>>> results;
 
 	for (int i = 0; i < (int) pow(2, num_inputs); i++) {
-		int total = 0;
+		unsigned int total = 0;
 		RS232_SendByte(comport_num, (unsigned char) SET_VALUE);
 		RS232_SendByte(comport_num, (unsigned char) i);
 		results.emplace_back(std::vector<std::bitset<8>>());
 
 		Timer timeout_timer;
 		timeout_timer.start(1000);
-		while (total < NUM_SAMPLES) {
+		while (total < num_samples) {
 			timeout_timer.update();
 			if (timeout_timer.isDone()) {
 				std::cout << "TIMEOUT Detectado com " << total << " amostras coletadas." << std::endl;
 				std::cout << "Replicando a ultima amostra." << std::endl;
-				for (int j = total; j < NUM_SAMPLES; j++) {
+				for (unsigned int j = total; j < num_samples; j++) {
 					results[i].emplace_back(results[i][total - 1]);
 				}
 				break;
@@ -296,4 +296,13 @@ std::string FPGAFitnessCalculator::gera_le_input_assignments() {
 	}
 
 	return resultado;
+}
+
+void FPGAFitnessCalculator::cria_arquivo_sender() {
+	auto arquivo_modelo = le_conteudo_arquivo("sender_modelo");
+	std::ofstream arquivo_resultado("Verilog/circ_gen/sender.v");
+
+	replace(arquivo_modelo, "#num_samples", to_string(num_samples));
+
+	arquivo_resultado << arquivo_modelo;
 }
