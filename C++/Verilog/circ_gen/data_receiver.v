@@ -83,7 +83,7 @@ always@ (posedge iClock) begin
 			if (oResultData[0] == INPUT_MESSAGE) begin
 				incoming_message_size = 8'b1 + 8'b1;
 			end else begin
-				incoming_message_size = 8'd79 + 8'b1;
+				incoming_message_size = 8'd29 + 8'b1;
 			end
 		end
 		FETCH_VALUE_INC_COUNTER: begin

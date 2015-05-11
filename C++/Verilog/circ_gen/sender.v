@@ -2,7 +2,7 @@ module sender(iClock, iReset, iTxDone, iStartSignal, oAddress, oFinished, oTxSen
 
 	parameter IDLE = 3'b000,
 		SENDING = 3'b001,
-		SEND_PACKET = 3'b010, // Só serve para fazer o pulso de envio.
+		SEND_PACKET = 3'b010, // So serve para fazer o pulso de envio.
 		SENDING_PACKET = 3'b011,
 		INCREMENTING_ADDR = 3'b100,
 		FINISHED_SENDING = 3'b101;
@@ -30,7 +30,7 @@ module sender(iClock, iReset, iTxDone, iStartSignal, oAddress, oFinished, oTxSen
 				fsm_function = IDLE;
 			end
 		SENDING:
-			if (current_address < 16'hFFFF) begin
+			if (current_address < 16'd100) begin
 				fsm_function = SEND_PACKET;
 			end else begin
 				fsm_function = FINISHED_SENDING; // Acabou de enviar os dados.
