@@ -22,6 +22,12 @@
 
 const double MELHOR_FITNESS = 20000000.0;
 const unsigned int NUM_SAMPLES = 100;
+const unsigned int NUM_IN = 3;
+const unsigned int NUM_OUT = 2;
+const unsigned int NUM_ROWS = 3;
+const unsigned int NUM_COLS = 3;
+const unsigned int LE_NUM_IN = 2;
+const bool FEED_FORWARD = true;
 
 double fitness(const std::vector<std::vector<std::bitset<8>>>& individual_output) {
 	int soma_distancias = 0;
@@ -45,11 +51,12 @@ int main(int argc, char* argv[]) {
 			true, // OR
 			true, // XOR
 			true, // NOT
-			true, // NAND
-			true, // XNOR
-			true, // NOR
+			false, // NAND
+			false, // XNOR
+			false, // NOR
 			};
-	GeneticParams genetic_params(3, 2, funcs, 2, 3, 3, true);
+	GeneticParams genetic_params(NUM_IN, NUM_OUT, funcs, LE_NUM_IN, NUM_ROWS,
+			NUM_COLS, FEED_FORWARD);
 
 	std::mt19937 mt;
 	mt.seed(time(nullptr));
