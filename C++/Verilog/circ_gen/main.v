@@ -11,7 +11,7 @@ module main(CLOCK_50, KEY, LEDR, SW, UART_RXD, UART_TXD);
 	
 	// Regs
 	reg [7:0] current_value, value_into_genetico;
-	reg [11:0] current_circuit_les[8:0];
+	reg [10:0] current_circuit_les[8:0];
 	reg [3:0] current_circuit_outs[1:0];
 	
 	// Wires
@@ -34,7 +34,7 @@ always @(posedge CLOCK_50) begin
 		value_into_genetico <= current_value;
 	if (set_current_circuit) begin
 		for (i = 0; i < 9; i = i + 1) begin
-			current_circuit_les[i][11:8] <= received_data[(i * 3) + 1][3:0];
+			current_circuit_les[i][10:8] <= received_data[(i * 3) + 1][2:0];
 			current_circuit_les[i][7:4] <= received_data[(i * 3) + 2][3:0];
 			current_circuit_les[i][3:0] <= received_data[(i * 3) + 3][3:0];
 

@@ -175,7 +175,7 @@ std::string FPGAFitnessCalculator::gera_le_funcs() {
 			"xnor", "nor" };
 	std::vector<std::string> filtered_funcs;
 
-	const std::string modelo = "#func func#index(all_funcs[#index], #inputs);\n";
+	const std::string modelo = "\t#func func#index(all_funcs[#index], #inputs);\n";
 	const int total_pinos = genetic_params.r * genetic_params.c
 			+ genetic_params.num_in;
 	const int bits_pinos = ceil(log2(total_pinos));
@@ -193,7 +193,7 @@ std::string FPGAFitnessCalculator::gera_le_funcs() {
 		replace(current_modelo, "#index", to_string(i));
 
 		std::string inputs;
-		for (int j = genetic_params.num_in; j > 0; j--) {
+		for (int j = genetic_params.le_num_in; j > 0; j--) {
 			const int current_max = (j * bits_pinos) - 1;
 			const int current_min = current_max - (bits_pinos - 1);
 			inputs += std::string("all_inputs[conf_ins[") + to_string(current_max)

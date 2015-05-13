@@ -7,7 +7,7 @@ module logic_e(conf_func, conf_ins, all_inputs, out);
 	
 	wire all_funcs[#num_funcs_1:0];
 	
-	#funcs
+#funcs
 	
 	assign out = all_funcs[conf_func];
 
