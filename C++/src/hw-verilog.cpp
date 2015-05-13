@@ -40,13 +40,24 @@ double fitness(const std::vector<std::vector<std::bitset<8>>>& individual_output
 }
 
 int main(int argc, char* argv[]) {
+	std::vector<bool> funcs = {
+			true, // AND
+			true, // OR
+			true, // XOR
+			true, // NOT
+			true, // NAND
+			true, // XNOR
+			true, // NOR
+			};
+	GeneticParams genetic_params(3, 2, funcs, 2, 3, 3, true);
+
 	std::mt19937 mt;
 	mt.seed(time(nullptr));
-	GeneticParams genetic_params(3, 2, 16, 2, 3, 3, true);
 
 	Populacao populacao(
 			new OnePlusLambdaEvoStrategy(mt, 4, genetic_params,
-					new FPGAFitnessCalculator(genetic_params, NUM_SAMPLES, fitness)));
+					new FPGAFitnessCalculator(genetic_params, NUM_SAMPLES,
+							fitness)));
 
 	int geracao = 0;
 	populacao.calcular_fitness();
@@ -54,7 +65,8 @@ int main(int argc, char* argv[]) {
 			&& populacao.melhor_individuo().fitness() != MELHOR_FITNESS) {
 		std::cout << geracao << ": " << populacao.melhor_individuo().fitness()
 				<< ", " << populacao.fitness_medio() << std::endl;
-		populacao.melhor_individuo().criar_arquivo_verilog("melhor.v", "genetico");
+		populacao.melhor_individuo().criar_arquivo_verilog("melhor.v",
+				"genetico");
 		populacao.proxima_geracao();
 		populacao.calcular_fitness();
 		geracao++;

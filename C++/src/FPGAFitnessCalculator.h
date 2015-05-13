@@ -31,7 +31,8 @@ private:
 	GeneticParams genetic_params;
 	unsigned int num_samples;
 public:
-	FPGAFitnessCalculator(GeneticParams genetic_params, unsigned int num_samples,
+	FPGAFitnessCalculator(GeneticParams genetic_params,
+			unsigned int num_samples,
 			std::function<double(const std::vector<std::vector<std::bitset<8>>>&)> fitness_calculator) :
 			FitnessCalculator(fitness_calculator), genetic_params(genetic_params), num_samples(num_samples) {
 		cria_arquivo_genetico();
@@ -59,6 +60,7 @@ private:
 	std::string gera_string_saida();
 	std::string gera_les();
 	std::string gera_le_input_assignments();
+	std::string gera_le_funcs();
 	void enviar_individuo(int comport_num, const Cromossomo& individuo);
 
 	enum Message {

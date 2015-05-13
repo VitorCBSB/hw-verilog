@@ -130,7 +130,7 @@ void FPGAFitnessCalculator::cria_arquivo_genetico() {
 	const int total_pinos = genetic_params.r * genetic_params.c
 			+ genetic_params.num_in;
 	const int bits_pinos = ceil(log2(total_pinos));
-	const int tam_le = ceil(log2(genetic_params.num_funcs))
+	const int tam_le = ceil(log2(genetic_params.num_funcs()))
 			+ ceil(log2(total_pinos)) * genetic_params.le_num_in;
 
 	replace(arquivo_modelo, "#tam_le", to_string(tam_le - 1));
@@ -153,31 +153,63 @@ void FPGAFitnessCalculator::cria_arquivo_logic_e() {
 	auto arquivo_modelo = le_conteudo_arquivo("logic_e_modelo");
 	std::ofstream arquivo_resultado("Verilog/circ_gen/logic_e.v");
 
-	const int bits_func = ceil(log2(genetic_params.num_funcs));
-	const int bits_bits_func = log2(bits_func);
+	const int bits_func = ceil(log2(genetic_params.num_funcs()));
 	const int total_pinos = genetic_params.r * genetic_params.c
 			+ genetic_params.num_in;
 	const int bits_pinos = ceil(log2(total_pinos));
 	const int bits_inputs = bits_pinos * genetic_params.le_num_in;
+	const int num_funcs = genetic_params.num_funcs();
 
 	replace(arquivo_modelo, "#bits_func", to_string(bits_func - 1));
 	replace(arquivo_modelo, "#bits_inputs", to_string(bits_inputs - 1));
 	replace(arquivo_modelo, "#total_pinos", to_string(total_pinos - 1));
+	replace(arquivo_modelo, "#num_funcs_1", to_string(num_funcs - 1));
+	replace(arquivo_modelo, "#funcs", gera_le_funcs());
 
-	std::string output;
-	for (int i = bits_bits_func; i > 0; i--) {
-		const int current_max = (i * bits_pinos) - 1;
-		const int current_min = current_max - (bits_pinos - 1);
-		output += std::string("all_inputs[conf_ins[") + to_string(current_max)
-				+ ":" + to_string(current_min) + "]]";
-		if (i != 1) {
-			output += ", ";
+	arquivo_resultado << arquivo_modelo;
+}
+
+std::string FPGAFitnessCalculator::gera_le_funcs() {
+	std::string result;
+	std::vector<std::string> funcs = { "and", "or", "xor", "not", "nand",
+			"xnor", "nor" };
+	std::vector<std::string> filtered_funcs;
+
+	const std::string modelo = "#func func#index(all_funcs[#index], #inputs);\n";
+	const int total_pinos = genetic_params.r * genetic_params.c
+			+ genetic_params.num_in;
+	const int bits_pinos = ceil(log2(total_pinos));
+
+	for (unsigned int i = 0; i < funcs.size(); i++) {
+		if (genetic_params.funcs[i]) {
+			filtered_funcs.push_back(funcs[i]);
 		}
 	}
 
-	replace(arquivo_modelo, "#all_inputs_le_out", output);
+	for (unsigned int i = 0; i < filtered_funcs.size(); i++) {
+		auto current_modelo = modelo;
+		replace(current_modelo, "#func", filtered_funcs[i]);
+		replace(current_modelo, "#index", to_string(i));
+		replace(current_modelo, "#index", to_string(i));
 
-	arquivo_resultado << arquivo_modelo;
+		std::string inputs;
+		for (int j = genetic_params.num_in; j > 0; j--) {
+			const int current_max = (j * bits_pinos) - 1;
+			const int current_min = current_max - (bits_pinos - 1);
+			inputs += std::string("all_inputs[conf_ins[") + to_string(current_max)
+								+ std::string(":") + to_string(current_min) + "]]";
+			if (filtered_funcs[i] == "not") {
+				break;
+			}
+			if (j != 1) {
+				inputs += ", ";
+			}
+		}
+		replace(current_modelo, "#inputs", inputs);
+		result += current_modelo;
+	}
+
+	return result;
 }
 
 void FPGAFitnessCalculator::cria_arquivo_data_receiver() {
@@ -211,7 +243,7 @@ std::string FPGAFitnessCalculator::gera_les() {
 	const int total_pinos = genetic_params.r * genetic_params.c
 			+ genetic_params.num_in;
 	const int bits_pinos = ceil(log2(total_pinos));
-	const int bits_func = ceil(log2(genetic_params.num_funcs));
+	const int bits_func = ceil(log2(genetic_params.num_funcs()));
 	const int bits_top = bits_func + genetic_params.le_num_in * bits_pinos;
 
 	for (unsigned int j = 0; j < genetic_params.c; j++) {
@@ -238,7 +270,7 @@ void FPGAFitnessCalculator::cria_arquivo_main() {
 	auto arquivo_modelo = le_conteudo_arquivo("main_modelo");
 	std::ofstream arquivo_resultado("Verilog/circ_gen/main.v");
 
-	const int bits_func = ceil(log2(genetic_params.num_funcs));
+	const int bits_func = ceil(log2(genetic_params.num_funcs()));
 	const int num_les = genetic_params.r * genetic_params.c;
 	const int bits_pinos = ceil(log2(num_les + genetic_params.num_in));
 	const int bits_le = bits_func + bits_pinos * genetic_params.le_num_in;
