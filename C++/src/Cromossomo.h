@@ -179,8 +179,8 @@ public:
 		auto linha = ponto_a_mutar / genetic_params.c;
 		auto coluna = ponto_a_mutar % genetic_params.c;
 		if (componente_a_mutar == 0) {
-			auto bit_a_mutar = random_func() % SAIDAS_LUT;
-			elementos_logicos[linha][coluna].function ^= 1 << bit_a_mutar;
+			elementos_logicos[linha][coluna].function = random_func()
+					% genetic_params.num_funcs();
 		} else {
 			if (genetic_params.feed_forward) {
 				elementos_logicos[linha][coluna].inputs[componente_a_mutar - 1] =
@@ -210,7 +210,7 @@ public:
 private:
 	FunctionCell aleatorio(int coluna) {
 		std::vector<unsigned int> inputs;
-		unsigned int function = random_func() % ((int) pow(2, SAIDAS_LUT));
+		unsigned int function = random_func() % (genetic_params.num_funcs());
 		for (unsigned int i = 0; i < genetic_params.le_num_in; i++) {
 			if (genetic_params.feed_forward) {
 				inputs.push_back(
