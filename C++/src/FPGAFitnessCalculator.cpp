@@ -114,7 +114,7 @@ void FPGAFitnessCalculator::cria_arquivo_data_receiver() {
 }
 
 void FPGAFitnessCalculator::cria_arquivo_main() {
-	auto arquivo_modelo = le_conteudo_arquivo("main_modelo");
+	auto arquivo_modelo = le_conteudo_arquivo("fpga_main_modelo");
 	std::ofstream arquivo_resultado("Verilog/circ_gen/main.v");
 
 	const int bits_func = ceil(log2(genetic_params.num_funcs()));
