@@ -245,7 +245,7 @@ private:
 	}
 
 public:
-	std::vector<unsigned char> descricao_les() {
+	std::vector<unsigned char> descricao_les() const {
 		std::vector<unsigned char> result;
 
 		for (unsigned int j = 0; j < genetic_params.c; j++) {
@@ -260,7 +260,7 @@ public:
 		return result;
 	}
 
-	std::vector<unsigned char> descricao_outs() {
+	std::vector<unsigned char> descricao_outs() const {
 		std::vector<unsigned char> result;
 
 		for (const auto& output : saidas) {

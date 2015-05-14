@@ -29,19 +29,12 @@ void FPGAFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 void FPGAFitnessCalculator::enviar_individuo(int comport_num,
 		const Cromossomo& individuo) {
 	RS232_SendByte(comport_num, (unsigned char) SET_CIRCUIT);
-	for (unsigned int j = 0; j < genetic_params.c; j++) {
-		for (unsigned int i = 0; i < genetic_params.r; i++) {
-			RS232_SendByte(comport_num,
-					(unsigned char) individuo.elementos_logicos[i][j].function);
-			for (unsigned int k = 0; k < genetic_params.le_num_in; k++) {
-				RS232_SendByte(comport_num,
-						(unsigned char) individuo.elementos_logicos[i][j].inputs[k]);
-			}
-		}
-	}
-	for (unsigned int i = 0; i < genetic_params.num_out; i++) {
-		RS232_SendByte(comport_num, (unsigned char) individuo.saidas[i].input);
-	}
+
+	auto descricao_les = individuo.descricao_les();
+	auto descricao_outs = individuo.descricao_outs();
+
+	RS232_SendBuf(comport_num, &descricao_les[0], descricao_les.size());
+	RS232_SendBuf(comport_num, &descricao_outs[0], descricao_outs.size());
 }
 
 void FPGAFitnessCalculator::compilar() {
