@@ -1,0 +1,27 @@
+module top();
+
+	integer i;
+	reg [#bits_les_1:0] descricao_les[#num_les_1:0];
+	reg [#bits_pinos_1:0] descricao_outs[#num_outputs_1:0];
+	reg [#num_inputs_1:0] in;
+	reg [#num_outputs_1:0] out;
+
+initial begin
+	$monitor("%b %b", in, out);
+
+#assign_les
+#assign_outs
+
+	for (i = 0; i < #inputs_pow2; i = i + 1) begin
+		#5 in = i;
+	end
+end
+
+genetico genetico (
+	.conf_les(descricao_les),
+	.conf_outs(descricao_outs),
+	.in(in),
+	.out(out)
+);
+
+endmodule
