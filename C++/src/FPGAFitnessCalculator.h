@@ -28,13 +28,12 @@
 
 class FPGAFitnessCalculator: public FitnessCalculator {
 private:
-	GeneticParams genetic_params;
 	unsigned int num_samples;
 public:
 	FPGAFitnessCalculator(GeneticParams genetic_params,
 			unsigned int num_samples,
 			std::function<double(const std::vector<std::vector<std::bitset<8>>>&)> fitness_calculator) :
-			FitnessCalculator(fitness_calculator), genetic_params(genetic_params), num_samples(num_samples) {
+			FitnessCalculator(genetic_params, fitness_calculator), num_samples(num_samples) {
 		cria_arquivo_genetico();
 		cria_arquivo_logic_e();
 		cria_arquivo_data_receiver();

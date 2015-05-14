@@ -9,6 +9,7 @@
 #define FITNESSCALCULATOR_H_
 
 #include "Cromossomo.h"
+#include "GeneticParams.h"
 #include <functional>
 #include <string>
 #include <vector>
@@ -20,12 +21,13 @@
 
 class FitnessCalculator {
 protected:
+	GeneticParams genetic_params;
 	std::function<double(std::vector<std::vector<std::bitset<8>>>)>fitness_calculator;
 
 public:
-	FitnessCalculator(
+	FitnessCalculator(GeneticParams genetic_params,
 			std::function<double(const std::vector<std::vector<std::bitset<8>>>&)> fitness_calculator) :
-			 fitness_calculator(
+			 genetic_params(genetic_params), fitness_calculator(
 					fitness_calculator) {
 	}
 	virtual ~FitnessCalculator() {

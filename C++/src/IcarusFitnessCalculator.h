@@ -18,9 +18,9 @@
 
 class IcarusFitnessCalculator: public FitnessCalculator {
 public:
-	IcarusFitnessCalculator(
+	IcarusFitnessCalculator(GeneticParams genetic_params,
 			std::function<double(const std::vector<std::vector<std::bitset<8>>>&)> fitness_calculator) :
-			FitnessCalculator(fitness_calculator) {
+			FitnessCalculator(genetic_params, fitness_calculator) {
 	}
 
 	void fitness(std::vector<Cromossomo>& populacao, int num_inputs, int le_num_inputs, int num_outputs);
