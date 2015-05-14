@@ -9,8 +9,6 @@
 
 void IcarusFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 		int num_inputs, int le_num_inputs, int num_outputs) {
-	gerar_arquivo_logic_e("logic_e.v", le_num_inputs);
-	gerar_arquivo_top(num_inputs, num_outputs);
 
 #pragma omp parallel for
 	for (unsigned int i = 0; i < populacao.size(); i++) {
@@ -22,11 +20,12 @@ void IcarusFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 }
 
 void IcarusFitnessCalculator::compilar(const Cromossomo& individuo, int index) {
-	auto individuo_file = std::string("individuo") + to_string(index);
-	auto modulo_file = std::string("genetico") + to_string(index);
-	individuo.criar_arquivo_verilog(modulo_file, "genetico");
-	std::string system_call = std::string("iverilog top.v ") + modulo_file
+	auto top_file = std::string("top") + to_string(index);
+	auto individuo_file = std::string("genetico") + to_string(index);
+	std::string system_call = std::string("iverilog genetico.v ") + top_file
 			+ std::string(" logic_e.v -o ") + individuo_file;
+
+	criar_arquivo_top(individuo, top_file);
 	if (system(system_call.c_str()) != 0) {
 		std::cerr << "Erro na chamada iverilog.\n";
 		exit(1);
@@ -47,42 +46,92 @@ std::vector<std::vector<std::bitset<8>>>
 	return parsed_output;
 }
 
-void IcarusFitnessCalculator::gerar_arquivo_top(int num_inputs,
-		int num_outputs) {
-	std::ofstream top;
-	top.open("top.v");
+void IcarusFitnessCalculator::criar_arquivo_top(const Cromossomo& individuo,
+		const std::string& nome_arquivo) {
+	auto arquivo_modelo = le_conteudo_arquivo("icarus_main_modelo");
+	std::ofstream top(nome_arquivo);
 
-	top << "module top();\n\n";
-	top << "\tinteger i;\n";
-	top << "\treg [" << num_inputs - 1 << ":0] in;\n";
-	top << "\twire [" << num_outputs - 1 << ":0] out;\n\n";
-	top << "initial begin\n";
-	top << "\t$monitor(\"";
-	for (int i = 0; i < num_inputs; i++) {
-		top << "%b";
+	const int num_les = genetic_params.r * genetic_params.c;
+	const int bits_pinos = ceil(log2(num_les + genetic_params.num_in));
+	const int bits_func = ceil(log2(genetic_params.num_funcs()));
+	const int bits_les = bits_pinos * genetic_params.le_num_in + bits_func;
+
+	replace(arquivo_modelo, "#bits_les_1", to_string(bits_les - 1));
+	replace(arquivo_modelo, "#num_les_1", to_string(num_les - 1));
+	replace(arquivo_modelo, "#bits_pinos_1", to_string(bits_pinos - 1));
+	replace(arquivo_modelo, "#num_outputs_1",
+			to_string(genetic_params.num_out - 1));
+	replace(arquivo_modelo, "#num_inputs_1",
+			to_string(genetic_params.num_in - 1));
+	replace(arquivo_modelo, "#num_outputs_1",
+			to_string(genetic_params.num_out - 1));
+	replace(arquivo_modelo, "#assign_les", gera_le_assigns(individuo));
+	replace(arquivo_modelo, "#assign_outs", gera_outs_assigns(individuo));
+	replace(arquivo_modelo, "#inputs_pow2",
+			to_string((int) pow(genetic_params.num_in, 2)));
+
+	top << arquivo_modelo;
+}
+
+std::string IcarusFitnessCalculator::gera_le_assigns(
+		const Cromossomo& individuo) {
+	std::string result;
+	const std::string modelo =
+			"\tdescricao_les[#index] = {#bits_func'd#func, #inputs};\n";
+
+	const int num_les = genetic_params.r * genetic_params.c;
+	const int bits_pinos = ceil(log2(num_les + genetic_params.num_in));
+	const int bits_func = ceil(log2(genetic_params.num_funcs()));
+
+	for (int j = 0; j < genetic_params.c; j++) {
+		for (int i = 0; i < genetic_params.r; i++) {
+			const int current = j * genetic_params.r + i;
+			auto current_modelo = modelo;
+			replace(current_modelo, "#bits_func", to_string(bits_func));
+			replace(current_modelo, "#func",
+					to_string(individuo.elementos_logicos[i][j].function));
+			replace(current_modelo, "#index", to_string(current));
+
+			std::string inputs;
+			for (int k = genetic_params.le_num_in; k > 0; k--) {
+				const int current_max = (k * bits_pinos) - 1;
+				const int current_min = current_max - (bits_pinos - 1);
+				std::string input_modelo = "#bits_pinos'd#input";
+
+				replace(input_modelo, "#bits_pinos", to_string(bits_pinos));
+				replace(input_modelo, "#input",
+						to_string(individuo.elementos_logicos[i][j].inputs[k]));
+
+				inputs += input_modelo;
+				if (k != 1) {
+					inputs += ", ";
+				}
+			}
+			replace(current_modelo, "#inputs", inputs);
+			result += modelo;
+		}
 	}
-	top << " ";
-	for (int i = 0; i < num_outputs; i++) {
-		top << "%b";
+
+	return result;
+}
+
+std::string IcarusFitnessCalculator::gera_outs_assigns(
+		const Cromossomo& individuo) {
+	std::string result;
+	const std::string modelo = "\tdescricao_outs[#index] = #bits_pinosd'#output;\n";
+
+	const int num_les = genetic_params.r * genetic_params.c;
+	const int bits_pinos = ceil(log2(num_les + genetic_params.num_in));
+
+	for (int i = 0; i < individuo.saidas.size(); i++) {
+		auto current_modelo = modelo;
+		replace(current_modelo, "#index", to_string(i));
+		replace(current_modelo, "#bits_pinos", to_string(bits_pinos));
+		replace(current_modelo, "#output", to_string(individuo.saidas[i].input));
+		result += current_modelo;
 	}
-	top << "\", ";
-	for (int i = num_inputs - 1; i >= 0; i--) {
-		top << "in[" << i << "], ";
-	}
-	for (int i = num_outputs - 1; i >= 1; i--) {
-		top << "out[" << i << "], ";
-	}
-	top << "out[0]);\n";
-	top << "\tfor (i = 0; i < " << (int) pow(2, num_inputs)
-			<< "; i = i + 1) begin\n";
-	top << "\t\t#5 in = i;\n";
-	top << "\tend\n";
-	top << "end\n\n";
-	top << "genetico genetico(\n";
-	top << "\t.in(in),\n";
-	top << "\t.out(out)\n";
-	top << ");\n\n";
-	top << "endmodule";
+
+	return result;
 }
 
 std::vector<std::vector<std::bitset<8>>>
