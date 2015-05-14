@@ -245,6 +245,31 @@ private:
 	}
 
 public:
+	std::vector<unsigned char> descricao_les() {
+		std::vector<unsigned char> result;
+
+		for (unsigned int j = 0; j < genetic_params.c; j++) {
+			for (unsigned int i = 0; i < genetic_params.r; i++) {
+				result.push_back(elementos_logicos[i][j].function);
+				for (unsigned int k = 0; k < genetic_params.le_num_in; k++) {
+					result.push_back(elementos_logicos[i][j].inputs[k]);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	std::vector<unsigned char> descricao_outs() {
+		std::vector<unsigned char> result;
+
+		for (const auto& output : saidas) {
+			result.push_back(output.input);
+		}
+
+		return result;
+	}
+
 	void criar_arquivo_verilog(std::string nome_arquivo,
 			std::string nome_modulo) const {
 		FILE* fp = fopen(nome_arquivo.c_str(), "w");
