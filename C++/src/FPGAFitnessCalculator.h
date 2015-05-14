@@ -34,8 +34,8 @@ public:
 			unsigned int num_samples,
 			std::function<double(const std::vector<std::vector<std::bitset<8>>>&)> fitness_calculator) :
 			FitnessCalculator(genetic_params, fitness_calculator), num_samples(num_samples) {
-		cria_arquivo_genetico();
-		cria_arquivo_logic_e();
+		cria_arquivo_genetico("Verilog/circ_gen/genetico.v");
+		cria_arquivo_logic_e("Verilog/circ_gen/logic_e.v");
 		cria_arquivo_data_receiver();
 		cria_arquivo_sender();
 		cria_arquivo_main();
@@ -51,15 +51,10 @@ private:
 	std::vector<std::vector<std::bitset<8>>> receive_data(int num_inputs, int comport_num);
 	void compilar();
 	void carregar();
-	void cria_arquivo_genetico();
-	void cria_arquivo_logic_e();
 	void cria_arquivo_data_receiver();
 	void cria_arquivo_sender();
 	void cria_arquivo_main();
-	std::string gera_string_saida();
-	std::string gera_les();
 	std::string gera_le_input_assignments();
-	std::string gera_le_funcs();
 	void enviar_individuo(int comport_num, const Cromossomo& individuo);
 
 	enum Message {

@@ -10,6 +10,7 @@
 
 #include "Cromossomo.h"
 #include "GeneticParams.h"
+#include "Utils.h"
 #include <functional>
 #include <string>
 #include <vector>
@@ -49,6 +50,12 @@ public:
 
 		logic_e << "endmodule";
 	}
+
+	void cria_arquivo_genetico(const std::string& nome_arquivo);
+	void cria_arquivo_logic_e(const std::string& nome_arquivo);
+	std::string gera_le_funcs();
+	std::string gera_string_saida();
+	std::string gera_les();
 };
 
 #endif /* FITNESSCALCULATOR_H_ */
