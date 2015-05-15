@@ -11,8 +11,8 @@ module main(CLOCK_50, KEY, LEDR, SW, UART_RXD, UART_TXD);
 	
 	// Regs
 	reg [7:0] current_value, value_into_genetico;
-	reg [#bits_le_1:0] current_circuit_les[#num_les_1:0];
-	reg [#bits_pinos_1:0] current_circuit_outs[#num_outs_1:0];
+	reg [#num_les_1:0][#bits_le_1:0] current_circuit_les;
+	reg [#num_outs_1:0][#bits_pinos_1:0] current_circuit_outs;
 	
 	// Wires
 	wire [31:0] data_to_send, rs232_received_data;

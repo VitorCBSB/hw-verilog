@@ -1,7 +1,7 @@
 module genetico(conf_les, conf_outs, in, out);
 
-	input [#tam_le:0] conf_les[#r_x_c:0];
-	input [#bits_pinos:0] conf_outs[#num_out:0];
+	input [#r_x_c:0][#tam_le:0] conf_les;
+	input [#num_out:0][#bits_pinos:0] conf_outs;
 	input [#num_in:0] in;
 	output [#num_out:0] out;
 	
