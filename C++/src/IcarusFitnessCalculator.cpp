@@ -21,7 +21,7 @@ void IcarusFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 
 void IcarusFitnessCalculator::compilar(const Cromossomo& individuo, int index) {
 	auto top_file = std::string("top") + to_string(index);
-	auto individuo_file = std::string("genetico") + to_string(index);
+	auto individuo_file = std::string("individuo") + to_string(index);
 	std::string system_call = std::string("iverilog genetico.v ") + top_file
 			+ std::string(" logic_e.v -o ") + individuo_file;
 
@@ -83,8 +83,8 @@ std::string IcarusFitnessCalculator::gera_le_assigns(
 	const int bits_pinos = ceil(log2(num_les + genetic_params.num_in));
 	const int bits_func = ceil(log2(genetic_params.num_funcs()));
 
-	for (int j = 0; j < genetic_params.c; j++) {
-		for (int i = 0; i < genetic_params.r; i++) {
+	for (unsigned int j = 0; j < genetic_params.c; j++) {
+		for (unsigned int i = 0; i < genetic_params.r; i++) {
 			const int current = j * genetic_params.r + i;
 			auto current_modelo = modelo;
 			replace(current_modelo, "#bits_func", to_string(bits_func));
@@ -94,8 +94,6 @@ std::string IcarusFitnessCalculator::gera_le_assigns(
 
 			std::string inputs;
 			for (int k = genetic_params.le_num_in; k > 0; k--) {
-				const int current_max = (k * bits_pinos) - 1;
-				const int current_min = current_max - (bits_pinos - 1);
 				std::string input_modelo = "#bits_pinos'd#input";
 
 				replace(input_modelo, "#bits_pinos", to_string(bits_pinos));
@@ -123,7 +121,7 @@ std::string IcarusFitnessCalculator::gera_outs_assigns(
 	const int num_les = genetic_params.r * genetic_params.c;
 	const int bits_pinos = ceil(log2(num_les + genetic_params.num_in));
 
-	for (int i = 0; i < individuo.saidas.size(); i++) {
+	for (unsigned int i = 0; i < individuo.saidas.size(); i++) {
 		auto current_modelo = modelo;
 		replace(current_modelo, "#index", to_string(i));
 		replace(current_modelo, "#bits_pinos", to_string(bits_pinos));
