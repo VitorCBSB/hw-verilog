@@ -44,12 +44,12 @@ public:
 		carregar();
 	}
 
-	void fitness(std::vector<Cromossomo>& populacao, int num_inputs, int le_num_inputs, int num_outputs);
+	void fitness(std::vector<Cromossomo>& populacao);
 	std::unique_ptr<FitnessCalculator> clone() {
 		return std::unique_ptr<FitnessCalculator>(new FPGAFitnessCalculator(*this));
 	}
 private:
-	std::vector<std::vector<std::bitset<8>>> receive_data(int num_inputs, int comport_num);
+	std::vector<std::vector<std::bitset<8>>> receive_data(int comport_num);
 	void compilar();
 	void carregar();
 	void cria_arquivo_data_receiver();

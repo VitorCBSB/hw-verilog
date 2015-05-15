@@ -7,8 +7,7 @@
 
 #include "FPGAFitnessCalculator.h"
 
-void FPGAFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
-		int num_inputs, int le_num_inputs, int num_outputs) {
+void FPGAFitnessCalculator::fitness(std::vector<Cromossomo>& populacao) {
 	int bauds = 115200;
 	int comport_num = 6;
 	char mode[10] = "8N1";
@@ -20,7 +19,7 @@ void FPGAFitnessCalculator::fitness(std::vector<Cromossomo>& populacao,
 	for (unsigned int i = 0; i < populacao.size(); i++) {
 		enviar_individuo(comport_num, populacao[i]);
 		populacao[i].set_fitness(
-				fitness_calculator(receive_data(num_inputs, comport_num)));
+				fitness_calculator(receive_data(comport_num)));
 	}
 
 	RS232_CloseComport(comport_num);
@@ -67,11 +66,11 @@ void FPGAFitnessCalculator::carregar() {
 }
 
 std::vector<std::vector<std::bitset<8>>> FPGAFitnessCalculator::receive_data(
-		int num_inputs, int comport_num) {
+		int comport_num) {
 	unsigned char buffer[4096];
 	std::vector<std::vector<std::bitset<8>>> results;
 
-	for (int i = 0; i < (int) pow(2, num_inputs); i++) {
+	for (int i = 0; i < (int) pow(2, genetic_params.num_in); i++) {
 		unsigned int total = 0;
 		RS232_SendByte(comport_num, (unsigned char) SET_VALUE);
 		RS232_SendByte(comport_num, (unsigned char) i);

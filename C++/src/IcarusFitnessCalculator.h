@@ -25,7 +25,7 @@ public:
 		cria_arquivo_genetico("genetico.v");
 	}
 
-	void fitness(std::vector<Cromossomo>& populacao, int num_inputs, int le_num_inputs, int num_outputs);
+	void fitness(std::vector<Cromossomo>& populacao);
 	std::unique_ptr<FitnessCalculator> clone() {
 		return std::unique_ptr<FitnessCalculator>(new IcarusFitnessCalculator(*this));
 	}
@@ -34,10 +34,10 @@ private:
 	void criar_arquivo_top(const Cromossomo& individuo, const std::string& nome_arquivo);
 	std::string gera_le_assigns(const Cromossomo& individuo);
 	std::string gera_outs_assigns(const Cromossomo& individuo);
-	std::vector<std::vector<std::bitset<8>>> parse_output(FILE* simulador, int num_inputs);
+	std::vector<std::vector<std::bitset<8>>> parse_output(FILE* simulador);
 
 	void compilar(const Cromossomo& individuo, int index);
-	std::vector<std::vector<std::bitset<8>>> simular(int index, int num_inputs);
+	std::vector<std::vector<std::bitset<8>>> simular(int index);
 };
 
 #endif /* ICARUSFITNESSCALCULATOR_H_ */

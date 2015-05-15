@@ -78,8 +78,7 @@ public:
 	}
 
 	void calcular_fitness(std::vector<Cromossomo>& populacao) {
-		fitness_calculator->fitness(populacao, genetic_params.num_in,
-				genetic_params.le_num_in, genetic_params.num_out);
+		fitness_calculator->fitness(populacao);
 	}
 
 	Cromossomo& melhor_individuo(std::vector<Cromossomo>& populacao) {

@@ -34,22 +34,8 @@ public:
 	virtual ~FitnessCalculator() {
 	}
 
-	virtual void fitness(std::vector<Cromossomo>& populacao, int num_inputs, int le_num_inputs, int num_outputs) = 0;
+	virtual void fitness(std::vector<Cromossomo>& populacao) = 0;
 	virtual std::unique_ptr<FitnessCalculator> clone() = 0;
-	void gerar_arquivo_logic_e(const std::string& file_path, int le_num_inputs) {
-		std::ofstream logic_e;
-		logic_e.open(file_path);
-
-		logic_e << "module logic_e(func, in, out);\n\n";
-
-		logic_e << "\tinput [" << (int) pow(2, le_num_inputs) - 1 << ":0] func;\n";
-		logic_e << "\tinput [" << le_num_inputs - 1 << ":0] in;\n";
-		logic_e << "\toutput out;\n\n";
-
-		logic_e << "\tassign out = func[in];\n\n";
-
-		logic_e << "endmodule";
-	}
 
 	void cria_arquivo_genetico(const std::string& nome_arquivo);
 	void cria_arquivo_logic_e(const std::string& nome_arquivo);
