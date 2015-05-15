@@ -31,14 +31,14 @@ const bool FEED_FORWARD = true;
 
 double fitness(const std::vector<std::vector<std::bitset<8>>>& individual_output) {
 	int soma_distancias = 0;
-	soma_distancias += individual_output[0][50].to_ulong();
-	soma_distancias += abs((int) individual_output[1][50].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[2][50].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[3][50].to_ulong() - 2);
-	soma_distancias += abs((int) individual_output[4][50].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[5][50].to_ulong() - 2);
-	soma_distancias += abs((int) individual_output[6][50].to_ulong() - 2);
-	soma_distancias += abs((int) individual_output[7][50].to_ulong() - 3);
+	soma_distancias += individual_output[0][0].to_ulong();
+	soma_distancias += abs((int) individual_output[1][0].to_ulong() - 1);
+	soma_distancias += abs((int) individual_output[2][0].to_ulong() - 1);
+	soma_distancias += abs((int) individual_output[3][0].to_ulong() - 2);
+	soma_distancias += abs((int) individual_output[4][0].to_ulong() - 1);
+	soma_distancias += abs((int) individual_output[5][0].to_ulong() - 2);
+	soma_distancias += abs((int) individual_output[6][0].to_ulong() - 2);
+	soma_distancias += abs((int) individual_output[7][0].to_ulong() - 3);
 	if (soma_distancias == 0) {
 		return MELHOR_FITNESS;
 	}
@@ -61,10 +61,11 @@ int main(int argc, char* argv[]) {
 	std::mt19937 mt;
 	mt.seed(time(nullptr));
 
+	auto fitness_calculator = new IcarusFitnessCalculator(genetic_params, fitness);
+
 	Populacao populacao(
-			new OnePlusLambdaEvoStrategy(mt, 4, genetic_params,
-					new FPGAFitnessCalculator(genetic_params, NUM_SAMPLES,
-							fitness)));
+			new OnePlusLambdaEvoStrategy(mt, 5, genetic_params,
+					fitness_calculator));
 
 	int geracao = 0;
 	populacao.calcular_fitness();
@@ -72,14 +73,13 @@ int main(int argc, char* argv[]) {
 			&& populacao.melhor_individuo().fitness() != MELHOR_FITNESS) {
 		std::cout << geracao << ": " << populacao.melhor_individuo().fitness()
 				<< ", " << populacao.fitness_medio() << std::endl;
-		populacao.melhor_individuo().criar_arquivo_verilog("melhor.v",
-				"genetico");
+		fitness_calculator->criar_arquivo_top(populacao.melhor_individuo(), "melhor.v");
 		populacao.proxima_geracao();
 		populacao.calcular_fitness();
 		geracao++;
 	}
 
-	populacao.melhor_individuo().criar_arquivo_verilog("melhor.v", "genetico");
+	fitness_calculator->criar_arquivo_top(populacao.melhor_individuo(), "melhor.v");
 	if (populacao.melhor_individuo().fitness() == MELHOR_FITNESS) {
 		std::cout << "Solucao encontrada na geracao " << geracao << std::endl;
 	}

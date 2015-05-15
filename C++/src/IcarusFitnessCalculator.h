@@ -30,8 +30,9 @@ public:
 		return std::unique_ptr<FitnessCalculator>(new IcarusFitnessCalculator(*this));
 	}
 
-private:
 	void criar_arquivo_top(const Cromossomo& individuo, const std::string& nome_arquivo);
+
+private:
 	std::string gera_le_assigns(const Cromossomo& individuo);
 	std::string gera_outs_assigns(const Cromossomo& individuo);
 	std::vector<std::vector<std::bitset<8>>> parse_output(FILE* simulador);
