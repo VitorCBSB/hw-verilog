@@ -28,10 +28,13 @@ public:
 	}
 
 	int num_funcs() {
-		std::vector<bool> temp(funcs.size());
-		auto it = std::copy_if(funcs.begin(), funcs.end(), temp.begin(), [](bool elem) { return elem; });
-		temp.resize(std::distance(temp.begin(), it));
-		return temp.size();
+		int num_funcs = 0;
+		for (auto func : funcs) {
+			if (func) {
+				num_funcs++;
+			}
+		}
+		return num_funcs;
 	}
 };
 
