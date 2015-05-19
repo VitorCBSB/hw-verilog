@@ -73,13 +73,13 @@ int main(int argc, char* argv[]) {
 			&& populacao.melhor_individuo().fitness() != MELHOR_FITNESS) {
 		std::cout << geracao << ": " << populacao.melhor_individuo().fitness()
 				<< ", " << populacao.fitness_medio() << std::endl;
-		fitness_calculator->criar_arquivo_top(populacao.melhor_individuo(), "melhor.v");
+		fitness_calculator->cria_arquivo_top_icarus(populacao.melhor_individuo(), "melhor.v");
 		populacao.proxima_geracao();
 		populacao.calcular_fitness();
 		geracao++;
 	}
 
-	fitness_calculator->criar_arquivo_top(populacao.melhor_individuo(), "melhor.v");
+	fitness_calculator->cria_arquivo_top_icarus(populacao.melhor_individuo(), "melhor.v");
 	if (populacao.melhor_individuo().fitness() == MELHOR_FITNESS) {
 		std::cout << "Solucao encontrada na geracao " << geracao << std::endl;
 	}
