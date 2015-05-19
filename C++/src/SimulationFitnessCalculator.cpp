@@ -8,13 +8,13 @@
 #include "SimulationFitnessCalculator.h"
 
 void SimulationFitnessCalculator::fitness(std::vector<Cromossomo>& populacao) {
-	for (auto& individuo : populacao) {
+	for (unsigned int i = 0; i < populacao.size(); i++) {
 		std::vector<std::vector<std::bitset<8>>> result;
-		for (unsigned int i = 0; i < (unsigned int) pow(2, genetic_params.num_in); i++) {
+		for (unsigned int j = 0; j < (unsigned int) pow(2, genetic_params.num_in); j++) {
 			result.push_back(std::vector<std::bitset<8>>());
-			result[i].push_back(calcular_entrada(individuo, std::bitset<8>(i)));
+			result[j].push_back(calcular_entrada(populacao[i], std::bitset<8>(j)));
 		}
-		individuo.set_fitness(fitness_calculator(result));
+		populacao[i].set_fitness(fitness_calculator(result));
 	}
 }
 
