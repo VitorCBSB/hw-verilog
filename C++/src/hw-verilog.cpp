@@ -15,6 +15,7 @@
 #include "Populacao.h"
 #include "IcarusFitnessCalculator.h"
 #include "FPGAFitnessCalculator.h"
+#include "SimulationFitnessCalculator.h"
 #include "TournamentEvoStrategy.h"
 #include "OnePlusLambdaEvoStrategy.h"
 #include "RouletteEvoStrategy.h"
@@ -61,7 +62,7 @@ int main(int argc, char* argv[]) {
 	std::mt19937 mt;
 	mt.seed(time(nullptr));
 
-	auto fitness_calculator = new IcarusFitnessCalculator(genetic_params, fitness);
+	auto fitness_calculator = new SimulationFitnessCalculator(genetic_params, fitness);
 
 	Populacao populacao(
 			new OnePlusLambdaEvoStrategy(mt, 5, genetic_params,
@@ -73,7 +74,6 @@ int main(int argc, char* argv[]) {
 			&& populacao.melhor_individuo().fitness() != MELHOR_FITNESS) {
 		std::cout << geracao << ": " << populacao.melhor_individuo().fitness()
 				<< ", " << populacao.fitness_medio() << std::endl;
-		fitness_calculator->cria_arquivo_top_icarus(populacao.melhor_individuo(), "melhor.v");
 		populacao.proxima_geracao();
 		populacao.calcular_fitness();
 		geracao++;
