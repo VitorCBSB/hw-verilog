@@ -17,9 +17,19 @@ std::bitset<8> SimulationFitnessCalculator::calcular_entrada(
 	std::bitset<8> resultado;
 	auto matriz_resultados = matriz_resultados_inicial();
 
-	for (int j = 0; j < genetic_params.c; j++) {
-		for (int i = 0; i < genetic_params.r; i++) {
+	for (unsigned int j = 0; j < genetic_params.c; j++) {
+		for (unsigned int i = 0; i < genetic_params.r; i++) {
+			auto& individuo_atual = individuo.elementos_logicos[i][j];
+			auto funcao = escolher_funcao(
+					individuo_atual.function);
+			auto input0 = escolher_input(individuo_atual.inputs[0], matriz_resultados, entrada);
+			auto input1 = escolher_input(individuo_atual.inputs[1], matriz_resultados, entrada);
+			matriz_resultados[i][j] = funcao(input0, input1);
 		}
+	}
+
+	for (unsigned int i = 0; i < genetic_params.num_out; i++) {
+		resultado[i] = escolher_input(individuo.saidas[i].input, matriz_resultados, entrada);
 	}
 
 	return resultado;
@@ -28,9 +38,33 @@ std::bitset<8> SimulationFitnessCalculator::calcular_entrada(
 std::vector<std::vector<bool>> SimulationFitnessCalculator::matriz_resultados_inicial() {
 	std::vector<std::vector<bool>> matriz_inicial(genetic_params.r);
 
-	for (int i = 0; i < genetic_params.r; i++) {
+	for (unsigned int i = 0; i < genetic_params.r; i++) {
 		matriz_inicial[i].reserve(genetic_params.c);
 	}
-
 	return matriz_inicial;
+}
+
+std::function<bool(const bool&, const bool&)> SimulationFitnessCalculator::escolher_funcao(
+		int funcao) {
+	std::vector<std::function<bool(const bool&, const bool&)>> funcoes = {
+					std::logical_and<bool>(),
+					std::logical_or<bool>(),
+					std::not_equal_to<bool>(),
+					[](const bool& a, const bool& b) {return !a;},
+					[](const bool& a, const bool& b) {return !(a && b);},
+					std::equal_to<bool>(),
+					[](const bool& a, const bool& b) {return !(a || b);}
+			};
+
+	return funcoes[funcao];
+}
+
+bool SimulationFitnessCalculator::escolher_input(unsigned int input,
+		const std::vector<std::vector<bool>>& matriz_resultados,
+		const std::bitset<8>& entrada) {
+	if (input >= genetic_params.num_in) {
+		input -= genetic_params.num_in;
+		return matriz_resultados[input / genetic_params.c][input % genetic_params.c];
+	}
+	return entrada[input];
 }

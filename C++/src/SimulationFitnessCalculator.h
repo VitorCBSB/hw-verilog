@@ -9,6 +9,8 @@
 #define SIMULATIONFITNESSCALCULATOR_H_
 
 #include "FitnessCalculator.h"
+#include <functional>
+#include <algorithm>
 
 class SimulationFitnessCalculator: public FitnessCalculator {
 public:
@@ -25,6 +27,10 @@ public:
 private:
 	std::bitset<8> calcular_entrada(const Cromossomo& individuo, std::bitset<8> entrada);
 	std::vector<std::vector<bool>> matriz_resultados_inicial();
+	std::function<bool(const bool&, const bool&)> escolher_funcao(int funcao);
+	bool escolher_input(unsigned int input,
+			const std::vector<std::vector<bool>>& matriz_resultados,
+			const std::bitset<8>& entrada);
 
 };
 
