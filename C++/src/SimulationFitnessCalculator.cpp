@@ -26,7 +26,7 @@ std::bitset<8> SimulationFitnessCalculator::calcular_entrada(
 
 	for (unsigned int j = 0; j < genetic_params.c; j++) {
 		for (unsigned int i = 0; i < genetic_params.r; i++) {
-			auto& individuo_atual = individuo.elementos_logicos[i][j];
+			const auto& individuo_atual = individuo.elementos_logicos[i][j];
 			auto funcao = escolher_funcao(
 					individuo_atual.function);
 			auto input0 = escolher_input(individuo_atual.inputs[0], matriz_resultados, entrada);
@@ -46,14 +46,14 @@ std::vector<std::vector<bool>> SimulationFitnessCalculator::matriz_resultados_in
 	std::vector<std::vector<bool>> matriz_inicial(genetic_params.r);
 
 	for (unsigned int i = 0; i < genetic_params.r; i++) {
-		matriz_inicial[i].reserve(genetic_params.c);
+		matriz_inicial[i].resize(genetic_params.c);
 	}
 	return matriz_inicial;
 }
 
 std::function<bool(const bool&, const bool&)> SimulationFitnessCalculator::escolher_funcao(
 		int funcao) {
-	std::vector<std::function<bool(const bool&, const bool&)>> funcoes = {
+	const std::vector<std::function<bool(const bool&, const bool&)>> funcoes = {
 					std::logical_and<bool>(),
 					std::logical_or<bool>(),
 					std::not_equal_to<bool>(),
@@ -63,7 +63,16 @@ std::function<bool(const bool&, const bool&)> SimulationFitnessCalculator::escol
 					[](const bool& a, const bool& b) {return !(a || b);}
 			};
 
-	return funcoes[funcao];
+	int contador_funcao = 0;
+	int i = 0;
+	while (contador_funcao < funcao) {
+		if (genetic_params.funcs[i]) {
+			contador_funcao++;
+		}
+		i++;
+	}
+
+	return funcoes[i];
 }
 
 bool SimulationFitnessCalculator::escolher_input(unsigned int input,
