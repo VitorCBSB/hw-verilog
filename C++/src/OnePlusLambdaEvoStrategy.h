@@ -43,7 +43,7 @@ public:
 
 	Cromossomo& melhor_individuo(std::vector<Cromossomo>& populacao) {
 		Cromossomo& melhor = populacao[0];
-		for (unsigned int i = 0; i < populacao.size(); i++) {
+		for (unsigned int i = 1; i < populacao.size(); i++) {
 			if (populacao[i].fitness() >= melhor.fitness()) {
 				melhor = populacao[i];
 			}
