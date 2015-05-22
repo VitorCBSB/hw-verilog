@@ -13,7 +13,8 @@
 #include "GeneticParams.h"
 #include "Timer.h"
 #include "Utils.h"
-#include "math.h"
+#include "CriadorArquivos.h"
+#include <math.h>
 #include <fstream>
 #include <chrono>
 #include <stdlib.h>
@@ -35,11 +36,11 @@ public:
 			unsigned int num_samples,
 			std::function<double(const std::vector<std::vector<std::bitset<8>>>&)> fitness_calculator) :
 			FitnessCalculator(genetic_params, fitness_calculator), num_samples(num_samples) {
-		cria_arquivo_genetico("Verilog/circ_gen/genetico.v");
-		cria_arquivo_logic_e("Verilog/circ_gen/logic_e.v");
-		cria_arquivo_data_receiver();
-		cria_arquivo_sender();
-		cria_arquivo_main();
+		CriadorArquivos::cria_arquivo_genetico(genetic_params, "Verilog/circ_gen/genetico.v");
+		CriadorArquivos::cria_arquivo_logic_e(genetic_params, "Verilog/circ_gen/logic_e.v");
+		CriadorArquivos::cria_arquivo_data_receiver(genetic_params);
+		CriadorArquivos::cria_arquivo_sender(genetic_params, num_samples);
+		CriadorArquivos::cria_arquivo_main(genetic_params);
 		compilar();
 		carregar();
 	}
@@ -52,10 +53,6 @@ private:
 	std::vector<std::vector<std::bitset<8>>> receive_data(int comport_num);
 	void compilar();
 	void carregar();
-	void cria_arquivo_data_receiver();
-	void cria_arquivo_sender();
-	void cria_arquivo_main();
-	std::string gera_le_input_assignments();
 	void enviar_individuo(int comport_num, const Cromossomo& individuo);
 
 	enum Message {

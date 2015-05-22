@@ -36,17 +36,6 @@ public:
 
 	virtual void fitness(std::vector<Cromossomo>& populacao) = 0;
 	virtual std::unique_ptr<FitnessCalculator> clone() = 0;
-
-	void cria_arquivo_genetico(const std::string& nome_arquivo);
-	void cria_arquivo_logic_e(const std::string& nome_arquivo);
-	void cria_arquivo_top_icarus(const Cromossomo& individuo, const std::string& nome_arquivo);
-
-private:
-	std::string gera_le_assigns(const Cromossomo& individuo);
-	std::string gera_outs_assigns(const Cromossomo& individuo);
-	std::string gera_le_funcs();
-	std::string gera_string_saida();
-	std::string gera_les();
 };
 
 #endif /* FITNESSCALCULATOR_H_ */

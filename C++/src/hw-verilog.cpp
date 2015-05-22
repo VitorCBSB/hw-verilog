@@ -62,11 +62,9 @@ int main(int argc, char* argv[]) {
 	std::mt19937 mt;
 	mt.seed(time(nullptr));
 
-	auto fitness_calculator = new SimulationFitnessCalculator(genetic_params, fitness);
-
 	Populacao populacao(
 			new OnePlusLambdaEvoStrategy(mt, 5, genetic_params,
-					fitness_calculator));
+					new SimulationFitnessCalculator(genetic_params, fitness)));
 
 	int geracao = 0;
 	populacao.calcular_fitness();
@@ -79,7 +77,7 @@ int main(int argc, char* argv[]) {
 		geracao++;
 	}
 
-	fitness_calculator->cria_arquivo_top_icarus(populacao.melhor_individuo(), "melhor.v");
+	CriadorArquivos::cria_arquivo_top_icarus(genetic_params, populacao.melhor_individuo(), "melhor.v");
 	if (populacao.melhor_individuo().fitness() == MELHOR_FITNESS) {
 		std::cout << "Solucao encontrada na geracao " << geracao << std::endl;
 	}

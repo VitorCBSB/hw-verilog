@@ -24,7 +24,7 @@ void IcarusFitnessCalculator::compilar(const Cromossomo& individuo, int index) {
 	std::string system_call = std::string("iverilog genetico.v ") + top_file
 			+ std::string(" logic_e.v -o ") + individuo_file;
 
-	cria_arquivo_top_icarus(individuo, top_file);
+	CriadorArquivos::cria_arquivo_top_icarus(genetic_params, individuo, top_file);
 	if (system(system_call.c_str()) != 0) {
 		std::cerr << "Erro na chamada iverilog.\n";
 		exit(1);

@@ -1,13 +1,13 @@
 /*
- * FitnessCalculator.cpp
+ * CriadorArquivos.cpp
  *
- *  Created on: 14/05/2015
- *      Author: vitor
+ *  Created on: 21/05/2015
+ *      Author: Vitor
  */
 
-#include "FitnessCalculator.h"
+#include "CriadorArquivos.h"
 
-void FitnessCalculator::cria_arquivo_genetico(const std::string& nome_arquivo) {
+void CriadorArquivos::cria_arquivo_genetico(GeneticParams genetic_params, const std::string& nome_arquivo) {
 	auto arquivo_modelo = le_conteudo_arquivo("genetico_modelo");
 	std::ofstream arquivo_resultado(nome_arquivo);
 
@@ -27,13 +27,33 @@ void FitnessCalculator::cria_arquivo_genetico(const std::string& nome_arquivo) {
 			to_string(genetic_params.r * genetic_params.c - 1));
 	replace(arquivo_modelo, "#bits_pinos", to_string(bits_pinos - 1));
 	replace(arquivo_modelo, "#num_pinos", to_string(total_pinos - 1));
-	replace(arquivo_modelo, "#all_inputs_for_out", gera_string_saida());
-	replace(arquivo_modelo, "#les", gera_les());
+	replace(arquivo_modelo, "#all_inputs_for_out", gera_string_saida(genetic_params));
+	replace(arquivo_modelo, "#les", gera_les(genetic_params));
 
 	arquivo_resultado << arquivo_modelo;
 }
 
-std::string FitnessCalculator::gera_string_saida() {
+void CriadorArquivos::cria_arquivo_logic_e(GeneticParams genetic_params, const std::string& nome_arquivo) {
+	auto arquivo_modelo = le_conteudo_arquivo("logic_e_modelo");
+	std::ofstream arquivo_resultado(nome_arquivo);
+
+	const int bits_func = ceil(log2(genetic_params.num_funcs()));
+	const int total_pinos = genetic_params.r * genetic_params.c
+			+ genetic_params.num_in;
+	const int bits_pinos = ceil(log2(total_pinos));
+	const int bits_inputs = bits_pinos * genetic_params.le_num_in;
+	const int num_funcs = genetic_params.num_funcs();
+
+	replace(arquivo_modelo, "#bits_func", to_string(bits_func - 1));
+	replace(arquivo_modelo, "#bits_inputs", to_string(bits_inputs - 1));
+	replace(arquivo_modelo, "#total_pinos", to_string(total_pinos - 1));
+	replace(arquivo_modelo, "#num_funcs_1", to_string(num_funcs - 1));
+	replace(arquivo_modelo, "#funcs", gera_le_funcs(genetic_params));
+
+	arquivo_resultado << arquivo_modelo;
+}
+
+std::string CriadorArquivos::gera_string_saida(GeneticParams genetic_params) {
 	std::string resultado;
 	for (int i = genetic_params.num_out - 1; i >= 0; i--) {
 		resultado += std::string("all_inputs[conf_outs[") + to_string(i) + "]]";
@@ -44,7 +64,7 @@ std::string FitnessCalculator::gera_string_saida() {
 	return resultado;
 }
 
-std::string FitnessCalculator::gera_les() {
+std::string CriadorArquivos::gera_les(GeneticParams genetic_params) {
 	std::string resultado;
 	const std::string base = std::string("logic_e le#r#c(\n")
 			+ std::string("\t.conf_func(conf_les[#n][#bits_top:#bits_next]),\n")
@@ -79,27 +99,8 @@ std::string FitnessCalculator::gera_les() {
 
 }
 
-void FitnessCalculator::cria_arquivo_logic_e(const std::string& nome_arquivo) {
-	auto arquivo_modelo = le_conteudo_arquivo("logic_e_modelo");
-	std::ofstream arquivo_resultado(nome_arquivo);
 
-	const int bits_func = ceil(log2(genetic_params.num_funcs()));
-	const int total_pinos = genetic_params.r * genetic_params.c
-			+ genetic_params.num_in;
-	const int bits_pinos = ceil(log2(total_pinos));
-	const int bits_inputs = bits_pinos * genetic_params.le_num_in;
-	const int num_funcs = genetic_params.num_funcs();
-
-	replace(arquivo_modelo, "#bits_func", to_string(bits_func - 1));
-	replace(arquivo_modelo, "#bits_inputs", to_string(bits_inputs - 1));
-	replace(arquivo_modelo, "#total_pinos", to_string(total_pinos - 1));
-	replace(arquivo_modelo, "#num_funcs_1", to_string(num_funcs - 1));
-	replace(arquivo_modelo, "#funcs", gera_le_funcs());
-
-	arquivo_resultado << arquivo_modelo;
-}
-
-std::string FitnessCalculator::gera_le_funcs() {
+std::string CriadorArquivos::gera_le_funcs(GeneticParams genetic_params) {
 	std::string result;
 	std::vector<std::string> funcs = { "and", "or", "xor", "not", "nand",
 			"xnor", "nor" };
@@ -142,7 +143,7 @@ std::string FitnessCalculator::gera_le_funcs() {
 	return result;
 }
 
-void FitnessCalculator::cria_arquivo_top_icarus(const Cromossomo& individuo,
+void CriadorArquivos::cria_arquivo_top_icarus(GeneticParams genetic_params, const Cromossomo& individuo,
 		const std::string& nome_arquivo) {
 	auto arquivo_modelo = le_conteudo_arquivo("icarus_main_modelo");
 	std::ofstream top(nome_arquivo);
@@ -161,15 +162,15 @@ void FitnessCalculator::cria_arquivo_top_icarus(const Cromossomo& individuo,
 			to_string(genetic_params.num_in - 1));
 	replace(arquivo_modelo, "#num_outputs_1",
 			to_string(genetic_params.num_out - 1));
-	replace(arquivo_modelo, "#assign_les", gera_le_assigns(individuo));
-	replace(arquivo_modelo, "#assign_outs", gera_outs_assigns(individuo));
+	replace(arquivo_modelo, "#assign_les", gera_le_assigns(genetic_params, individuo));
+	replace(arquivo_modelo, "#assign_outs", gera_outs_assigns(genetic_params, individuo));
 	replace(arquivo_modelo, "#inputs_pow2",
 			to_string((int) pow(genetic_params.num_in, 2)));
 
 	top << arquivo_modelo;
 }
 
-std::string FitnessCalculator::gera_le_assigns(
+std::string CriadorArquivos::gera_le_assigns(GeneticParams genetic_params,
 		const Cromossomo& individuo) {
 	std::string result;
 	const std::string modelo =
@@ -210,7 +211,7 @@ std::string FitnessCalculator::gera_le_assigns(
 	return result;
 }
 
-std::string FitnessCalculator::gera_outs_assigns(
+std::string CriadorArquivos::gera_outs_assigns(GeneticParams genetic_params,
 		const Cromossomo& individuo) {
 	std::string result;
 	const std::string modelo = "\tdescricao_outs[#index] = #bits_pinos'd#output;\n";
@@ -227,4 +228,86 @@ std::string FitnessCalculator::gera_outs_assigns(
 	}
 
 	return result;
+}
+
+void CriadorArquivos::cria_arquivo_data_receiver(GeneticParams genetic_params) {
+	auto arquivo_modelo = le_conteudo_arquivo("data_receiver_modelo");
+	std::ofstream arquivo_resultado("Verilog/circ_gen/data_receiver.v");
+	const int tam_circuito = (genetic_params.r * genetic_params.c)
+			* (genetic_params.le_num_in + 1) + genetic_params.num_out;
+	replace(arquivo_modelo, "#tam_circuito", to_string(tam_circuito));
+	arquivo_resultado << arquivo_modelo;
+}
+
+void CriadorArquivos::cria_arquivo_main(GeneticParams genetic_params) {
+	auto arquivo_modelo = le_conteudo_arquivo("fpga_main_modelo");
+	std::ofstream arquivo_resultado("Verilog/circ_gen/main.v");
+
+	const int bits_func = ceil(log2(genetic_params.num_funcs()));
+	const int num_les = genetic_params.r * genetic_params.c;
+	const int bits_pinos = ceil(log2(num_les + genetic_params.num_in));
+	const int bits_le = bits_func + bits_pinos * genetic_params.le_num_in;
+	const int num_campos_le = genetic_params.le_num_in + 1;
+	const int bits_bottom_le_func = bits_le - bits_func;
+	const int num_outs = genetic_params.num_out;
+	const int num_total_componentes_les = num_les * num_campos_le;
+
+	replace(arquivo_modelo, "#bits_le_1", to_string(bits_le - 1));
+	replace(arquivo_modelo, "#num_les_1", to_string(num_les - 1));
+	replace(arquivo_modelo, "#bits_pinos_1", to_string(bits_pinos - 1));
+	replace(arquivo_modelo, "#num_outs_1", to_string(num_outs - 1));
+	replace(arquivo_modelo, "#num_les", to_string(num_les));
+	replace(arquivo_modelo, "#bits_le_1", to_string(bits_le - 1));
+	replace(arquivo_modelo, "#bits_bottom_le_func",
+			to_string(bits_bottom_le_func));
+	replace(arquivo_modelo, "#num_campos_le", to_string(num_campos_le));
+	replace(arquivo_modelo, "#bits_func_1", to_string(bits_func - 1));
+	replace(arquivo_modelo, "#circuit_le_input_assignments",
+			gera_le_input_assignments(genetic_params));
+	replace(arquivo_modelo, "#num_outs", to_string(num_outs));
+	replace(arquivo_modelo, "#num_total_componentes_les",
+			to_string(num_total_componentes_les));
+	replace(arquivo_modelo, "#bits_pinos_1", to_string(bits_pinos - 1));
+
+	arquivo_resultado << arquivo_modelo;
+}
+
+std::string CriadorArquivos::gera_le_input_assignments(GeneticParams genetic_params) {
+	std::string resultado;
+	const std::string modelo =
+			std::string(
+					"\t\t\tcurrent_circuit_les[i][#current_bits_max:#current_bits_min] <= ")
+					+ "received_data[(i * #num_campos_le) + #current_offset][#bits_pinos_1:0];\n";
+
+	const int num_les = genetic_params.r * genetic_params.c;
+	const int bits_pinos = ceil(log2(num_les + genetic_params.num_in));
+	const int num_campos_le = genetic_params.le_num_in + 1;
+
+	for (int i = genetic_params.le_num_in; i > 0; i--) {
+		std::string current_modelo = modelo;
+		const int current_offset = (2 + genetic_params.le_num_in) - i;
+		const int current_bits_max = (i * bits_pinos) - 1;
+		const int current_bits_min = current_bits_max - (bits_pinos - 1);
+
+		replace(current_modelo, "#current_bits_max",
+				to_string(current_bits_max));
+		replace(current_modelo, "#current_bits_min",
+				to_string(current_bits_min));
+		replace(current_modelo, "#num_campos_le", to_string(num_campos_le));
+		replace(current_modelo, "#current_offset", to_string(current_offset));
+		replace(current_modelo, "#bits_pinos_1", to_string(bits_pinos - 1));
+
+		resultado += current_modelo;
+	}
+
+	return resultado;
+}
+
+void CriadorArquivos::cria_arquivo_sender(GeneticParams genetic_params, int num_samples) {
+	auto arquivo_modelo = le_conteudo_arquivo("sender_modelo");
+	std::ofstream arquivo_resultado("Verilog/circ_gen/sender.v");
+
+	replace(arquivo_modelo, "#num_samples", to_string(num_samples));
+
+	arquivo_resultado << arquivo_modelo;
 }
