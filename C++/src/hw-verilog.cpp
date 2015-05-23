@@ -137,9 +137,6 @@ int main(int argc, char* argv[]) {
 		populacao.calcular_fitness();
 		while (geracao < 10000
 				&& populacao.melhor_individuo().fitness() != MELHOR_FITNESS) {
-			std::cout << geracao << ": "
-					<< populacao.melhor_individuo().fitness() << ", "
-					<< populacao.fitness_medio() << std::endl;
 			populacao.proxima_geracao();
 			populacao.calcular_fitness();
 			geracao++;
@@ -147,7 +144,9 @@ int main(int argc, char* argv[]) {
 		CriadorArquivos::cria_arquivo_top_icarus(genetic_params,
 				populacao.melhor_individuo(), "melhor.v");
 		if (populacao.melhor_individuo().fitness() == MELHOR_FITNESS) {
-			std::cout << "Solucao encontrada na geracao " << geracao << std::endl;
+			std::cout << geracao << std::endl;
+		} else {
+			std::cout << -1 << std::endl;
 		}
 	}
 
