@@ -104,6 +104,13 @@ double fitness2(const std::vector<std::vector<std::bitset<8>>>& individual_outpu
 }
 
 int main(int argc, char* argv[]) {
+	if (argc != 2) {
+		std::cout << "Uso: " << argv[0] << " max_geracoes" << std::endl;
+		exit(0);
+	}
+	int max_geracoes;
+	sscanf(argv[1], "%d", &max_geracoes);
+
 	std::vector<bool> funcs = {
 			true, // AND
 			true, // OR
@@ -135,7 +142,7 @@ int main(int argc, char* argv[]) {
 	for (auto& populacao : populacoes) {
 		int geracao = 0;
 		populacao.calcular_fitness();
-		while (geracao < 10000
+		while (geracao < max_geracoes
 				&& populacao.melhor_individuo().fitness() != MELHOR_FITNESS) {
 			populacao.proxima_geracao();
 			populacao.calcular_fitness();
