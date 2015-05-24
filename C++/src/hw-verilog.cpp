@@ -154,7 +154,8 @@ int main(int argc, char* argv[]) {
 		if (populacoes[i].melhor_individuo().fitness() == MELHOR_FITNESS) {
 			vetor_sucesso.push_back(geracao);
 		} else {
-			vetor_sucesso.push_back(geracao);
+			vetor_sucesso.push_back(-1);
+			break;
 		}
 	}
 
