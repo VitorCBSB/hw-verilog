@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <functional>
 #include "Cromossomo.h"
 #include "Populacao.h"
 #include "IcarusFitnessCalculator.h"
@@ -23,10 +24,10 @@
 
 const double MELHOR_FITNESS = 20000000.0;
 const unsigned int NUM_SAMPLES = 100;
-const unsigned int NUM_IN = 3;
-const unsigned int NUM_OUT = 2;
-const unsigned int NUM_ROWS = 3;
-const unsigned int NUM_COLS = 3;
+const unsigned int NUM_IN = 4;
+const unsigned int NUM_OUT = 1;
+const unsigned int NUM_ROWS = 1;
+const unsigned int NUM_COLS = 10;
 const unsigned int LE_NUM_IN = 2;
 const bool FEED_FORWARD = true;
 
@@ -55,6 +56,13 @@ double fitness(const std::vector<std::vector<std::bitset<8>>>& individual_output
 }
 
 int main(int argc, char* argv[]) {
+	if (argc != 2) {
+		std::cout << "Uso: " << argv[0] << " max_geracoes" << std::endl;
+		exit(0);
+	}
+	int max_geracoes;
+	sscanf(argv[1], "%d", &max_geracoes);
+
 	std::vector<bool> funcs = {
 			true, // AND
 			true, // OR
@@ -72,23 +80,27 @@ int main(int argc, char* argv[]) {
 
 	Populacao populacao(
 			new OnePlusLambdaEvoStrategy(mt, 5, genetic_params,
-					new SimulationFitnessCalculator(genetic_params, fitness)));
+				new SimulationFitnessCalculator(genetic_params,
+					fitness)));
 
 	int geracao = 0;
 	populacao.calcular_fitness();
-	while (geracao < 10000
+	while (geracao < max_geracoes
 			&& populacao.melhor_individuo().fitness() != MELHOR_FITNESS) {
-		std::cout << geracao << ": " << populacao.melhor_individuo().fitness()
-				<< ", " << populacao.fitness_medio() << std::endl;
 		populacao.proxima_geracao();
 		populacao.calcular_fitness();
 		geracao++;
 	}
 
-	CriadorArquivos::cria_arquivo_top_icarus(genetic_params, populacao.melhor_individuo(), "melhor.v");
 	if (populacao.melhor_individuo().fitness() == MELHOR_FITNESS) {
-		std::cout << "Solucao encontrada na geracao " << geracao << std::endl;
+		std::cout << geracao << std::endl;
+	} else {
+		std::cout << -1 << std::endl;
 	}
+
+	CriadorArquivos::cria_arquivo_top_icarus(genetic_params,
+			populacao.melhor_individuo(), "melhor.v");
 
 	return 0;
 }
+
