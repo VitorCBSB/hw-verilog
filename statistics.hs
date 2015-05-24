@@ -1,4 +1,5 @@
 import System.Process
+import System.Directory
 import Data.Function
 import Data.List
 import Data.Maybe
@@ -12,7 +13,7 @@ chamar_n_vezes n input =
 		return []
 	else
 		do 
-			output <- readProcess "/home/vitor/hw-verilog/C++/hw-verilog" [show input] ""
+			output <- readProcess "/home/vitor/hw-verilog/C++/Debug/hw-verilog" [show input] ""
 			let list_output = map read (words output) :: [Integer]
 			recursive_call <- chamar_n_vezes (n - 1) input
 			return $ (maybemiza_input (sum list_output)) : recursive_call
@@ -54,6 +55,7 @@ linhas = "-------------------------------------------"
 main = do
 	putStr $ formatar ["Max ger.", "Media", "Menor", "Maior", "Desvio Padrao", "Taxa sucesso"] ++ "\n"
 	putStr $ linhas ++ "\n"
+	setCurrentDirectory "/home/vitor/hw-verilog/C++"
 	let max_geracoes = [10, 100, 2000]
 	let amostras = 10
 	multiple_outputs <- mapM (chamar_n_vezes amostras) max_geracoes
