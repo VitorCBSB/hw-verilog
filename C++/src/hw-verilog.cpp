@@ -139,22 +139,32 @@ int main(int argc, char* argv[]) {
 										funcao_fitness))));
 	}
 
-	for (auto& populacao : populacoes) {
+	std::vector<int> vetor_sucesso;
+	for (unsigned int i = 0; i < populacoes.size(); i++) {
 		int geracao = 0;
-		populacao.calcular_fitness();
+		populacoes[i].calcular_fitness();
 		while (geracao < max_geracoes
-				&& populacao.melhor_individuo().fitness() != MELHOR_FITNESS) {
-			populacao.proxima_geracao();
-			populacao.calcular_fitness();
+				&& populacoes[i].melhor_individuo().fitness() != MELHOR_FITNESS) {
+			populacoes[i].proxima_geracao();
+			populacoes[i].calcular_fitness();
 			geracao++;
 		}
 		CriadorArquivos::cria_arquivo_top_icarus(genetic_params,
-				populacao.melhor_individuo(), "melhor.v");
-		if (populacao.melhor_individuo().fitness() == MELHOR_FITNESS) {
-			std::cout << geracao << std::endl;
+				populacoes[i].melhor_individuo(), "melhor.v");
+		if (populacoes[i].melhor_individuo().fitness() == MELHOR_FITNESS) {
+			vetor_sucesso.push_back(geracao);
 		} else {
-			std::cout << -1 << std::endl;
+			vetor_sucesso.push_back(geracao);
 		}
+	}
+
+	if (std::find(vetor_sucesso.begin(), vetor_sucesso.end(), -1) == vetor_sucesso.end()) {
+		std::cout << -1 << std::endl;
+		return 0;
+	}
+
+	for (auto& geracao : vetor_sucesso) {
+		std::cout << geracao << std::endl;
 	}
 
 	return 0;
