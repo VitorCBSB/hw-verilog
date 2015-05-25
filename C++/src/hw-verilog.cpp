@@ -25,7 +25,7 @@
 const double MELHOR_FITNESS = 20000000.0;
 const unsigned int NUM_SAMPLES = 100;
 const unsigned int NUM_IN = 4;
-const unsigned int NUM_OUT = 1;
+const unsigned int NUM_OUT = 3;
 const unsigned int NUM_ROWS = 1;
 const unsigned int NUM_COLS = 10;
 const unsigned int LE_NUM_IN = 2;
