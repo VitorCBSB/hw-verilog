@@ -19,7 +19,7 @@ void FPGAFitnessCalculator::fitness(std::vector<Cromossomo>& populacao) {
 	for (unsigned int i = 0; i < populacao.size(); i++) {
 		enviar_individuo(comport_num, populacao[i]);
 		populacao[i].set_fitness(
-				fitness_calculator(receive_data(comport_num)));
+				fitness_calculator(populacao[i], receive_data(comport_num)));
 	}
 
 	RS232_CloseComport(comport_num);

@@ -31,7 +31,8 @@ const unsigned int NUM_COLS = 10;
 const unsigned int LE_NUM_IN = 2;
 const bool FEED_FORWARD = true;
 
-double fitness0(const std::vector<std::vector<std::bitset<8>>>& individual_output) {
+double fitness0(const Cromossomo& individuo,
+		const std::vector<std::vector<std::bitset<8>>>& individual_output) {
 	int soma_distancias = 0;
 	soma_distancias += abs((int) individual_output[0][0].to_ulong() -  0);
 	soma_distancias += abs((int) individual_output[1][0].to_ulong() -  1);
@@ -55,7 +56,8 @@ double fitness0(const std::vector<std::vector<std::bitset<8>>>& individual_outpu
 	return 1.0 / ((double) soma_distancias);
 }
 
-double fitness1(const std::vector<std::vector<std::bitset<8>>>& individual_output) {
+double fitness1(const Cromossomo& individuo,
+		const std::vector<std::vector<std::bitset<8>>>& individual_output) {
 	int soma_distancias = 0;
 	soma_distancias += abs((int) individual_output[0][0].to_ulong() -  0);
 	soma_distancias += abs((int) individual_output[1][0].to_ulong() -  0);
@@ -79,7 +81,8 @@ double fitness1(const std::vector<std::vector<std::bitset<8>>>& individual_outpu
 	return 1.0 / ((double) soma_distancias);
 }
 
-double fitness2(const std::vector<std::vector<std::bitset<8>>>& individual_output) {
+double fitness2(const Cromossomo& individuo,
+		const std::vector<std::vector<std::bitset<8>>>& individual_output) {
 	int soma_distancias = 0;
 	soma_distancias += abs((int) individual_output[0][0].to_ulong() -  0);
 	soma_distancias += abs((int) individual_output[1][0].to_ulong() -  0);
@@ -127,7 +130,8 @@ int main(int argc, char* argv[]) {
 	mt.seed(time(nullptr));
 
 	std::vector<
-			std::function<double(const std::vector<std::vector<std::bitset<8>>>&)>>
+			std::function<double(const Cromossomo&,
+					const std::vector<std::vector<std::bitset<8>>>&)>>
 	funcoes_fitness = {fitness0, fitness1, fitness2};
 	std::vector<Populacao> populacoes;
 

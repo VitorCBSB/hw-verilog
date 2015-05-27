@@ -15,7 +15,7 @@
 class SimulationFitnessCalculator: public FitnessCalculator {
 public:
 	SimulationFitnessCalculator(GeneticParams genetic_params,
-			std::function<double(const std::vector<std::vector<std::bitset<8>>>&)> fitness_calculator)
+			std::function<double(const Cromossomo&, const std::vector<std::vector<std::bitset<8>>>&)> fitness_calculator)
 				: FitnessCalculator(genetic_params, fitness_calculator) {
 	}
 

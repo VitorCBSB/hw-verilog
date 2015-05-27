@@ -34,7 +34,8 @@ private:
 public:
 	FPGAFitnessCalculator(GeneticParams genetic_params,
 			unsigned int num_samples,
-			std::function<double(const std::vector<std::vector<std::bitset<8>>>&)> fitness_calculator) :
+			std::function<double(const Cromossomo&,
+					const std::vector<std::vector<std::bitset<8>>>&)> fitness_calculator) :
 			FitnessCalculator(genetic_params, fitness_calculator), num_samples(num_samples) {
 		CriadorArquivos::cria_arquivo_genetico(genetic_params, "Verilog/circ_gen/genetico.v");
 		CriadorArquivos::cria_arquivo_logic_e(genetic_params, "Verilog/circ_gen/logic_e.v");

@@ -15,7 +15,7 @@ void SimulationFitnessCalculator::fitness(std::vector<Cromossomo>& populacao) {
 			result.push_back(std::vector<std::bitset<8>>());
 			result[j].push_back(calcular_entrada(populacao[i], std::bitset<8>(j)));
 		}
-		populacao[i].set_fitness(fitness_calculator(result));
+		populacao[i].set_fitness(fitness_calculator(populacao[i], result));
 	}
 }
 

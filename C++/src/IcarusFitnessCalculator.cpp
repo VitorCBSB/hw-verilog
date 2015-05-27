@@ -14,7 +14,7 @@ void IcarusFitnessCalculator::fitness(std::vector<Cromossomo>& populacao) {
 		compilar(populacao[i], i);
 
 		auto parsed_output = simular(i);
-		populacao[i].set_fitness(fitness_calculator(parsed_output));
+		populacao[i].set_fitness(fitness_calculator(populacao[i], parsed_output));
 	}
 }
 

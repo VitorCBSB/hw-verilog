@@ -20,7 +20,8 @@
 class IcarusFitnessCalculator: public FitnessCalculator {
 public:
 	IcarusFitnessCalculator(GeneticParams genetic_params,
-			std::function<double(const std::vector<std::vector<std::bitset<8>>>&)> fitness_calculator) :
+			std::function<double(const Cromossomo&,
+					const std::vector<std::vector<std::bitset<8>>>&)> fitness_calculator) :
 			FitnessCalculator(genetic_params, fitness_calculator) {
 		CriadorArquivos::cria_arquivo_logic_e(genetic_params, "logic_e.v");
 		CriadorArquivos::cria_arquivo_genetico(genetic_params, "genetico.v");
