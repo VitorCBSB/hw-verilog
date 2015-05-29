@@ -22,9 +22,6 @@ public:
 
 	std::vector<Cromossomo> proxima_geracao(
 			std::vector<Cromossomo>& populacao) {
-		if (primeira_populacao(populacao)) {
-			return instancia_primeira_populacao();
-		}
 		std::vector<Cromossomo> nova_populacao;
 		nova_populacao.emplace_back(melhor_individuo(populacao));
 		nova_populacao.emplace_back(populacao[1]);
@@ -56,10 +53,6 @@ public:
 		return aleatorio < TAXA_MUTACAO_;
 	}
 
-	bool primeira_populacao(const std::vector<Cromossomo>& populacao) {
-		return populacao.empty();
-	}
-
 	double soma_fitness(const std::vector<Cromossomo>& populacao) {
 		double soma = 0.0;
 		for (auto& cromossomo : populacao) {
@@ -68,7 +61,7 @@ public:
 		return soma;
 	}
 
-	std::vector<Cromossomo> instancia_primeira_populacao() {
+	std::vector<Cromossomo> primeira_populacao() {
 		std::vector<Cromossomo> nova_populacao;
 		for (int i = 0; i < population_size; i++) {
 			nova_populacao.emplace_back(

@@ -33,9 +33,6 @@ public:
 
 	std::vector<Cromossomo> proxima_geracao(
 			std::vector<Cromossomo>& populacao) {
-		if (primeira_populacao(populacao)) {
-			return instancia_primeira_populacao();
-		}
 		std::vector<Cromossomo> nova_populacao;
 		nova_populacao.emplace_back(melhor_individuo(populacao));
 		return nova_populacao;
@@ -51,11 +48,7 @@ public:
 		return melhor;
 	}
 
-	bool primeira_populacao(const std::vector<Cromossomo>& populacao) {
-		return populacao.empty();
-	}
-
-	std::vector<Cromossomo> instancia_primeira_populacao() {
+	std::vector<Cromossomo> primeira_populacao() {
 		std::vector<Cromossomo> nova_populacao;
 		for (int i = 0; i < population_size; i++) {
 			nova_populacao.emplace_back(Cromossomo(mt, genetic_params));

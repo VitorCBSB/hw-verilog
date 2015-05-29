@@ -34,6 +34,7 @@ public:
 	// a ser gerada.
 	virtual std::vector<Cromossomo> proxima_geracao(
 			std::vector<Cromossomo>& populacao) = 0;
+	virtual std::vector<Cromossomo> primeira_populacao() = 0;
 	virtual void calcular_fitness(std::vector<Cromossomo>& populacao) = 0;
 	virtual Cromossomo& melhor_individuo(std::vector<Cromossomo>& populacao) = 0;
 };

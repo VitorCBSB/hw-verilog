@@ -29,9 +29,6 @@ public:
 
 	std::vector<Cromossomo> proxima_geracao(
 			std::vector<Cromossomo>& populacao) {
-		if (primeira_populacao(populacao)) {
-			return instancia_primeira_populacao();
-		}
 		std::vector<Cromossomo> nova_populacao;
 		while (nova_populacao.size() < populacao.size()) {
 			auto cromossomo1 = selecao_torneio(populacao);
@@ -72,11 +69,7 @@ private:
 		return aleatorio < TAXA_MUTACAO;
 	}
 
-	bool primeira_populacao(const std::vector<Cromossomo>& populacao) {
-		return populacao.empty();
-	}
-
-	std::vector<Cromossomo> instancia_primeira_populacao() {
+	std::vector<Cromossomo> primeira_populacao() {
 		std::vector<Cromossomo> nova_populacao;
 		for (int i = 0; i < population_size; i++) {
 			nova_populacao.emplace_back(
