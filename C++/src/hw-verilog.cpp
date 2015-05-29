@@ -152,18 +152,13 @@ int main(int argc, char* argv[]) {
 		if (populacoes[i].melhor_individuo().fitness() == MELHOR_FITNESS) {
 			vetor_sucesso.push_back(geracao);
 		} else {
-			vetor_sucesso.push_back(-1);
-			break;
+			std::cout << -1 << std::endl;
+			return 0;
 		}
 	}
 
 	CriadorArquivos::cria_arquivo_top_icarus(genetic_params,
 			populacoes[0].melhor_individuo(), "melhor.v");
-
-	if (std::find(vetor_sucesso.begin(), vetor_sucesso.end(), -1) != vetor_sucesso.end()) {
-		std::cout << -1 << std::endl;
-		return 0;
-	}
 
 	for (auto& geracao : vetor_sucesso) {
 		std::cout << geracao << std::endl;
