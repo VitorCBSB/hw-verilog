@@ -30,6 +30,13 @@ public:
 		populacao = evolutionary_strategy->primeira_populacao();
 	}
 
+	Populacao(std::vector<Cromossomo> populacao,
+			EvolutionaryStrategy* evolutionary_strategy) :
+			populacao(populacao), evolutionary_strategy(
+					std::unique_ptr<EvolutionaryStrategy>(
+							evolutionary_strategy)) {
+	}
+
 	void proxima_geracao() {
 		populacao = evolutionary_strategy->proxima_geracao(populacao);
 	}
