@@ -106,6 +106,21 @@ double fitness2(const Cromossomo& individuo,
 	return 1.0 / ((double) soma_distancias);
 }
 
+int main_loop_genetico(Populacao& populacao, int max_geracoes) {
+	int geracao = 0;
+	populacao.calcular_fitness();
+	while (geracao < max_geracoes
+			&& populacao.melhor_individuo().fitness() != MELHOR_FITNESS) {
+		populacao.proxima_geracao();
+		populacao.calcular_fitness();
+		geracao++;
+	}
+	if (populacao.melhor_individuo().fitness() == MELHOR_FITNESS) {
+		return geracao;
+	}
+	return -1;
+}
+
 int main(int argc, char* argv[]) {
 	if (argc != 2) {
 		std::cout << "Uso: " << argv[0] << " max_geracoes" << std::endl;
@@ -143,29 +158,11 @@ int main(int argc, char* argv[]) {
 										funcao_fitness))));
 	}
 
-	std::vector<int> vetor_sucesso;
 	for (unsigned int i = 0; i < populacoes.size(); i++) {
-		int geracao = 0;
-		populacoes[i].calcular_fitness();
-		while (geracao < max_geracoes
-				&& populacoes[i].melhor_individuo().fitness() != MELHOR_FITNESS) {
-			populacoes[i].proxima_geracao();
-			populacoes[i].calcular_fitness();
-			geracao++;
-		}
-		if (populacoes[i].melhor_individuo().fitness() == MELHOR_FITNESS) {
-			vetor_sucesso.push_back(geracao);
-		} else {
+		if (main_loop_genetico(populacoes[i], max_geracoes) == -1) {
 			std::cout << -1 << std::endl;
 			return 0;
 		}
-	}
-
-	CriadorArquivos::cria_arquivo_top_icarus(genetic_params,
-			populacoes[0].melhor_individuo(), "melhor.v");
-
-	for (auto& geracao : vetor_sucesso) {
-		std::cout << geracao << std::endl;
 	}
 
 	return 0;
