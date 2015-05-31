@@ -65,8 +65,7 @@ private:
 			const std::vector<std::vector<unsigned int>>& mapa_adaptacao,
 			unsigned int velho_input, unsigned int k, unsigned int num_inputs) {
 		return velho_input < num_inputs ?
-				velho_input :
-				mapa_adaptacao[k][velho_input - num_inputs];
+				velho_input : mapa_adaptacao[k][velho_input - num_inputs];
 	}
 
 	std::vector<unsigned int> novos_inputs(
@@ -76,7 +75,8 @@ private:
 		std::vector<unsigned int> result;
 
 		for (auto velho_input : velhos_inputs) {
-			result.push_back(novo_input(mapa_adaptacao, velho_input, k, num_inputs));
+			result.push_back(
+					novo_input(mapa_adaptacao, velho_input, k, num_inputs));
 		}
 
 		return result;
@@ -107,17 +107,20 @@ public:
 			for (unsigned int j = 0; j < genetic_params.c; j++) {
 				for (unsigned int i = 0; i < genetic_params.r; i++) {
 					elementos_logicos[conjunto_atual + i][j] =
-							cromossomos_a_juntar[k].elementos_logicos[i][j];
-					elementos_logicos[conjunto_atual + i][j].inputs =
-							novos_inputs(mapa, k, genetic_params.num_in,
-									elementos_logicos[conjunto_atual + i][j].inputs);
+							FunctionCell(
+									cromossomos_a_juntar[k].elementos_logicos[i][j].function,
+									novos_inputs(mapa, k, genetic_params.num_in,
+											cromossomos_a_juntar[k].elementos_logicos[i][j].inputs));
 				}
 			}
 		}
 
 		for (unsigned int k = 0; k < cromossomos_a_juntar.size(); k++) {
-			saidas[k].input = novo_input(mapa,
-					cromossomos_a_juntar[k].saidas[0].input, k, genetic_params.num_in);
+			saidas.push_back(
+					OutputCell(
+							novo_input(mapa,
+									cromossomos_a_juntar[k].saidas[0].input, k,
+									genetic_params.num_in)));
 		}
 	}
 
