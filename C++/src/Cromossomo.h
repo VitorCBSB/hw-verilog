@@ -40,12 +40,85 @@ private:
 		return mt();
 	}
 
+	std::vector<std::vector<unsigned int>> mapa_adaptacao(unsigned int old_rows,
+			unsigned int rows, unsigned int cols, unsigned int num_inputs) {
+		std::vector<std::vector<unsigned int>> result;
+		result.resize(rows / old_rows);
+		for (auto& linha : result) {
+			linha.resize(old_rows * cols);
+		}
+
+		for (unsigned int k = 0; k < rows / old_rows; k++) {
+			auto conjunto_atual = k * old_rows;
+			for (unsigned int j = 0; j < cols; j++) {
+				for (unsigned int i = 0; i < old_rows; i++) {
+					result[k][j * old_rows + i] = j * rows
+							+ (conjunto_atual + i + num_inputs);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	unsigned int novo_input(
+			const std::vector<std::vector<unsigned int>>& mapa_adaptacao,
+			unsigned int velho_input, unsigned int k, unsigned int num_inputs) {
+		return velho_input < num_inputs ?
+				velho_input :
+				mapa_adaptacao[k][velho_input - num_inputs];
+	}
+
+	std::vector<unsigned int> novos_inputs(
+			const std::vector<std::vector<unsigned int>>& mapa_adaptacao,
+			unsigned int k, unsigned int num_inputs,
+			const std::vector<unsigned int>& velhos_inputs) {
+		std::vector<unsigned int> result;
+
+		for (auto velho_input : velhos_inputs) {
+			result.push_back(novo_input(mapa_adaptacao, velho_input, k, num_inputs));
+		}
+
+		return result;
+	}
+
 public:
 
 	Cromossomo(const Cromossomo& other) :
 			genetic_params(other.genetic_params), elementos_logicos(
 					other.elementos_logicos), saidas(other.saidas), mt(
 					other.mt), fitness_score(other.fitness_score) {
+	}
+
+	Cromossomo(std::mt19937& mt, GeneticParams genetic_params,
+			const std::vector<Cromossomo>& cromossomos_a_juntar) :
+			genetic_params(genetic_params), mt(mt) {
+		elementos_logicos.resize(genetic_params.r);
+		for (unsigned int i = 0; i < genetic_params.r; i++) {
+			this->elementos_logicos[i].resize(genetic_params.c);
+		}
+
+		auto old_rows = cromossomos_a_juntar[0].genetic_params.r;
+		auto mapa = mapa_adaptacao(old_rows, genetic_params.r, genetic_params.c,
+				genetic_params.num_in);
+
+		for (unsigned int k = 0; k < cromossomos_a_juntar.size(); k++) {
+			auto conjunto_atual = k * old_rows;
+			for (unsigned int j = 0; j < genetic_params.c; j++) {
+				for (unsigned int i = 0; i < genetic_params.r; i++) {
+					elementos_logicos[conjunto_atual + i][j] =
+							cromossomos_a_juntar[k].elementos_logicos[i][j];
+					elementos_logicos[conjunto_atual + i][j].inputs =
+							novos_inputs(mapa, k, genetic_params.num_in,
+									elementos_logicos[conjunto_atual + i][j].inputs);
+				}
+			}
+		}
+
+		for (unsigned int k = 0; k < cromossomos_a_juntar.size(); k++) {
+			saidas[k].input = novo_input(mapa,
+					cromossomos_a_juntar[k].saidas[0].input, k, genetic_params.num_in);
+		}
 	}
 
 	Cromossomo& operator=(const Cromossomo& other) {
@@ -73,8 +146,7 @@ public:
 		return fitness() >= other.fitness();
 	}
 
-	Cromossomo(std::mt19937& mt, GeneticParams genetic_params,
-			bool feed_forward = false) :
+	Cromossomo(std::mt19937& mt, GeneticParams genetic_params) :
 			genetic_params(genetic_params), mt(mt) {
 		for (unsigned int i = 0; i < genetic_params.r; i++) {
 			elementos_logicos.emplace_back(std::vector<FunctionCell>());
