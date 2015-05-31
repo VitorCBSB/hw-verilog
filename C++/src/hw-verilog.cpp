@@ -106,11 +106,37 @@ double fitness2(const Cromossomo& individuo,
 	return 1.0 / ((double) soma_distancias);
 }
 
+double fitness_otimizacao(const Cromossomo& individuo,
+		const std::vector<std::vector<std::bitset<8>>>& individual_output) {
+	int soma_distancias = 0;
+	soma_distancias += abs((int) individual_output[0][0].to_ulong() -  0);
+	soma_distancias += abs((int) individual_output[1][0].to_ulong() -  1);
+	soma_distancias += abs((int) individual_output[2][0].to_ulong() -  2);
+	soma_distancias += abs((int) individual_output[3][0].to_ulong() -  3);
+	soma_distancias += abs((int) individual_output[4][0].to_ulong() -  1);
+	soma_distancias += abs((int) individual_output[5][0].to_ulong() -  2);
+	soma_distancias += abs((int) individual_output[6][0].to_ulong() -  3);
+	soma_distancias += abs((int) individual_output[7][0].to_ulong() -  4);
+	soma_distancias += abs((int) individual_output[8][0].to_ulong() -  2);
+	soma_distancias += abs((int) individual_output[9][0].to_ulong() -  3);
+	soma_distancias += abs((int) individual_output[10][0].to_ulong() - 4);
+	soma_distancias += abs((int) individual_output[11][0].to_ulong() - 5);
+	soma_distancias += abs((int) individual_output[12][0].to_ulong() - 3);
+	soma_distancias += abs((int) individual_output[13][0].to_ulong() - 4);
+	soma_distancias += abs((int) individual_output[14][0].to_ulong() - 5);
+	soma_distancias += abs((int) individual_output[15][0].to_ulong() - 6);
+	if (soma_distancias != 0) {
+		return 0;
+	}
+	return 1.0;
+}
+
 int main_loop_genetico(Populacao& populacao, int max_geracoes) {
 	int geracao = 0;
 	populacao.calcular_fitness();
 	while (geracao < max_geracoes
 			&& populacao.melhor_individuo().fitness() != MELHOR_FITNESS) {
+		std::cout << geracao << ": " << populacao.melhor_individuo().fitness() << std::endl;
 		populacao.proxima_geracao();
 		populacao.calcular_fitness();
 		geracao++;
@@ -158,12 +184,34 @@ int main(int argc, char* argv[]) {
 										funcao_fitness))));
 	}
 
+	// Primeira etapa
+	// -- MC-CGP para achar a resposta
 	for (unsigned int i = 0; i < populacoes.size(); i++) {
 		if (main_loop_genetico(populacoes[i], max_geracoes) == -1) {
 			std::cout << -1 << std::endl;
 			return 0;
 		}
 	}
+
+	// Segunda etapa:
+	// -- CGP para otimizacao
+	genetic_params.num_out *= populacoes.size();
+	genetic_params.r *= populacoes.size();
+
+	std::vector<Cromossomo> nova_populacao;
+	std::vector<Cromossomo> melhores_individuos;
+
+	for (auto& populacao_mccgp : populacoes) {
+		melhores_individuos.push_back(populacao_mccgp.melhor_individuo());
+	}
+	nova_populacao.push_back(Cromossomo(mt, genetic_params, melhores_individuos));
+
+	Populacao populacao_otimizacao(nova_populacao,
+			new OnePlusLambdaEvoStrategy(mt, 5, genetic_params,
+								new SimulationFitnessCalculator(genetic_params,
+										fitness_otimizacao)));
+
+	std::cout << main_loop_genetico(populacao_otimizacao, max_geracoes) << std::endl;
 
 	return 0;
 }
