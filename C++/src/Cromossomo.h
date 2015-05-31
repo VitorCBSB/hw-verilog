@@ -105,7 +105,7 @@ public:
 		for (unsigned int k = 0; k < cromossomos_a_juntar.size(); k++) {
 			auto conjunto_atual = k * old_rows;
 			for (unsigned int j = 0; j < genetic_params.c; j++) {
-				for (unsigned int i = 0; i < genetic_params.r; i++) {
+				for (unsigned int i = 0; i < old_rows; i++) {
 					elementos_logicos[conjunto_atual + i][j] =
 							FunctionCell(
 									cromossomos_a_juntar[k].elementos_logicos[i][j].function,
