@@ -80,7 +80,7 @@ bool SimulationFitnessCalculator::escolher_input(unsigned int input,
 		const std::bitset<8>& entrada) {
 	if (input >= genetic_params.num_in) {
 		input -= genetic_params.num_in;
-		return matriz_resultados[input / genetic_params.c][input % genetic_params.c];
+		return matriz_resultados[input % genetic_params.r][input / genetic_params.r];
 	}
 	return entrada[input];
 }
