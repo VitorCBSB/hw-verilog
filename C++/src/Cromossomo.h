@@ -320,7 +320,7 @@ private:
 	}
 
 	int busca_recursiva(unsigned int input,
-			std::vector<std::vector<bool>>& nos_visitados) {
+			std::vector<std::vector<bool>>& nos_visitados) const {
 		if (input < genetic_params.num_in) {
 			return 0;
 		} else {
@@ -364,7 +364,7 @@ public:
 		return result;
 	}
 
-	int num_portas_utilizadas() {
+	int num_portas_utilizadas() const {
 		int soma = 0;
 		for (auto& saida : saidas) {
 			std::vector<std::vector<bool>> nos_visitados;
