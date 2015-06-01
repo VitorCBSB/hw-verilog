@@ -128,7 +128,7 @@ double fitness_otimizacao(const Cromossomo& individuo,
 	if (soma_distancias != 0) {
 		return 0;
 	}
-	return 1.0;
+	return 1.0 / individuo.num_portas_utilizadas();
 }
 
 int main_loop_genetico(Populacao& populacao, int max_geracoes) {
@@ -136,7 +136,6 @@ int main_loop_genetico(Populacao& populacao, int max_geracoes) {
 	populacao.calcular_fitness();
 	while (geracao < max_geracoes
 			&& populacao.melhor_individuo().fitness() != MELHOR_FITNESS) {
-		std::cout << geracao << ": " << populacao.melhor_individuo().fitness() << std::endl;
 		populacao.proxima_geracao();
 		populacao.calcular_fitness();
 		geracao++;
@@ -207,11 +206,13 @@ int main(int argc, char* argv[]) {
 	nova_populacao.push_back(Cromossomo(mt, genetic_params, melhores_individuos));
 
 	Populacao populacao_otimizacao(nova_populacao,
-			new OnePlusLambdaEvoStrategy(mt, 5, genetic_params,
+			new OnePlusLambdaEvoStrategy(mt, 15, genetic_params,
 								new SimulationFitnessCalculator(genetic_params,
 										fitness_otimizacao)));
 
-	std::cout << main_loop_genetico(populacao_otimizacao, max_geracoes) << std::endl;
+	std::cout << populacao_otimizacao.melhor_individuo().num_portas_utilizadas() << std::endl;
+	main_loop_genetico(populacao_otimizacao, max_geracoes);
+	std::cout << populacao_otimizacao.melhor_individuo().num_portas_utilizadas() << std::endl;
 
 	return 0;
 }
