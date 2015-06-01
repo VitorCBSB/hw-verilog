@@ -8,7 +8,7 @@
 #include "SimulationFitnessCalculator.h"
 
 void SimulationFitnessCalculator::fitness(std::vector<Cromossomo>& populacao) {
-//#pragma omp parallel for
+#pragma omp parallel for
 	for (unsigned int i = 0; i < populacao.size(); i++) {
 		std::vector<std::vector<std::bitset<8>>> result;
 		for (unsigned int j = 0; j < (unsigned int) pow(2, genetic_params.num_in); j++) {
@@ -21,7 +21,6 @@ void SimulationFitnessCalculator::fitness(std::vector<Cromossomo>& populacao) {
 
 std::bitset<8> SimulationFitnessCalculator::calcular_entrada(
 		const Cromossomo& individuo, std::bitset<8> entrada) {
-	auto entrada_temp = entrada.to_string();
 	std::bitset<8> resultado;
 	auto matriz_resultados = matriz_resultados_inicial();
 
@@ -39,7 +38,6 @@ std::bitset<8> SimulationFitnessCalculator::calcular_entrada(
 	for (unsigned int i = 0; i < genetic_params.num_out; i++) {
 		resultado[i] = escolher_input(individuo.saidas[i].input, matriz_resultados, entrada);
 	}
-	auto temp_resultado = resultado.to_string();
 
 	return resultado;
 }
@@ -86,7 +84,7 @@ bool SimulationFitnessCalculator::escolher_input(unsigned int input,
 		const std::bitset<8>& entrada) {
 	if (input >= genetic_params.num_in) {
 		input -= genetic_params.num_in;
-		return matriz_resultados[input / genetic_params.c][input % genetic_params.c];
+		return matriz_resultados[input % genetic_params.r][input / genetic_params.r];
 	}
 	return entrada[input];
 }
