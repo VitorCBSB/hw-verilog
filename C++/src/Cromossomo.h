@@ -345,68 +345,6 @@ public:
 		return result;
 	}
 
-	void criar_arquivo_verilog(std::string nome_arquivo,
-			std::string nome_modulo) const {
-		FILE* fp = fopen(nome_arquivo.c_str(), "w");
-		unsigned int i;
-
-		fprintf(fp, "module %s(in, out);\n", nome_modulo.c_str());
-		fprintf(fp, "\n");
-		fprintf(fp, "\tinput [%d:0] in;\n", genetic_params.num_in - 1);
-		fprintf(fp, "\toutput [%d:0] out;\n", genetic_params.num_out - 1);
-		fprintf(fp, "\twire le_out[%d:0];\n",
-				(genetic_params.r * genetic_params.c) - 1);
-		fprintf(fp, "\n");
-
-		fprintf(fp, "\tassign out = {");
-		for (i = 0; i < genetic_params.num_out - 1; i++) {
-			fprintf(fp, "%s, ", decodificar_entrada(saidas[i].input).c_str());
-		}
-		fprintf(fp, "%s", decodificar_entrada(saidas[i].input).c_str());
-		fprintf(fp, "};\n\n");
-
-		for (unsigned int j = 0; j < genetic_params.c; j++) {
-			for (i = 0; i < genetic_params.r; i++) {
-				fprintf(fp, "logic_e le%d%d (\n", i, j);
-				fprintf(fp, "\t.func(%d'b%s),\n", SAIDAS_LUT,
-						to_bit_string(elementos_logicos[i][j].function,
-								SAIDAS_LUT).c_str());
-				fprintf(fp, "\t.in({");
-				unsigned int k;
-				for (k = 0; k < genetic_params.le_num_in - 1; k++) {
-					fprintf(fp, "%s, ",
-							decodificar_entrada(
-									elementos_logicos[i][j].inputs[k]).c_str());
-				}
-				fprintf(fp, "%s",
-						decodificar_entrada(elementos_logicos[i][j].inputs[k]).c_str());
-				fprintf(fp, "}),\n");
-
-				fprintf(fp, "\t.out(le_out[%d])\n", j * genetic_params.r + i);
-				fprintf(fp, ");\n\n");
-			}
-		}
-
-		fprintf(fp, "endmodule\n");
-
-		fclose(fp);
-	}
-
-	std::string to_bit_string(unsigned int value, unsigned int size) const {
-		std::string rest;
-		std::string result;
-		while (value != 0) {
-			char m = '0' + (value % 2);
-			value /= 2;
-			result.push_back(m);
-			size--;
-		}
-		for (unsigned int i = 0; i < size; i++) {
-			rest += '0';
-		}
-		std::reverse(result.begin(), result.end());
-		return std::string(rest + result);
-	}
 };
 
 #endif /* CROMOSSOMO_H_ */
