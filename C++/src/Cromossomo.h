@@ -319,7 +319,7 @@ private:
 		return retorno;
 	}
 
-	int busca_recursiva(unsigned int input,
+	int busca_recursiva_num_portas(unsigned int input,
 			std::vector<std::vector<bool>>& nos_visitados) const {
 		if (input < genetic_params.num_in) {
 			return 0;
@@ -333,9 +333,25 @@ private:
 			nos_visitados[i][j] = true;
 			int soma = 1;
 			for (auto input : elementos_logicos[i][j].inputs) {
-				soma += busca_recursiva(input, nos_visitados);
+				soma += busca_recursiva_num_portas(input, nos_visitados);
 			}
 			return soma;
+		}
+	}
+
+	int busca_recursiva_gate_path(unsigned int input) const {
+		if (input < genetic_params.num_in) {
+			return 0;
+		} else {
+			input -= genetic_params.num_in;
+			int i = input % genetic_params.r;
+			int j = input / genetic_params.r;
+			std::vector<unsigned int> niveis_filhos;
+			for (unsigned int k = 0; k < genetic_params.le_num_in; k++) {
+				niveis_filhos.emplace_back(busca_recursiva_gate_path(
+						elementos_logicos[i][j].inputs[k]));
+			}
+			return (*std::max_element(niveis_filhos.begin(), niveis_filhos.end())) + 1;
 		}
 	}
 
@@ -374,9 +390,17 @@ public:
 				nos_visitados[i].resize(genetic_params.c);
 			}
 
-			soma += busca_recursiva(saida.input, nos_visitados);
+			soma += busca_recursiva_num_portas(saida.input, nos_visitados);
 		}
 		return soma;
+	}
+
+	int num_maior_gate_path() const {
+		std::vector<int> lista_niveis;
+		for (auto& saida : saidas) {
+			lista_niveis.push_back(busca_recursiva_gate_path(saida.input));
+		}
+		return *std::max_element(lista_niveis.begin(), lista_niveis.end());
 	}
 };
 
