@@ -324,6 +324,7 @@ private:
 		if (input < genetic_params.num_in) {
 			return 0;
 		} else {
+			input -= genetic_params.num_in;
 			int i = input % genetic_params.r;
 			int j = input / genetic_params.r;
 			if (nos_visitados[i][j]) {
