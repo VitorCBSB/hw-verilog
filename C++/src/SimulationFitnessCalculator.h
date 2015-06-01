@@ -32,6 +32,9 @@ private:
 			const std::vector<std::vector<bool>>& matriz_resultados,
 			const std::bitset<8>& entrada);
 
-};
+	std::vector<std::function<bool(const bool&, const bool&)>>
+			determinar_funcoes();
+
+	};
 
 #endif /* SIMULATIONFITNESSCALCULATOR_H_ */

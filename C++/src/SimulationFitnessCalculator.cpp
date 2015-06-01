@@ -8,7 +8,7 @@
 #include "SimulationFitnessCalculator.h"
 
 void SimulationFitnessCalculator::fitness(std::vector<Cromossomo>& populacao) {
-#pragma omp parallel for
+//#pragma omp parallel for
 	for (unsigned int i = 0; i < populacao.size(); i++) {
 		std::vector<std::vector<std::bitset<8>>> result;
 		for (unsigned int j = 0; j < (unsigned int) pow(2, genetic_params.num_in); j++) {
@@ -21,6 +21,7 @@ void SimulationFitnessCalculator::fitness(std::vector<Cromossomo>& populacao) {
 
 std::bitset<8> SimulationFitnessCalculator::calcular_entrada(
 		const Cromossomo& individuo, std::bitset<8> entrada) {
+	auto entrada_temp = entrada.to_string();
 	std::bitset<8> resultado;
 	auto matriz_resultados = matriz_resultados_inicial();
 
@@ -38,6 +39,7 @@ std::bitset<8> SimulationFitnessCalculator::calcular_entrada(
 	for (unsigned int i = 0; i < genetic_params.num_out; i++) {
 		resultado[i] = escolher_input(individuo.saidas[i].input, matriz_resultados, entrada);
 	}
+	auto temp_resultado = resultado.to_string();
 
 	return resultado;
 }
@@ -53,6 +55,12 @@ std::vector<std::vector<bool>> SimulationFitnessCalculator::matriz_resultados_in
 
 std::function<bool(const bool&, const bool&)> SimulationFitnessCalculator::escolher_funcao(
 		int funcao) {
+	auto funcoes = determinar_funcoes();
+	return funcoes[funcao];
+}
+
+std::vector<std::function<bool(const bool&, const bool&)>>
+	SimulationFitnessCalculator::determinar_funcoes() {
 	const std::vector<std::function<bool(const bool&, const bool&)>> funcoes = {
 					std::logical_and<bool>(),
 					std::logical_or<bool>(),
@@ -62,17 +70,15 @@ std::function<bool(const bool&, const bool&)> SimulationFitnessCalculator::escol
 					std::equal_to<bool>(),
 					[](const bool& a, const bool& b) {return !(a || b);}
 			};
+	std::vector<std::function<bool(const bool&, const bool&)>> result;
 
-	int contador_funcao = 0;
-	int i = 0;
-	while (contador_funcao < funcao) {
+	for (unsigned int i = 0; i < funcoes.size(); i++) {
 		if (genetic_params.funcs[i]) {
-			contador_funcao++;
+			result.emplace_back(funcoes[i]);
 		}
-		i++;
 	}
 
-	return funcoes[i];
+	return result;
 }
 
 bool SimulationFitnessCalculator::escolher_input(unsigned int input,
