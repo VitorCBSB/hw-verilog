@@ -319,6 +319,25 @@ private:
 		return retorno;
 	}
 
+	int busca_recursiva(unsigned int input,
+			std::vector<std::vector<bool>>& nos_visitados) {
+		if (input < genetic_params.num_in) {
+			return 0;
+		} else {
+			int i = input % genetic_params.r;
+			int j = input / genetic_params.r;
+			if (nos_visitados[i][j]) {
+				return 0;
+			}
+			nos_visitados[i][j] = true;
+			int soma = 1;
+			for (auto input : elementos_logicos[i][j].inputs) {
+				soma += busca_recursiva(input, nos_visitados);
+			}
+			return soma;
+		}
+	}
+
 public:
 	std::vector<unsigned char> descricao_les() const {
 		std::vector<unsigned char> result;
@@ -345,6 +364,19 @@ public:
 		return result;
 	}
 
+	int num_portas_utilizadas() {
+		int soma = 0;
+		for (auto& saida : saidas) {
+			std::vector<std::vector<bool>> nos_visitados;
+			nos_visitados.resize(genetic_params.r);
+			for (unsigned int i = 0; i < nos_visitados.size(); i++) {
+				nos_visitados[i].resize(genetic_params.c);
+			}
+
+			soma += busca_recursiva(saida.input, nos_visitados);
+		}
+		return soma;
+	}
 };
 
 #endif /* CROMOSSOMO_H_ */
