@@ -1,5 +1,6 @@
 import System.Process
 import System.Directory
+import System.Environment
 import Data.Function
 import Data.List
 import Data.Maybe
@@ -59,17 +60,23 @@ formatar =
 linhas n = replicate n '-'
 
 main = do
-	arquivoResultado <- openFile "resultado.txt" WriteMode
-	let cabecalho = formatar $ ["Amostras", "Max ger. otimizicao", "Media convergencia"] 
-		++ ["Media n. portas (pre)", "Media gate path (pre)", "Media n. portas (pos)", "Media gate path (pos)"] 
-		++ ["% n. portas", "% gate"]
-	hPutStrLn arquivoResultado cabecalho
-	hPutStrLn arquivoResultado $ linhas (length cabecalho)
-	setCurrentDirectory "/home/vitor/hw-verilog/C++"
-	let maxGeracoes = 30000
-	let amostras = 20
-	resultados <- chamarProgramaNVezes amostras maxGeracoes
-	let estatisticas = calcularEstatisticas amostras maxGeracoes ((map . map) fromInteger resultados)
-	hPutStrLn arquivoResultado $ formatar $ map formatarMaybe estatisticas
-	hClose arquivoResultado
+	args <- getArgs
+	case args of
+		[geracoesArg, amostrasArg] -> do
+			arquivoResultado <- openFile "resultado.txt" WriteMode
+			let cabecalho = formatar $ ["Amostras", "Max ger. otimizicao", "Media convergencia"] 
+				++ ["Media n. portas (pre)", "Media gate path (pre)", "Media n. portas (pos)"]
+				++ ["Media gate path (pos)", "% n. portas", "% gate"]
+			hPutStrLn arquivoResultado cabecalho
+			hPutStrLn arquivoResultado $ linhas (length cabecalho)
+			setCurrentDirectory "/home/vitor/hw-verilog/C++"
+			let maxGeracoes = read geracoesArg
+			let amostras = read amostrasArg
+			resultados <- chamarProgramaNVezes amostras maxGeracoes
+			let estatisticas = calcularEstatisticas amostras maxGeracoes ((map . map) fromInteger resultados)
+			hPutStrLn arquivoResultado $ formatar $ map formatarMaybe estatisticas
+			hClose arquivoResultado
+		_ -> do
+			nome <- getProgName
+			putStrLn $ "uso: " ++ nome ++ " <geracoes> <amostras>"
 
