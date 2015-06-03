@@ -4,6 +4,7 @@ import Data.Function
 import Data.List
 import Data.Maybe
 import Control.Monad
+import System.IO
 
 chamarPrograma :: Integer -> IO [Integer]
 chamarPrograma input =
@@ -17,6 +18,7 @@ chamarProgramaNVezes n input =
 		return []
 	else
 		do 
+			putStrLn $ show n
 			listOutput <- chamarPrograma input
 			case listOutput of
 				[-1] -> chamarProgramaNVezes n input
@@ -37,8 +39,8 @@ desvioPadrao lista = let
 formatarMaybe (Just x) = show x
 formatarMaybe Nothing = "N/A"
 
-printarEstatisticas :: Integer -> Integer -> [[Float]] -> IO ()
-printarEstatisticas amostras max_geracoes listaAmostras = let 
+calcularEstatisticas :: Integer -> Integer -> [[Float]] -> [Maybe Float]
+calcularEstatisticas amostras max_geracoes listaAmostras = let 
 	mediaConvergencia = media $ map (!! 0) listaAmostras
 	mediaNumPortasPre = media $ map (!! 1) listaAmostras
 	mediaNivelGatePre = media $ map (!! 2) listaAmostras
@@ -46,25 +48,27 @@ printarEstatisticas amostras max_geracoes listaAmostras = let
 	mediaNivelGatePos = media $ map (!! 4) listaAmostras
 	taxaMelhoraNumPortas = liftM2 (/) mediaNumPortasPre mediaNumPortasPos
 	taxaMelhoraNivelGate = liftM2 (/) mediaNivelGatePre mediaNivelGatePos
-	output = [Just (fromInteger amostras), Just (fromInteger max_geracoes), mediaConvergencia, 
+	in
+	[Just (fromInteger amostras), Just (fromInteger max_geracoes), mediaConvergencia, 
 			mediaNumPortasPre, mediaNivelGatePre, mediaNumPortasPos, mediaNivelGatePos,
 			taxaMelhoraNumPortas, taxaMelhoraNivelGate]
-	in
-			putStrLn $ formatar (map formatarMaybe output)
 
 formatar = 
 	intercalate " | "
 
-linhas = "------------------------------------------------------------------------"
+linhas n = replicate n '-'
 
 main = do
-	putStrLn $ formatar $ ["Amostras", "Max ger. otimizicao", "Media convergencia"] 
+	arquivoResultado <- openFile "resultado.txt" WriteMode
+	let cabecalho = formatar $ ["Amostras", "Max ger. otimizicao", "Media convergencia"] 
 		++ ["Media n. portas (pre)", "Media gate path (pre)", "Media n. portas (pos)", "Media gate path (pos)"] 
 		++ ["% n. portas", "% gate"]
-	putStr $ linhas ++ "\n"
+	hPutStrLn arquivoResultado cabecalho
+	hPutStrLn arquivoResultado $ linhas (length cabecalho)
 	setCurrentDirectory "/home/vitor/hw-verilog/C++"
 	let maxGeracoes = 30000
-	let amostras = 50
+	let amostras = 20
 	resultados <- chamarProgramaNVezes amostras maxGeracoes
-	printarEstatisticas amostras maxGeracoes ((map . map) fromInteger resultados)
+	let estatisticas = calcularEstatisticas amostras maxGeracoes ((map . map) fromInteger resultados)
+	hPutStrLn arquivoResultado $ formatar $ map formatarMaybe estatisticas
 
