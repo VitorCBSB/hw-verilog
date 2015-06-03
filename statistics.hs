@@ -71,4 +71,5 @@ main = do
 	resultados <- chamarProgramaNVezes amostras maxGeracoes
 	let estatisticas = calcularEstatisticas amostras maxGeracoes ((map . map) fromInteger resultados)
 	hPutStrLn arquivoResultado $ formatar $ map formatarMaybe estatisticas
+	hClose arquivoResultado
 
