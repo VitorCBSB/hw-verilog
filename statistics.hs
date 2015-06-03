@@ -3,20 +3,26 @@ import System.Directory
 import Data.Function
 import Data.List
 import Data.Maybe
+import Control.Monad
 
-maybemizaInput (-1) = Nothing
-maybemizaInput x = Just x
+chamarPrograma :: Integer -> IO [Integer]
+chamarPrograma input =
+	do
+		output <- readProcess "/home/vitor/hw-verilog/C++/Debug/hw-verilog" [show input] ""
+		return (map read (words output) :: [Integer])
 
-chamarNVezes :: Integer -> Integer -> IO [Maybe Integer]
-chamarNVezes n input =
+chamarProgramaNVezes :: Integer -> Integer -> IO [[Integer]]
+chamarProgramaNVezes n input =
 	if n == 0 then
 		return []
 	else
 		do 
-			output <- readProcess "/home/vitor/hw-verilog/C++/Debug/hw-verilog" [show input] ""
-			let listOutput = map read (words output) :: [Integer]
-			recursiveCall <- chamarNVezes (n - 1) input
-			return $ maybemizaInput (sum listOutput) : recursiveCall
+			listOutput <- chamarPrograma input
+			case listOutput of
+				[-1] -> chamarProgramaNVezes n input
+				_ -> do
+					recursiveCall <- chamarProgramaNVezes (n - 1) input
+					return $ listOutput : recursiveCall
 
 media [] = Nothing
 media lista = Just $ sum lista / fromIntegral (length lista)
@@ -28,36 +34,37 @@ desvioPadrao lista = let
 	in
 		Just $ sqrt $ sum (map (\x -> (x - mediaLista)^2) lista) / fromIntegral (length lista - 1)
 
-minimum_ [] = Nothing
-minimum_ lista = Just (minimum lista)
-
-maximum_ [] = Nothing
-maximum_ lista = Just (maximum lista)
-
 formatarMaybe (Just x) = show x
 formatarMaybe Nothing = "N/A"
 
-printarEstatisticas :: Integer -> [Maybe Float] -> IO ()
-printarEstatisticas max_geracoes lista_amostras = let 
-	respostasCorretas = catMaybes lista_amostras
-	taxaSucesso = fromIntegral (length respostasCorretas) / fromIntegral (length lista_amostras)
-	output = [Just (fromInteger max_geracoes), media respostasCorretas, 
-			minimum_ respostasCorretas, maximum_ respostasCorretas, 
-			desvioPadrao respostasCorretas, Just taxaSucesso]
+printarEstatisticas :: Integer -> Integer -> [[Float]] -> IO ()
+printarEstatisticas amostras max_geracoes listaAmostras = let 
+	mediaConvergencia = media $ map (!! 0) listaAmostras
+	mediaNumPortasPre = media $ map (!! 1) listaAmostras
+	mediaNivelGatePre = media $ map (!! 2) listaAmostras
+	mediaNumPortasPos = media $ map (!! 3) listaAmostras
+	mediaNivelGatePos = media $ map (!! 4) listaAmostras
+	taxaMelhoraNumPortas = liftM2 (/) mediaNumPortasPre mediaNumPortasPos
+	taxaMelhoraNivelGate = liftM2 (/) mediaNivelGatePre mediaNivelGatePos
+	output = [Just (fromInteger amostras), Just (fromInteger max_geracoes), mediaConvergencia, 
+			mediaNumPortasPre, mediaNivelGatePre, mediaNumPortasPos, mediaNivelGatePos,
+			taxaMelhoraNumPortas, taxaMelhoraNivelGate]
 	in
-			putStr $ formatar (map formatarMaybe output) ++ "\n"
+			putStrLn $ formatar (map formatarMaybe output)
 
 formatar = 
 	intercalate " | "
 
-linhas = "-------------------------------------------"
+linhas = "------------------------------------------------------------------------"
 
 main = do
-	putStr $ formatar ["Max ger.", "Media", "Menor", "Maior", "Desvio Padrao", "Taxa sucesso"] ++ "\n"
+	putStrLn $ formatar $ ["Amostras", "Max ger. otimizicao", "Media convergencia"] 
+		++ ["Media n. portas (pre)", "Media gate path (pre)", "Media n. portas (pos)", "Media gate path (pos)"] 
+		++ ["% n. portas", "% gate"]
 	putStr $ linhas ++ "\n"
 	setCurrentDirectory "/home/vitor/hw-verilog/C++"
-	let maxGeracoes = [2000, 5000, 10000]
-	let amostras = 20
-	multipleOutputs <- mapM (chamarNVezes amostras) maxGeracoes
-	mapM_ (\(max_g, mul_o) -> printarEstatisticas max_g (map (fmap fromInteger) mul_o)) (zip maxGeracoes multipleOutputs)
+	let maxGeracoes = 30000
+	let amostras = 50
+	resultados <- chamarProgramaNVezes amostras maxGeracoes
+	printarEstatisticas amostras maxGeracoes ((map . map) fromInteger resultados)
 
