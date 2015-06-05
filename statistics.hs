@@ -1,7 +1,6 @@
 import System.Process
 import System.Directory
 import System.Environment
-import Data.Function
 import Data.List
 import Data.Maybe
 import Control.Monad
@@ -19,7 +18,7 @@ chamarProgramaNVezes n input =
 		return []
 	else
 		do 
-			putStrLn $ show n
+                        print n
 			listOutput <- chamarPrograma input
 			case listOutput of
 				[-1] -> chamarProgramaNVezes n input
@@ -54,29 +53,30 @@ calcularEstatisticas amostras max_geracoes listaAmostras = let
 			mediaNumPortasPre, mediaNivelGatePre, mediaNumPortasPos, mediaNivelGatePos,
 			taxaMelhoraNumPortas, taxaMelhoraNivelGate]
 
-formatar = 
-	intercalate " | "
+formatar = intercalate " | "
 
 linhas n = replicate n '-'
 
-main = do
-	args <- getArgs
-	case args of
-		[geracoesArg, amostrasArg] -> do
-			arquivoResultado <- openFile "resultado.txt" WriteMode
-			let cabecalho = formatar $ ["Amostras", "Max ger. otimizicao", "Media convergencia"] 
-				++ ["Media n. portas (pre)", "Media gate path (pre)", "Media n. portas (pos)"]
-				++ ["Media gate path (pos)", "% n. portas", "% gate"]
-			hPutStrLn arquivoResultado cabecalho
-			hPutStrLn arquivoResultado $ linhas (length cabecalho)
-			setCurrentDirectory "/home/vitor/hw-verilog/C++"
-			let maxGeracoes = read geracoesArg
-			let amostras = read amostrasArg
-			resultados <- chamarProgramaNVezes amostras maxGeracoes
-			let estatisticas = calcularEstatisticas amostras maxGeracoes ((map . map) fromInteger resultados)
-			hPutStrLn arquivoResultado $ formatar $ map formatarMaybe estatisticas
-			hClose arquivoResultado
-		_ -> do
-			nome <- getProgName
-			putStrLn $ "uso: " ++ nome ++ " <geracoes> <amostras>"
+realMain :: [String] -> IO ()
+realMain [geracoesArg, amostrasArg] = do
+	arquivoResultado <- openFile "resultado.txt" WriteMode
+	let cabecalho = formatar $ ["Amostras", "Max ger. otimizicao", "Media convergencia"] 
+		++ ["Media n. portas (pre)", "Media gate path (pre)", "Media n. portas (pos)"]
+		++ ["Media gate path (pos)", "% n. portas", "% gate"]
+	hPutStrLn arquivoResultado cabecalho
+	hPutStrLn arquivoResultado $ linhas (length cabecalho)
+	setCurrentDirectory "/home/vitor/hw-verilog/C++"
+	let maxGeracoes = read geracoesArg
+	let amostras = read amostrasArg
+	resultados <- chamarProgramaNVezes amostras maxGeracoes
+	let estatisticas = calcularEstatisticas amostras maxGeracoes ((map . map) fromInteger resultados)
+	hPutStrLn arquivoResultado $ formatar $ map formatarMaybe estatisticas
+	hClose arquivoResultado
+
+realMain _ = do
+	nome <- getProgName
+	putStrLn $ "uso: " ++ nome ++ " <geracoes> <amostras>"
+
+main :: IO ()
+main = getArgs >>= realMain
 
