@@ -8,7 +8,7 @@
 #include "SimulationFitnessCalculator.h"
 
 void SimulationFitnessCalculator::fitness(std::vector<Cromossomo>& populacao) {
-#pragma omp parallel for
+#pragma omp parallel for if (paralelismo_local)
 	for (unsigned int i = 0; i < populacao.size(); i++) {
 		std::vector<std::vector<std::bitset<8>>> result;
 		for (unsigned int j = 0; j < (unsigned int) pow(2, genetic_params.num_in); j++) {

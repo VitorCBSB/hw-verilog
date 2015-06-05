@@ -297,17 +297,18 @@ int main(int argc, char* argv[]) {
 				Populacao(
 						new OnePlusLambdaEvoStrategy(mt, 5, genetic_params,
 								new SimulationFitnessCalculator(genetic_params,
-										funcao_fitness))));
+										funcao_fitness, false))));
 	}
 
 	// Primeira etapa
 	// -- MC-CGP para achar a resposta
 	int soma_geracoes = 0;
+#pragma omp parallel for reduction (+: soma_geracoes)
 	for (unsigned int i = 0; i < populacoes.size(); i++) {
 		int geracao_final = main_loop_genetico(populacoes[i], max_geracoes);
 		if (geracao_final == -1) {
 			std::cout << -1 << std::endl;
-			return 0;
+			exit(0);
 		}
 		soma_geracoes += geracao_final;
 	}
@@ -329,7 +330,7 @@ int main(int argc, char* argv[]) {
 	Populacao populacao_otimizacao(nova_populacao,
 			new OnePlusLambdaEvoStrategy(mt, 15, genetic_params,
 								new SimulationFitnessCalculator(genetic_params,
-										fitness_otimizacao)));
+										fitness_otimizacao, true)));
 
 	std::cout << populacao_otimizacao.melhor_individuo().num_portas_utilizadas()
 			<< ' '
