@@ -52,7 +52,7 @@ int soma_distancias_decoder7(bool parcial, int bit,
 			std::bitset<8>("1111001"),
 			std::bitset<8>("1110001")
 	};
-	for (unsigned int i = 0; i < output_a_analisar.size(); i++) {
+	for (unsigned int i = 0; i < respostas.size(); i++) {
 		soma_distancias += abs((int) output_a_analisar[i][0].to_ulong() -
 				(parcial ? respostas[i][bit] : respostas[i].to_ulong()));
 	}
