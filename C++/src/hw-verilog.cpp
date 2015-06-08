@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
 
 	std::vector<Populacao> populacoes;
 
-	for (unsigned int i = 0; i < genetic_params.num_out; i++) {
+	for (unsigned int i = 0; i < 7; i++) {
 		populacoes.push_back(
 				Populacao(
 						new OnePlusLambdaEvoStrategy(mt, 5, genetic_params,
