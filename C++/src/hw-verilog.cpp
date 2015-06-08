@@ -31,216 +31,37 @@ const unsigned int NUM_COLS = 10;
 const unsigned int LE_NUM_IN = 2;
 const bool FEED_FORWARD = true;
 
-double fitness0(const Cromossomo& individuo,
-		const std::vector<std::vector<std::bitset<8>>>& individual_output) {
+int soma_distancias_decoder7(bool parcial, int bit,
+		const std::vector<std::vector<std::bitset<8>>>& output_a_analisar) {
 	int soma_distancias = 0;
-	soma_distancias += abs((int) individual_output[0][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[1][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[2][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[3][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[4][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[5][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[6][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[7][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[8][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[9][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[10][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[11][0].to_ulong() - 0);
-	soma_distancias += abs((int) individual_output[12][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[13][0].to_ulong() - 0);
-	soma_distancias += abs((int) individual_output[14][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[15][0].to_ulong() - 1);
-	if (soma_distancias == 0) {
-		return MELHOR_FITNESS;
+	std::vector<std::bitset<8>> respostas = {
+			std::bitset<8>("0111111"),
+			std::bitset<8>("0000110"),
+			std::bitset<8>("1011011"),
+			std::bitset<8>("1001111"),
+			std::bitset<8>("1100110"),
+			std::bitset<8>("1101101"),
+			std::bitset<8>("1111101"),
+			std::bitset<8>("0000111"),
+			std::bitset<8>("1111111"),
+			std::bitset<8>("1101111"),
+			std::bitset<8>("1110111"),
+			std::bitset<8>("1111100"),
+			std::bitset<8>("0111001"),
+			std::bitset<8>("1011110"),
+			std::bitset<8>("1111001"),
+			std::bitset<8>("1110001")
+	};
+	for (unsigned int i = 0; i < output_a_analisar.size(); i++) {
+		soma_distancias += abs((int) output_a_analisar[i][0].to_ulong() -
+				(parcial ? respostas[i][bit] : respostas[i].to_ulong()));
 	}
-	return 1.0 / ((double) soma_distancias);
-}
-
-double fitness1(const Cromossomo& individuo,
-		const std::vector<std::vector<std::bitset<8>>>& individual_output) {
-	int soma_distancias = 0;
-	soma_distancias += abs((int) individual_output[0][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[1][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[2][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[3][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[4][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[5][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[6][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[7][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[8][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[9][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[10][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[11][0].to_ulong() - 0);
-	soma_distancias += abs((int) individual_output[12][0].to_ulong() - 0);
-	soma_distancias += abs((int) individual_output[13][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[14][0].to_ulong() - 0);
-	soma_distancias += abs((int) individual_output[15][0].to_ulong() - 0);
-	if (soma_distancias == 0) {
-		return MELHOR_FITNESS;
-	}
-	return 1.0 / ((double) soma_distancias);
-}
-
-double fitness2(const Cromossomo& individuo,
-		const std::vector<std::vector<std::bitset<8>>>& individual_output) {
-	int soma_distancias = 0;
-	soma_distancias += abs((int) individual_output[0][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[1][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[2][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[3][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[4][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[5][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[6][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[7][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[8][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[9][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[10][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[11][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[12][0].to_ulong() - 0);
-	soma_distancias += abs((int) individual_output[13][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[14][0].to_ulong() - 0);
-	soma_distancias += abs((int) individual_output[15][0].to_ulong() - 0);
-	if (soma_distancias == 0) {
-		return MELHOR_FITNESS;
-	}
-	return 1.0 / ((double) soma_distancias);
-}
-
-double fitness3(const Cromossomo& individuo,
-		const std::vector<std::vector<std::bitset<8>>>& individual_output) {
-	int soma_distancias = 0;
-	soma_distancias += abs((int) individual_output[0][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[1][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[2][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[3][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[4][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[5][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[6][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[7][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[8][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[9][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[10][0].to_ulong() - 0);
-	soma_distancias += abs((int) individual_output[11][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[12][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[13][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[14][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[15][0].to_ulong() - 0);
-	if (soma_distancias == 0) {
-		return MELHOR_FITNESS;
-	}
-	return 1.0 / ((double) soma_distancias);
-}
-
-double fitness4(const Cromossomo& individuo,
-		const std::vector<std::vector<std::bitset<8>>>& individual_output) {
-	int soma_distancias = 0;
-	soma_distancias += abs((int) individual_output[0][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[1][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[2][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[3][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[4][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[5][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[6][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[7][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[8][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[9][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[10][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[11][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[12][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[13][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[14][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[15][0].to_ulong() - 1);
-	if (soma_distancias == 0) {
-		return MELHOR_FITNESS;
-	}
-	return 1.0 / ((double) soma_distancias);
-}
-
-double fitness5(const Cromossomo& individuo,
-		const std::vector<std::vector<std::bitset<8>>>& individual_output) {
-	int soma_distancias = 0;
-	soma_distancias += abs((int) individual_output[0][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[1][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[2][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[3][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[4][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[5][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[6][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[7][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[8][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[9][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[10][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[11][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[12][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[13][0].to_ulong() - 0);
-	soma_distancias += abs((int) individual_output[14][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[15][0].to_ulong() - 1);
-	if (soma_distancias == 0) {
-		return MELHOR_FITNESS;
-	}
-	return 1.0 / ((double) soma_distancias);
-}
-
-double fitness6(const Cromossomo& individuo,
-		const std::vector<std::vector<std::bitset<8>>>& individual_output) {
-	int soma_distancias = 0;
-	soma_distancias += abs((int) individual_output[0][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[1][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[2][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[3][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[4][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[5][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[6][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[7][0].to_ulong() -  0);
-	soma_distancias += abs((int) individual_output[8][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[9][0].to_ulong() -  1);
-	soma_distancias += abs((int) individual_output[10][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[11][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[12][0].to_ulong() - 0);
-	soma_distancias += abs((int) individual_output[13][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[14][0].to_ulong() - 1);
-	soma_distancias += abs((int) individual_output[15][0].to_ulong() - 1);
-	if (soma_distancias == 0) {
-		return MELHOR_FITNESS;
-	}
-	return 1.0 / ((double) soma_distancias);
+	return soma_distancias;
 }
 
 double fitness_otimizacao(const Cromossomo& individuo,
 		const std::vector<std::vector<std::bitset<8>>>& individual_output) {
-	int soma_distancias = 0;
-	soma_distancias += abs((int) individual_output[0][0].to_ulong() -
-			std::bitset<8>("0111111").to_ulong());
-	soma_distancias += abs((int) individual_output[1][0].to_ulong() -
-			std::bitset<8>("0000110").to_ulong());
-	soma_distancias += abs((int) individual_output[2][0].to_ulong() -
-			std::bitset<8>("1011011").to_ulong());
-	soma_distancias += abs((int) individual_output[3][0].to_ulong() -
-			std::bitset<8>("1001111").to_ulong());
-	soma_distancias += abs((int) individual_output[4][0].to_ulong() -
-			std::bitset<8>("1100110").to_ulong());
-	soma_distancias += abs((int) individual_output[5][0].to_ulong() -
-			std::bitset<8>("1101101").to_ulong());
-	soma_distancias += abs((int) individual_output[6][0].to_ulong() -
-			std::bitset<8>("1111101").to_ulong());
-	soma_distancias += abs((int) individual_output[7][0].to_ulong() -
-			std::bitset<8>("0000111").to_ulong());
-	soma_distancias += abs((int) individual_output[8][0].to_ulong() -
-			std::bitset<8>("1111111").to_ulong());
-	soma_distancias += abs((int) individual_output[9][0].to_ulong() -
-			std::bitset<8>("1101111").to_ulong());
-	soma_distancias += abs((int) individual_output[10][0].to_ulong() -
-			std::bitset<8>("1110111").to_ulong());
-	soma_distancias += abs((int) individual_output[11][0].to_ulong() -
-			std::bitset<8>("1111100").to_ulong());
-	soma_distancias += abs((int) individual_output[12][0].to_ulong() -
-			std::bitset<8>("0111001").to_ulong());
-	soma_distancias += abs((int) individual_output[13][0].to_ulong() -
-			std::bitset<8>("1011110").to_ulong());
-	soma_distancias += abs((int) individual_output[14][0].to_ulong() -
-			std::bitset<8>("1111001").to_ulong());
-	soma_distancias += abs((int) individual_output[15][0].to_ulong() -
-			std::bitset<8>("1110001").to_ulong());
+	auto soma_distancias = soma_distancias_decoder7(false, 0, individual_output);
 	if (soma_distancias != 0) {
 		return 0;
 	}
@@ -285,19 +106,21 @@ int main(int argc, char* argv[]) {
 	std::mt19937 mt;
 	mt.seed(time(nullptr));
 
-	std::vector<
-			std::function<double(const Cromossomo&,
-					const std::vector<std::vector<std::bitset<8>>>&)>>
-	funcoes_fitness = {fitness0, fitness1, fitness2, fitness3, fitness4,
-			fitness5, fitness6};
 	std::vector<Populacao> populacoes;
 
-	for (auto& funcao_fitness : funcoes_fitness) {
+	for (unsigned int i = 0; i < genetic_params.num_out; i++) {
 		populacoes.push_back(
 				Populacao(
 						new OnePlusLambdaEvoStrategy(mt, 5, genetic_params,
 								new SimulationFitnessCalculator(genetic_params,
-										funcao_fitness, false))));
+	[i](const Cromossomo& individuo,
+		const std::vector<std::vector<std::bitset<8>>>& individual_output) {
+			auto soma_distancias = soma_distancias_decoder7(true, i, individual_output);
+			if (soma_distancias == 0) {
+				return MELHOR_FITNESS;
+			}
+			return 1.0 / ((double) soma_distancias);
+		}, false))));
 	}
 
 	// Primeira etapa
@@ -344,8 +167,14 @@ int main(int argc, char* argv[]) {
 
 	CriadorArquivos::cria_arquivo_logic_e(genetic_params, "logic_e.v");
 	CriadorArquivos::cria_arquivo_genetico(genetic_params, "genetico.v");
+	auto& melhor_individuo = populacao_otimizacao.melhor_individuo();
 	CriadorArquivos::cria_arquivo_top_icarus(genetic_params,
-			populacao_otimizacao.melhor_individuo(), "otimizado.v");
+			melhor_individuo,
+			  to_string("otimizado_")
+			+ to_string(melhor_individuo.num_portas_utilizadas())
+			+ to_string("_")
+			+ to_string(melhor_individuo.num_maior_gate_path())
+			+ to_string(".v"));
 
 	return 0;
 }
