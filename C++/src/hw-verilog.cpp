@@ -65,7 +65,9 @@ double fitness_otimizacao(const Cromossomo& individuo,
 	if (soma_distancias != 0) {
 		return 0;
 	}
-	return 1.0 / individuo.num_portas_utilizadas() + 1.0 / individuo.num_maior_gate_path();
+	return 1.0 / individuo.num_portas_utilizadas()
+			+ 1.0 / individuo.num_maior_gate_path()
+			+ 1.0 / individuo.num_transistores_total();
 }
 
 int main_loop_genetico(Populacao& populacao, int max_geracoes) {
@@ -158,11 +160,15 @@ int main(int argc, char* argv[]) {
 	std::cout << populacao_otimizacao.melhor_individuo().num_portas_utilizadas()
 			<< ' '
 			<< populacao_otimizacao.melhor_individuo().num_maior_gate_path()
+			<< ' '
+			<< populacao_otimizacao.melhor_individuo().num_transistores_total()
 			<< std::endl;
 	main_loop_genetico(populacao_otimizacao, max_geracoes);
 	std::cout << populacao_otimizacao.melhor_individuo().num_portas_utilizadas()
 			<< ' '
 			<< populacao_otimizacao.melhor_individuo().num_maior_gate_path()
+			<< ' '
+			<< populacao_otimizacao.melhor_individuo().num_transistores_total()
 			<< std::endl;
 
 	CriadorArquivos::cria_arquivo_logic_e(genetic_params, "logic_e.v");
@@ -174,6 +180,8 @@ int main(int argc, char* argv[]) {
 			+ to_string(melhor_individuo.num_portas_utilizadas())
 			+ to_string("_")
 			+ to_string(melhor_individuo.num_maior_gate_path())
+			+ to_string("_")
+			+ to_string(melhor_individuo.num_transistores_total())
 			+ to_string(".v"));
 
 	return 0;
