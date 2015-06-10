@@ -312,7 +312,29 @@ void CriadorArquivos::cria_arquivo_sender(GeneticParams genetic_params, int num_
 	arquivo_resultado << arquivo_modelo;
 }
 
-void CriadorArquivos::cria_arquivo_minimo_main(GeneticParams genetic_params,
+void CriadorArquivos::cria_arquivo_fenotipo_main(GeneticParams genetic_params,
 		const Cromossomo& individuo, const std::string& nome_arquivo) {
+	auto arquivo_modelo = le_conteudo_arquivo("main_fenotipo_modelo");
+	std::ofstream arquivo_resultado(nome_arquivo);
 
+	replace(arquivo_modelo, "#num_portas_1", to_string(individuo.num_portas_utilizadas() - 1));
+	replace(arquivo_modelo, "#num_out_1", to_string(genetic_params.num_out - 1));
+	replace(arquivo_modelo, "#num_inputs_1", to_string(genetic_params.num_in - 1));
+	replace(arquivo_modelo, "#inputs_pow2", to_string((int) pow(2, genetic_params.num_in)));
+	replace(arquivo_modelo, "#assigns", gera_fenotipo(individuo));
+
+	arquivo_resultado << arquivo_modelo;
+}
+
+std::string CriadorArquivos::gera_fenotipo(const Cromossomo& individuo) {
+	auto verilog_fenotipo = individuo.verilog_fenotipo();
+	std::string result;
+
+	for (auto& linhas_saida : verilog_fenotipo) {
+		for (auto& descricao_le : linhas_saida) {
+			result += descricao_le + "\n";
+		}
+	}
+
+	return result;
 }

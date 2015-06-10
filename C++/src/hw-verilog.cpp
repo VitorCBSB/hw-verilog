@@ -171,10 +171,8 @@ int main(int argc, char* argv[]) {
 			<< populacao_otimizacao.melhor_individuo().num_transistores_total()
 			<< std::endl;
 
-	CriadorArquivos::cria_arquivo_logic_e(genetic_params, "logic_e.v");
-	CriadorArquivos::cria_arquivo_genetico(genetic_params, "genetico.v");
 	auto& melhor_individuo = populacao_otimizacao.melhor_individuo();
-	CriadorArquivos::cria_arquivo_top_icarus(genetic_params,
+	CriadorArquivos::cria_arquivo_fenotipo_main(genetic_params,
 			melhor_individuo,
 			  to_string("otimizado_")
 			+ to_string(melhor_individuo.num_portas_utilizadas())

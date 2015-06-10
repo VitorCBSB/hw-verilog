@@ -11,6 +11,7 @@
 #include "Cell.h"
 #include "GeneticParams.h"
 #include "FuncoesElementosLogicos.h"
+#include "Utils.h"
 #include <bitset>
 #include <array>
 #include <vector>
@@ -339,6 +340,23 @@ private:
 		return retorno;
 	}
 
+	std::string decodificar_entrada_indexada(unsigned int input,
+			const std::vector<std::vector<int>>& matriz_indexacao) const {
+		std::string result;
+		if (input < genetic_params.num_in) {
+			result += "in[";
+			result += to_string(input);
+		} else {
+			input -= genetic_params.num_in;
+			int i = input % genetic_params.r;
+			int j = input / genetic_params.r;
+			result += "le_out[";
+			result += to_string(matriz_indexacao[i][j]);
+		}
+		result += "]";
+		return result;
+	}
+
 	int busca_recursiva_num_portas(unsigned int input,
 			std::vector<std::vector<bool>>& nos_visitados) const {
 		if (input < genetic_params.num_in) {
@@ -352,6 +370,13 @@ private:
 			}
 			nos_visitados[i][j] = true;
 			int soma = 1;
+			if (funcoes_possiveis[elementos_logicos[i][j].function] == NOT) {
+				return soma
+						+ busca_recursiva_num_portas(
+								elementos_logicos[i][j].inputs[0],
+								nos_visitados);
+			}
+
 			for (auto input : elementos_logicos[i][j].inputs) {
 				soma += busca_recursiva_num_portas(input, nos_visitados);
 			}
@@ -371,9 +396,17 @@ private:
 				return 0;
 			}
 			nos_visitados[i][j] = true;
-			int soma = num_transistors(funcoes_possiveis[elementos_logicos[i][j].function]);
+			int soma = num_transistors(
+					funcoes_possiveis[elementos_logicos[i][j].function]);
+			if (funcoes_possiveis[elementos_logicos[i][j].function] == NOT) {
+				return soma
+						+ busca_recursiva_num_transistors(
+								elementos_logicos[i][j].inputs[0],
+								nos_visitados);
+			}
+
 			for (auto input : elementos_logicos[i][j].inputs) {
-				soma += busca_recursiva_num_portas(input, nos_visitados);
+				soma += busca_recursiva_num_transistors(input, nos_visitados);
 			}
 			return soma;
 		}
@@ -417,6 +450,124 @@ private:
 			fprintf(stderr, "Funcao desconhecida %d.\n", funcao);
 			exit(1);
 		}
+	}
+
+	std::string nome_funcao(Funcoes funcao) const {
+		switch (funcao) {
+		case AND:
+			return std::string("and");
+		case OR:
+			return std::string("or");
+		case XOR:
+			return std::string("xor");
+		case NOT:
+			return std::string("not");
+		case NAND:
+			return std::string("nand");
+		case XNOR:
+			return std::string("xnor");
+		case NOR:
+			return std::string("nor");
+		default:
+			fprintf(stderr, "Funcao desconhecida %d.\n", funcao);
+			exit(1);
+		}
+	}
+
+	void indexacao_recursiva(unsigned int input, int& index,
+			std::vector<std::vector<int>>& matriz_indexacao) const {
+		if (input < genetic_params.num_in) {
+			return;
+		} else {
+			input -= genetic_params.num_in;
+			int i = input % genetic_params.r;
+			int j = input / genetic_params.r;
+			if (matriz_indexacao[i][j] != -1) {
+				return;
+			}
+
+			matriz_indexacao[i][j] = index;
+			index++;
+
+			if (funcoes_possiveis[elementos_logicos[i][j].function] == NOT) {
+				indexacao_recursiva(elementos_logicos[i][j].inputs[0], index,
+						matriz_indexacao);
+			} else {
+				for (auto input_filho : elementos_logicos[i][j].inputs) {
+					indexacao_recursiva(input_filho, index, matriz_indexacao);
+				}
+			}
+		}
+	}
+
+	std::vector<std::string> geracao_recursiva_fenotipo(unsigned int input,
+			const std::vector<std::vector<int>>& matriz_indexacao,
+			std::vector<std::vector<bool>>& nos_visitados) const {
+		std::vector<std::string> result;
+		if (input < genetic_params.num_in) {
+			return result;
+		}
+
+		input -= genetic_params.num_in;
+		int i = input % genetic_params.r;
+		int j = input / genetic_params.r;
+
+		if (nos_visitados[i][j]) {
+			return result;
+		}
+		nos_visitados[i][j] = true;
+
+		auto funcao = nome_funcao(
+				funcoes_possiveis[elementos_logicos[i][j].function]);
+		auto linha_resultado = funcao + to_string(" ")
+				+ to_string("le" + to_string(matriz_indexacao[i][j]))
+				+ to_string(" (le_out[") + to_string(matriz_indexacao[i][j])
+				+ to_string("], ");
+		if (funcao == "not") {
+			linha_resultado += decodificar_entrada_indexada(
+					elementos_logicos[i][j].inputs[0], matriz_indexacao) + ");";
+			result.push_back(linha_resultado);
+			auto result_filho = geracao_recursiva_fenotipo(
+					elementos_logicos[i][j].inputs[0], matriz_indexacao,
+					nos_visitados);
+			result.insert(result.end(), result_filho.begin(),
+					result_filho.end());
+		} else {
+			for (unsigned int k = 0; k < elementos_logicos[i][j].inputs.size();
+					k++) {
+				linha_resultado += decodificar_entrada_indexada(
+						elementos_logicos[i][j].inputs[k], matriz_indexacao);
+				if (k < elementos_logicos[i][j].inputs.size() - 1) {
+					linha_resultado += ", ";
+				}
+			}
+			linha_resultado += ");";
+			result.push_back(linha_resultado);
+			for (auto input_filho : elementos_logicos[i][j].inputs) {
+				auto result_filho = geracao_recursiva_fenotipo(input_filho,
+						matriz_indexacao, nos_visitados);
+				result.insert(result.end(), result_filho.begin(),
+						result_filho.end());
+			}
+		}
+		return result;
+	}
+
+	std::vector<std::vector<int>> matriz_indexacao_fenotipo() const {
+		std::vector<std::vector<int>> result(genetic_params.r);
+		for (unsigned int i = 0; i < genetic_params.r; i++) {
+			result[i].resize(genetic_params.c);
+			for (unsigned int j = 0; j < genetic_params.c; j++) {
+				result[i][j] = -1;
+			}
+		}
+
+		int index = 0;
+		for (auto& saida : saidas) {
+			indexacao_recursiva(saida.input, index, result);
+		}
+
+		return result;
 	}
 
 public:
@@ -479,6 +630,35 @@ public:
 			soma += busca_recursiva_num_transistors(saida.input, nos_visitados);
 		}
 		return soma;
+	}
+
+	std::vector<std::vector<std::string>> verilog_fenotipo() const {
+		auto matriz_indexacao = matriz_indexacao_fenotipo();
+		std::vector<std::vector<std::string>> result;
+		std::vector<std::vector<bool>> nos_visitados;
+		nos_visitados.resize(genetic_params.r);
+		for (unsigned int i = 0; i < nos_visitados.size(); i++) {
+			nos_visitados[i].resize(genetic_params.c);
+		}
+
+		for (auto& saida : saidas) {
+			result.push_back(
+					geracao_recursiva_fenotipo(saida.input, matriz_indexacao,
+							nos_visitados));
+		}
+
+		std::vector<std::string> saidas_verilog;
+		for (unsigned int i = 0; i < saidas.size(); i++) {
+			saidas_verilog.push_back(
+					to_string("assign saidas[")
+					+ to_string(i)
+					+ to_string("] = ")
+					+ to_string(decodificar_entrada_indexada(saidas[i].input, matriz_indexacao))
+					+ to_string(";"));
+		}
+		result.push_back(saidas_verilog);
+
+		return result;
 	}
 };
 

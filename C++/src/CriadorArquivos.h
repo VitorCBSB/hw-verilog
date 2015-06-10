@@ -27,7 +27,7 @@ public:
 	static void cria_arquivo_sender(GeneticParams genetic_params,
 			int num_samples);
 	static void cria_arquivo_main_fpga(GeneticParams genetic_params);
-	static void cria_arquivo_minimo_main(GeneticParams genetic_params,
+	static void cria_arquivo_fenotipo_main(GeneticParams genetic_params,
 			const Cromossomo& individuo, const std::string& nome_arquivo);
 
 private:
@@ -39,6 +39,7 @@ private:
 	static std::string gera_string_saida(GeneticParams genetic_params);
 	static std::string gera_les(GeneticParams genetic_params);
 	static std::string gera_le_input_assignments(GeneticParams genetic_params);
+	static std::string gera_fenotipo(const Cromossomo& individuo);
 
 };
 

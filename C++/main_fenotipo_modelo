@@ -1,0 +1,19 @@
+module top();
+
+	integer i;
+	wire le_out[#num_portas_1:0];
+	wire [#num_out_1:0] saidas;
+	reg [#num_inputs_1:0] in;
+
+initial begin
+	$monitor("%b %b", in, saidas);
+
+	for (i = 0; i < #inputs_pow2; i = i + 1) begin
+		#5 in = i;
+	end
+end
+
+#assigns
+
+endmodule
+
