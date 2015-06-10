@@ -10,6 +10,7 @@
 
 #include "Cell.h"
 #include "GeneticParams.h"
+#include "FuncoesElementosLogicos.h"
 #include <bitset>
 #include <array>
 #include <vector>
@@ -34,10 +35,24 @@ private:
 	const int NUM_PINOS_DISPONIVEIS = genetic_params.num_in
 			+ genetic_params.r * genetic_params.c;
 	std::mt19937& mt;
+	std::vector<Funcoes> funcoes_possiveis;
 	double fitness_score = 0.0;
 
 	unsigned int random_func() {
 		return mt();
+	}
+
+	std::vector<Funcoes> filtrar_funcoes(GeneticParams genetic_params) {
+		std::vector<Funcoes> result;
+		std::vector<Funcoes> todas_as_funcoes = { AND, OR, XOR, NOT, NAND, XNOR,
+				NOR };
+
+		for (unsigned int i = 0; i < todas_as_funcoes.size(); i++) {
+			if (genetic_params.funcs[i]) {
+				result.push_back(todas_as_funcoes[i]);
+			}
+		}
+		return result;
 	}
 
 	std::vector<std::vector<unsigned int>> mapa_adaptacao(unsigned int old_rows,
@@ -87,12 +102,14 @@ public:
 	Cromossomo(const Cromossomo& other) :
 			genetic_params(other.genetic_params), elementos_logicos(
 					other.elementos_logicos), saidas(other.saidas), mt(
-					other.mt), fitness_score(other.fitness_score) {
+					other.mt), funcoes_possiveis(other.funcoes_possiveis), fitness_score(
+					other.fitness_score) {
 	}
 
 	Cromossomo(std::mt19937& mt, GeneticParams genetic_params,
 			const std::vector<Cromossomo>& cromossomos_a_juntar) :
-			genetic_params(genetic_params), mt(mt) {
+			genetic_params(genetic_params), mt(mt), funcoes_possiveis(
+					filtrar_funcoes(genetic_params)) {
 		elementos_logicos.resize(genetic_params.r);
 		for (unsigned int i = 0; i < genetic_params.r; i++) {
 			this->elementos_logicos[i].resize(genetic_params.c);
@@ -126,6 +143,7 @@ public:
 
 	Cromossomo& operator=(const Cromossomo& other) {
 		mt = other.mt;
+		funcoes_possiveis = other.funcoes_possiveis;
 		fitness_score = other.fitness_score;
 		genetic_params = other.genetic_params;
 		elementos_logicos = other.elementos_logicos;
@@ -150,7 +168,8 @@ public:
 	}
 
 	Cromossomo(std::mt19937& mt, GeneticParams genetic_params) :
-			genetic_params(genetic_params), mt(mt) {
+			genetic_params(genetic_params), mt(mt), funcoes_possiveis(
+					filtrar_funcoes(genetic_params)) {
 		for (unsigned int i = 0; i < genetic_params.r; i++) {
 			elementos_logicos.emplace_back(std::vector<FunctionCell>());
 			for (unsigned int j = 0; j < genetic_params.c; j++) {
@@ -167,7 +186,8 @@ public:
 			std::vector<std::vector<FunctionCell>> elementos_logicos,
 			std::vector<OutputCell> saidas) :
 			genetic_params(genetic_params), elementos_logicos(
-					elementos_logicos), saidas(saidas), mt(mt) {
+					elementos_logicos), saidas(saidas), mt(mt), funcoes_possiveis(
+					filtrar_funcoes(genetic_params)) {
 	}
 
 	std::vector<Cromossomo> gerar_filhos(const Cromossomo& outro_pai) {
@@ -339,6 +359,26 @@ private:
 		}
 	}
 
+	int busca_recursiva_num_transistors(unsigned int input,
+			std::vector<std::vector<bool>>& nos_visitados) const {
+		if (input < genetic_params.num_in) {
+			return 0;
+		} else {
+			input -= genetic_params.num_in;
+			int i = input % genetic_params.r;
+			int j = input / genetic_params.r;
+			if (nos_visitados[i][j]) {
+				return 0;
+			}
+			nos_visitados[i][j] = true;
+			int soma = num_transistors(funcoes_possiveis[elementos_logicos[i][j].function]);
+			for (auto input : elementos_logicos[i][j].inputs) {
+				soma += busca_recursiva_num_portas(input, nos_visitados);
+			}
+			return soma;
+		}
+	}
+
 	int busca_recursiva_gate_path(unsigned int input) const {
 		if (input < genetic_params.num_in) {
 			return 0;
@@ -348,10 +388,31 @@ private:
 			int j = input / genetic_params.r;
 			std::vector<unsigned int> niveis_filhos;
 			for (unsigned int k = 0; k < genetic_params.le_num_in; k++) {
-				niveis_filhos.emplace_back(busca_recursiva_gate_path(
-						elementos_logicos[i][j].inputs[k]));
+				niveis_filhos.emplace_back(
+						busca_recursiva_gate_path(
+								elementos_logicos[i][j].inputs[k]));
 			}
-			return (*std::max_element(niveis_filhos.begin(), niveis_filhos.end())) + 1;
+			return (*std::max_element(niveis_filhos.begin(),
+					niveis_filhos.end())) + 1;
+		}
+	}
+
+	int num_transistors(Funcoes funcao) const {
+		switch (funcao) {
+		case AND:
+			return 6;
+		case OR:
+			return 6;
+		case XOR:
+			return 6;
+		case NOT:
+			return 2;
+		case NAND:
+			return 4;
+		case XNOR:
+			return 8;
+		case NOR:
+			return 4;
 		}
 	}
 
@@ -382,14 +443,14 @@ public:
 	}
 
 	int num_portas_utilizadas() const {
+		std::vector<std::vector<bool>> nos_visitados;
+		nos_visitados.resize(genetic_params.r);
+		for (unsigned int i = 0; i < nos_visitados.size(); i++) {
+			nos_visitados[i].resize(genetic_params.c);
+		}
+
 		int soma = 0;
 		for (auto& saida : saidas) {
-			std::vector<std::vector<bool>> nos_visitados;
-			nos_visitados.resize(genetic_params.r);
-			for (unsigned int i = 0; i < nos_visitados.size(); i++) {
-				nos_visitados[i].resize(genetic_params.c);
-			}
-
 			soma += busca_recursiva_num_portas(saida.input, nos_visitados);
 		}
 		return soma;
@@ -401,6 +462,20 @@ public:
 			lista_niveis.push_back(busca_recursiva_gate_path(saida.input));
 		}
 		return *std::max_element(lista_niveis.begin(), lista_niveis.end());
+	}
+
+	int num_transistores_total() const {
+		std::vector<std::vector<bool>> nos_visitados;
+		nos_visitados.resize(genetic_params.r);
+		for (unsigned int i = 0; i < nos_visitados.size(); i++) {
+			nos_visitados[i].resize(genetic_params.c);
+		}
+
+		int soma = 0;
+		for (auto& saida : saidas) {
+			soma += busca_recursiva_num_transistors(saida.input, nos_visitados);
+		}
+		return soma;
 	}
 };
 
