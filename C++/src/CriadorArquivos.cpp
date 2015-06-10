@@ -239,7 +239,7 @@ void CriadorArquivos::cria_arquivo_data_receiver(GeneticParams genetic_params) {
 	arquivo_resultado << arquivo_modelo;
 }
 
-void CriadorArquivos::cria_arquivo_main(GeneticParams genetic_params) {
+void CriadorArquivos::cria_arquivo_main_fpga(GeneticParams genetic_params) {
 	auto arquivo_modelo = le_conteudo_arquivo("fpga_main_modelo");
 	std::ofstream arquivo_resultado("Verilog/circ_gen/main.v");
 
@@ -310,4 +310,9 @@ void CriadorArquivos::cria_arquivo_sender(GeneticParams genetic_params, int num_
 	replace(arquivo_modelo, "#num_samples", to_string(num_samples));
 
 	arquivo_resultado << arquivo_modelo;
+}
+
+void CriadorArquivos::cria_arquivo_minimo_main(GeneticParams genetic_params,
+		const Cromossomo& individuo, const std::string& nome_arquivo) {
+
 }

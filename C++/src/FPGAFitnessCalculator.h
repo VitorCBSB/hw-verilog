@@ -41,7 +41,7 @@ public:
 		CriadorArquivos::cria_arquivo_logic_e(genetic_params, "Verilog/circ_gen/logic_e.v");
 		CriadorArquivos::cria_arquivo_data_receiver(genetic_params);
 		CriadorArquivos::cria_arquivo_sender(genetic_params, num_samples);
-		CriadorArquivos::cria_arquivo_main(genetic_params);
+		CriadorArquivos::cria_arquivo_main_fpga(genetic_params);
 		compilar();
 		carregar();
 	}
