@@ -44,13 +44,17 @@ calcularEstatisticas amostras max_geracoes listaAmostras = let
 	mediaConvergencia = media $ map (!! 0) listaAmostras
 	mediaNumPortasPre = media $ map (!! 1) listaAmostras
 	mediaNivelGatePre = media $ map (!! 2) listaAmostras
-	mediaNumPortasPos = media $ map (!! 3) listaAmostras
-	mediaNivelGatePos = media $ map (!! 4) listaAmostras
+	mediaNumTransPre = media $ map (!! 3) listaAmostras
+	mediaNumPortasPos = media $ map (!! 4) listaAmostras
+	mediaNivelGatePos = media $ map (!! 5) listaAmostras
+	mediaNumTransPos = media $ map (!! 6) listaAmostras
 	taxaMelhoraNumPortas = liftM2 (/) mediaNumPortasPre mediaNumPortasPos
 	taxaMelhoraNivelGate = liftM2 (/) mediaNivelGatePre mediaNivelGatePos
+	taxaMelhoraNumTrans = liftM2 (/) mediaNumTransPre mediaNumTransPos
 	in
 	[Just (fromInteger amostras), Just (fromInteger max_geracoes), mediaConvergencia, 
-			mediaNumPortasPre, mediaNivelGatePre, mediaNumPortasPos, mediaNivelGatePos,
+			mediaNumPortasPre, mediaNivelGatePre, mediaNumTransPre, 
+			mediaNumPortasPos, mediaNivelGatePos, mediaNumTransPos,
 			taxaMelhoraNumPortas, taxaMelhoraNivelGate]
 
 formatar = intercalate " | "
@@ -61,8 +65,9 @@ realMain :: [String] -> IO ()
 realMain [geracoesArg, amostrasArg] = do
 	arquivoResultado <- openFile "resultado.txt" WriteMode
 	let cabecalho = formatar $ ["Amostras", "Max ger. otimizicao", "Media convergencia"] 
-		++ ["Media n. portas (pre)", "Media gate path (pre)", "Media n. portas (pos)"]
-		++ ["Media gate path (pos)", "% n. portas", "% gate"]
+		++ ["Media n. portas (pre)", "Media gate path (pre)", "Media num trans (pre)"] 
+		++ ["Media n. portas (pos)", "Media gate path (pos)", "Media num trans (pos)"]
+		++ ["% n. portas", "% gate"]
 	hPutStrLn arquivoResultado cabecalho
 	hPutStrLn arquivoResultado $ linhas (length cabecalho)
 	setCurrentDirectory "/home/vitor/hw-verilog/C++"
