@@ -413,6 +413,9 @@ private:
 			return 8;
 		case NOR:
 			return 4;
+		default:
+			fprintf(stderr, "Funcao desconhecida %d.\n", funcao);
+			exit(1);
 		}
 	}
 
