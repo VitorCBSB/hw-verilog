@@ -79,18 +79,18 @@ realMain [geracoesArg, amostrasArg] = do
 	arquivoResultado <- openFile "resultado.txt" WriteMode
 	setCurrentDirectory "/home/vitor/hw-verilog/C++"
 
-	hPutStrLn arquivoResultado $ renderTabela $ [informacoesGerais, [geracoesArg, amostrasArg]]
+	hPutStrLn arquivoResultado $ renderTabela [informacoesGerais, [geracoesArg, amostrasArg]]
 	hPutStrLn arquivoResultado ""
 
 	let maxGeracoes = read geracoesArg
 	let amostras = read amostrasArg
 	resultados <- chamarProgramaNVezes amostras maxGeracoes
 
-	hPutStrLn arquivoResultado $ renderTabela $ [cabecalho] ++ ((map . map) show (zipWith (\index amostras -> [index] ++ amostras) [1..] resultados))
+	hPutStrLn arquivoResultado $ renderTabela $ cabecalho : (map . map) show (zipWith (:) [1..] resultados)
 	hPutStrLn arquivoResultado ""
 
 	let estatisticas = calcularEstatisticas ((map . map) fromInteger resultados)
-	hPutStrLn arquivoResultado $ renderTabela $ [cabecalhoSumario, (map formatarMaybe estatisticas)]
+	hPutStrLn arquivoResultado $ renderTabela [cabecalhoSumario, map formatarMaybe estatisticas]
 
 	hClose arquivoResultado
 
