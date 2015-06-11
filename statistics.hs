@@ -6,6 +6,7 @@ import Data.Maybe
 import Data.Time.Clock
 import Control.Monad
 import System.IO
+import Text.PrettyPrint.Boxes
 
 chamarPrograma :: Integer -> IO [Integer]
 chamarPrograma input =
@@ -13,7 +14,7 @@ chamarPrograma input =
 		output <- readProcess "/home/vitor/hw-verilog/C++/Debug/hw-verilog" [show input] ""
 		return (map read (words output) :: [Integer])
 
-chamarProgramaNVezes :: Integer -> Integer -> IO [(Integer, [Integer])]
+chamarProgramaNVezes :: Integer -> Integer -> IO [[Integer]]
 chamarProgramaNVezes n input =
 	if n == 0 then
 		return []
@@ -28,7 +29,7 @@ chamarProgramaNVezes n input =
 				[-1] -> chamarProgramaNVezes n input
 				_ -> do
 					recursiveCall <- chamarProgramaNVezes (n - 1) input
-					return $ (tempoExecucao, listOutput) : recursiveCall
+					return $ (listOutput ++ [tempoExecucao]) : recursiveCall
 
 media [] = Nothing
 media lista = Just $ sum lista / fromIntegral (length lista)
@@ -52,53 +53,45 @@ calcularEstatisticas listaAmostras = let
 	mediaNumPortasPos = media $ map (!! 4) listaAmostras
 	mediaNivelGatePos = media $ map (!! 5) listaAmostras
 	mediaNumTransPos = media $ map (!! 6) listaAmostras
+	mediaTempo = media $ map (!! 7) listaAmostras
 	taxaMelhoraNumPortas = liftM2 (/) mediaNumPortasPre mediaNumPortasPos
 	taxaMelhoraNivelGate = liftM2 (/) mediaNivelGatePre mediaNivelGatePos
 	taxaMelhoraNumTrans = liftM2 (/) mediaNumTransPre mediaNumTransPos
 	in
-	[mediaConvergencia, 
-			mediaNumPortasPre, mediaNivelGatePre, mediaNumTransPre, 
-			mediaNumPortasPos, mediaNivelGatePos, mediaNumTransPos,
-			taxaMelhoraNumPortas, taxaMelhoraNivelGate]
+	[mediaConvergencia, mediaNumPortasPre, mediaNivelGatePre, mediaNumTransPre, 
+			mediaNumPortasPos, mediaNivelGatePos, mediaNumTransPos, mediaTempo,
+			taxaMelhoraNumPortas, taxaMelhoraNivelGate, taxaMelhoraNumTrans]
 
-formatar = intercalate " | "
-
-linhas n = replicate n '-'
+renderTabela :: [[String]] -> String
+renderTabela linhas = render $ hsep 2 left (map (vcat left . map text) (transpose linhas))
 
 realMain :: [String] -> IO ()
 realMain [geracoesArg, amostrasArg] = do
-	let informacoesGerais = formatar ["Geracoes", "Amostras"]
-	let cabecalho = formatar $ ["Amostra", "Geracoes conv."]
+	let informacoesGerais = ["Geracoes", "Amostras"]
+	let cabecalho = ["Amostra", "Geracoes conv."]
 		++ ["N. portas (pre)", "G. path (pre)", "N. trans (pre)"]
 		++ ["N. portas (pos)", "G. path (pos)", "N. trans (pos)"]
 		++ ["Tempo (s)"]
-	let cabecalhoSumario = formatar $ ["Media convergencia"] 
+	let cabecalhoSumario = ["Media convergencia"] 
 		++ ["Media n. portas (pre)", "Media g. path (pre)", "Media n. trans (pre)"] 
 		++ ["Media n. portas (pos)", "Media g. path (pos)", "Media n. trans (pos)"]
-		++ ["% n. portas", "% gate", "% trans"]
+		++ ["Media tempo", "% n. portas", "% gate", "% trans"]
 	arquivoResultado <- openFile "resultado.txt" WriteMode
 	setCurrentDirectory "/home/vitor/hw-verilog/C++"
 
-	hPutStrLn arquivoResultado informacoesGerais
-	hPutStrLn arquivoResultado $ linhas (length informacoesGerais)
-	hPutStrLn arquivoResultado $ formatar [geracoesArg, amostrasArg]
+	hPutStrLn arquivoResultado $ renderTabela $ [informacoesGerais, [geracoesArg, amostrasArg]]
 	hPutStrLn arquivoResultado ""
 
 	let maxGeracoes = read geracoesArg
 	let amostras = read amostrasArg
 	resultados <- chamarProgramaNVezes amostras maxGeracoes
 
-	hPutStrLn arquivoResultado cabecalho
-	hPutStrLn arquivoResultado $ linhas (length cabecalho)
-	mapM_ 
-		(\(amostra, (tempo, amostras)) -> hPutStrLn arquivoResultado $ formatar $ map show $ [amostra] ++ amostras ++ [tempo]) 
-		(zip [1..] resultados)
+	hPutStrLn arquivoResultado $ renderTabela $ [cabecalho] ++ ((map . map) show (zipWith (\index amostras -> [index] ++ amostras) [1..] resultados))
 	hPutStrLn arquivoResultado ""
 
-	let estatisticas = calcularEstatisticas (map (map fromInteger . snd) resultados)
-	hPutStrLn arquivoResultado cabecalhoSumario
-	hPutStrLn arquivoResultado $ linhas (length cabecalhoSumario)
-	hPutStrLn arquivoResultado $ formatar $ map formatarMaybe estatisticas
+	let estatisticas = calcularEstatisticas ((map . map) fromInteger resultados)
+	hPutStrLn arquivoResultado $ renderTabela $ [cabecalhoSumario, (map formatarMaybe estatisticas)]
+
 	hClose arquivoResultado
 
 realMain _ = do
