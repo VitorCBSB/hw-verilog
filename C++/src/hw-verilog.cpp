@@ -31,27 +31,11 @@ const unsigned int NUM_COLS = 10;
 const unsigned int LE_NUM_IN = 2;
 const bool FEED_FORWARD = true;
 
+std::vector<std::bitset<8>> respostas;
+
 int soma_distancias_decoder7(bool parcial, int bit,
 		const std::vector<std::vector<std::bitset<8>>>& output_a_analisar) {
 	int soma_distancias = 0;
-	std::vector<std::bitset<8>> respostas = {
-			std::bitset<8>("0111111"),
-			std::bitset<8>("0000110"),
-			std::bitset<8>("1011011"),
-			std::bitset<8>("1001111"),
-			std::bitset<8>("1100110"),
-			std::bitset<8>("1101101"),
-			std::bitset<8>("1111101"),
-			std::bitset<8>("0000111"),
-			std::bitset<8>("1111111"),
-			std::bitset<8>("1101111"),
-			std::bitset<8>("1110111"),
-			std::bitset<8>("1111100"),
-			std::bitset<8>("0111001"),
-			std::bitset<8>("1011110"),
-			std::bitset<8>("1111001"),
-			std::bitset<8>("1110001")
-	};
 	for (unsigned int i = 0; i < respostas.size(); i++) {
 		soma_distancias += abs((int) output_a_analisar[i][0].to_ulong() -
 				(parcial ? respostas[i][bit] : respostas[i].to_ulong()));
@@ -70,17 +54,23 @@ double fitness_otimizacao(const Cromossomo& individuo,
 			+ 1.0 / individuo.num_transistores_total();
 }
 
-int main_loop_genetico(Populacao& populacao, int max_geracoes) {
+int main_loop_genetico(Populacao& populacao, int max_geracoes, bool print = false) {
 	int geracao = 0;
 	populacao.calcular_fitness();
 	while (geracao < max_geracoes
 			&& populacao.melhor_individuo().fitness() != MELHOR_FITNESS) {
+		if (print && (geracao % (max_geracoes / 10)) == 0) {
+			std::cout << populacao.melhor_individuo().fitness() << std::endl;
+		}
 		populacao.proxima_geracao();
 		populacao.calcular_fitness();
 		geracao++;
 	}
 	if (populacao.melhor_individuo().fitness() == MELHOR_FITNESS) {
 		return geracao;
+	}
+	if (print) {
+		std::cout << populacao.melhor_individuo().fitness() << std::endl;
 	}
 	return -1;
 }
@@ -93,6 +83,25 @@ int main(int argc, char* argv[]) {
 	int max_geracoes;
 	sscanf(argv[1], "%d", &max_geracoes);
 
+	respostas = { 
+		std::bitset<8>("0111111"),
+		std::bitset<8>("0000110"),
+		std::bitset<8>("1011011"),
+		std::bitset<8>("1001111"),
+		std::bitset<8>("1100110"),
+		std::bitset<8>("1101101"),
+		std::bitset<8>("1111101"),
+		std::bitset<8>("0000111"),
+		std::bitset<8>("1111111"),
+		std::bitset<8>("1101111"),
+		std::bitset<8>("1110111"),
+		std::bitset<8>("1111100"),
+		std::bitset<8>("0111001"),
+		std::bitset<8>("1011110"),
+		std::bitset<8>("1111001"),
+		std::bitset<8>("1110001")
+	};
+	
 	std::vector<bool> funcs = {
 			true, // AND
 			true, // OR
@@ -130,7 +139,7 @@ int main(int argc, char* argv[]) {
 	int soma_geracoes = 0;
 #pragma omp parallel for reduction (+: soma_geracoes)
 	for (unsigned int i = 0; i < populacoes.size(); i++) {
-		int geracao_final = main_loop_genetico(populacoes[i], max_geracoes);
+		int geracao_final = main_loop_genetico(populacoes[i], 2 * max_geracoes);
 		if (geracao_final == -1) {
 			std::cout << -1 << std::endl;
 			exit(0);
@@ -163,7 +172,7 @@ int main(int argc, char* argv[]) {
 			<< ' '
 			<< populacao_otimizacao.melhor_individuo().num_transistores_total()
 			<< std::endl;
-	main_loop_genetico(populacao_otimizacao, max_geracoes);
+	main_loop_genetico(populacao_otimizacao, max_geracoes, true);
 	std::cout << populacao_otimizacao.melhor_individuo().num_portas_utilizadas()
 			<< ' '
 			<< populacao_otimizacao.melhor_individuo().num_maior_gate_path()
